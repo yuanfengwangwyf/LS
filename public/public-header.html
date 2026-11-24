@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Header</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css">
+  <script src="../iconfont/iconfont.js"></script>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <style>
+    html.dark-mode body {
+      background: var(--gray-2);
+    }
+  </style>
+</head>
+<body style="margin: var(--space0); padding: var(--space0); overflow: hidden;">
+  <header class="header">
+    <div class="header-left">
+      <a href="../index.html" class="header-logo" target="_parent">
+        <img src="../image/Header/ThorUI-logo.png" alt="NN" class="header-logo-graphic">
+        <span>ThorUI</span>
+      </a>
+      <nav class="header-nav" id="header-nav"></nav>
+    </div>
+    <div class="header-right">
+      <div id="header-toggle"></div>
+    </div>
+  </header>
+
+  <script src="../basic%20components/button.js"></script>
+  <script src="../basic%20components/tabs.js"></script>
+  <script>
+    (function() {
+      document.body.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+      const headerNav = document.getElementById('header-nav');
+      const headerToggle = document.getElementById('header-toggle');
+      const headerParams = new URLSearchParams(window.location.search);
+      const initialLibrary = headerParams.get('library');
+      const libraryIndexes = {
+        basic: '0',
+        business: '1',
+        page: '2',
+        'accelerator-business': '3',
+        'accelerator-page': '4'
+      };
+      let currentLibrary = Object.prototype.hasOwnProperty.call(libraryIndexes, initialLibrary) ? initialLibrary : 'basic';
+      let tabs;
+
+      function setHeaderLibrary(library) {
+        currentLibrary = Object.prototype.hasOwnProperty.call(libraryIndexes, library) ? library : 'basic';
+        if (!tabs) return;
+
+        const targetIndex = libraryIndexes[currentLibrary];
+        tabs.querySelectorAll('.nn-tab').forEach(function(tab) {
+          tab.classList.toggle('active', tab.dataset.index === targetIndex);
+        });
+
+        const activeTab = tabs.querySelector('.nn-tab.active');
+        const indicator = tabs.querySelector('.nn-tab-indicator');
+        if (activeTab && indicator) {
+          requestAnimationFrame(function() {
+            const tabRect = activeTab.getBoundingClientRect();
+            const wrapperRect = tabs.getBoundingClientRect();
+            indicator.style.left = (tabRect.left - wrapperRect.left) + 'px';
+            indicator.style.right = (wrapperRect.right - tabRect.right) + 'px';
+          });
+        }
+      }
+
+      tabs = createTabs({
+        type: 'primary',
+        tabs: [
+          { name: '基础组件库' },
+          { name: 'NN业务组件' },
+          { name: 'NN页面' },
+          { name: '加速器业务组件' },
+          { name: '加速器页面' }
+        ],
+        defaultActive: Number(libraryIndexes[currentLibrary]),
+        onChange: function(event) {
+          if (String(event.index) === libraryIndexes[currentLibrary]) {
+            return;
+          }
+
+          const targetUrls = [
+            '../index.html',
+            '../NN%20business/CommunityNavigation.html',
+            '../public/CommunityFramework.html',
+            '../Accelerator%20business/Header.html',
+            '../public/AcceleratorFramework.html'
+          ];
+          const targetUrl = targetUrls[event.index] || targetUrls[0];
+
+          if (window.parent && window.parent.location) {
+            window.parent.location.href = targetUrl;
+          }
+        }
+      });
+
+      headerNav.appendChild(tabs);
+      setHeaderLibrary(currentLibrary);
+
+      function updateToggleIcon() {
+        const isDarkMode = localStorage.getItem('dark-mode') === 'true';
+        const iconEl = headerToggle.querySelector('.nn-btn-icon i');
+        if (iconEl) {
+          if (isDarkMode) {
+            iconEl.className = 'nnicon nicon-a-Moon-fillyueliang-mianxing';
+          } else {
+            iconEl.className = 'nnicon nicon-a-Switchsun-linetaiyang-mianxing';
+          }
+        }
+      }
+
+      function toggleDarkMode() {
+        const isDarkMode = localStorage.getItem('dark-mode') === 'true';
+        const newDarkMode = !isDarkMode;
+        localStorage.setItem('dark-mode', newDarkMode);
+
+        document.documentElement.classList.toggle('dark-mode', newDarkMode);
+        document.body.classList.toggle('dark-mode', newDarkMode);
+
+        updateToggleIcon();
+
+        window.parent.postMessage({
+          type: 'dark-mode',
+          value: newDarkMode
+        }, '*');
+      }
+
+      const toggleBtn = nnButton({
+        variant: 'system',
+        level: 'tertiary',
+        size: 'large',
+        icon: '<i class="nnicon nicon-a-Switchsun-linetaiyang-mianxing"></i>',
+        iconPosition: 'only',
+        iconSize: 'var(--icon-size-x9)',
+        onClick: toggleDarkMode
+      });
+
+      headerToggle.appendChild(toggleBtn);
+
+      updateToggleIcon();
+
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'dark-mode') {
+          const isDarkMode = event.data.value;
+          localStorage.setItem('dark-mode', isDarkMode);
+          document.documentElement.classList.toggle('dark-mode', isDarkMode);
+          document.body.classList.toggle('dark-mode', isDarkMode);
+          updateToggleIcon();
+        } else if (event.data && event.data.type === 'library') {
+          setHeaderLibrary(event.data.value);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Table 表格</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260512">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">数据展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">表格</span>
+      <h1 class="section-title">Table 表格</h1>
+      <p class="description">Table 用于展示结构化数据，支持固定表头、纵向滚动、横向滚动、多选列、表头上下排列和单元格自定义组件渲染。</p>
+
+      <div class="table-content">
+        <div class="table-section">
+          <h2 class="table-section-title">纵向滚动</h2>
+          <p class="table-section-desc">表头固定在顶部，表体内容纵向滚动；表头高度 40px，表体行高 60px。</p>
+          <div class="table-page-demo table-page-with-border">
+            <div class="table-row" id="table-vertical-scroll"></div>
+          </div>
+        </div>
+
+        <div class="table-section">
+          <h2 class="table-section-title">横向滚动与固定列</h2>
+          <p class="table-section-desc">支持同时横向和纵向滚动，可配置固定表头、固定列和右侧操作列。</p>
+          <div class="table-page-demo table-page-with-border">
+            <div class="table-row" id="table-horizontal-scroll"></div>
+          </div>
+        </div>
+
+        <div class="table-section">
+          <h2 class="table-section-title">多选、排序与自定义内容</h2>
+          <p class="table-section-desc">表头第一列可配置多选，表头支持点击切换排序；单元格内容可插入组件，默认展示 Label。</p>
+          <div class="table-page-demo table-page-with-border">
+            <div class="table-row" id="table-selection-sort-label"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-api-section">
+        <h2 class="table-api-title">API 参考</h2>
+        <table class="table-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>columns</td><td>表格列配置，包含 key、title、subtitle、width、fixed、align、render、headerRender 和 footerRender；title 支持字符串或数组，数组会以上下排列展示</td><td>array</td><td>align: left | center | right</td><td>[]</td></tr>
+            <tr><td>data</td><td>表格数据源</td><td>array</td><td>-</td><td>[]</td></tr>
+            <tr><td>footerData</td><td>表尾数据，配置后展示底部表尾行</td><td>object</td><td>-</td><td>null</td></tr>
+            <tr><td>selectable</td><td>是否展示表头第一列多选</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>selectedRowKeys</td><td>默认选中的行 key</td><td>array</td><td>-</td><td>[]</td></tr>
+            <tr><td>rowKey</td><td>行唯一标识字段</td><td>string</td><td>-</td><td>id</td></tr>
+            <tr><td>defaultSort</td><td>默认排序状态，包含 key 和 order</td><td>object</td><td>asc | desc</td><td>null</td></tr>
+            <tr><td>onSortChange</td><td>排序切换回调，返回当前排序 key 和 order</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>onSelectionChange</td><td>勾选变化回调，返回 selectedRowKeys 和 selectedRows</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>column.render</td><td>自定义单元格内容，可返回文本或组件节点；示例中状态列默认插入 Label</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>column.headerRender</td><td>自定义表头内容，可返回文本或组件节点</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>height</td><td>表格可视高度，超出后滚动</td><td>number</td><td>-</td><td>420</td></tr>
+            <tr><td>rowHeight</td><td>表体行高</td><td>number</td><td>-</td><td>60</td></tr>
+            <tr><td>headerHeight</td><td>表头高度</td><td>number</td><td>-</td><td>40</td></tr>
+            <tr><td>minWidth</td><td>表格最小宽度，容器不足时横向滚动</td><td>number</td><td>-</td><td>760</td></tr>
+            <tr><td>surface</td><td>表格承载表面</td><td>string</td><td>page | panel</td><td>page</td></tr>
+            <tr><td>stickyHeader</td><td>是否固定表头</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>stickyFooter</td><td>是否固定表尾</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>fixedLeftColumns</td><td>从左侧开始固定的列数</td><td>number</td><td>-</td><td>0</td></tr>
+            <tr><td>fixedRightColumns</td><td>从右侧开始固定的列数</td><td>number</td><td>-</td><td>0</td></tr>
+            <tr><td>emptyText</td><td>空数据展示文本</td><td>string</td><td>-</td><td>暂无数据</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/checkbox.js?v=20260525-table"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/table.js?v=20261113-table-panel-surface"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-table');
+      injectTableStyles();
+
+      const verticalContainer = document.getElementById('table-vertical-scroll');
+      const horizontalContainer = document.getElementById('table-horizontal-scroll');
+      const selectionSortContainer = document.getElementById('table-selection-sort-label');
+      const rows = Array.from({ length: 24 }, function(_, index) {
+        return {
+          type: '赠送礼物',
+          time: '2023-12-31 18:36',
+          amount: '-50N币',
+          content: index % 3 === 0 ? '赠送1个可爱小熊，包含长文本时自动省略展示' : '赠送1个可爱小熊'
+        };
+      });
+
+      verticalContainer.appendChild(createTable({
+        height: 420,
+        headerHeight: 40,
+        rowHeight: 60,
+        minWidth: 920,
+        columns: [
+          { key: 'type', title: '类型', width: '25%' },
+          { key: 'time', title: '时间', width: '25%' },
+          { key: 'amount', title: '金额', width: '25%' },
+          { key: 'content', title: '内容', width: '25%' }
+        ],
+        data: rows
+      }));
+
+      const serviceRows = Array.from({ length: 16 }, function(_, index) {
+        return {
+          id: `NN-${String(index + 1).padStart(4, '0')}`,
+          type: index % 2 === 0 ? '语音服务' : '房间服务',
+          status: index % 4 === 3 ? '待处理' : '进行中',
+          startTime: '2024-06-06 12:30',
+          endTime: '2024-06-16 18:00',
+          price: `${(index + 1) * 50} N币`,
+          owner: index % 2 === 0 ? 'Apex 英雄' : 'PUBG',
+          content: index % 3 === 0 ? '服务内容较长时保持单行省略展示' : '标准服务内容',
+          action: index % 4 === 3 ? 'secondary-only' : 'default'
+        };
+      });
+
+      horizontalContainer.appendChild(createTable({
+        height: 420,
+        headerHeight: 40,
+        rowHeight: 60,
+        minWidth: 1320,
+        stickyHeader: true,
+        fixedLeftColumns: 1,
+        fixedRightColumns: 1,
+        columns: [
+          { key: 'id', title: '编号', width: 160 },
+          { key: 'type', title: '类型', width: 160 },
+          { key: 'status', title: '状态', width: 160 },
+          { key: 'startTime', title: '开始时间', width: 200 },
+          { key: 'endTime', title: '结束时间', width: 200 },
+          { key: 'price', title: '金额', width: 160 },
+          { key: 'owner', title: '归属', width: 160 },
+          { key: 'content', title: '内容', width: 160 },
+          {
+            key: 'action',
+            title: '操作',
+            width: 160,
+            render: function(value) {
+              if (value === 'secondary-only') {
+                return createTableActionButtons([{ text: '取消', type: 'secondary' }]);
+              }
+              return createTableActionButtons([
+                { text: '开始服务', type: 'primary' },
+                { text: '取消', type: 'secondary' }
+              ]);
+            }
+          }
+        ],
+        data: serviceRows
+      }));
+
+      selectionSortContainer.appendChild(createTable({
+        height: 340,
+        headerHeight: 40,
+        rowHeight: 60,
+        minWidth: 760,
+        stickyHeader: true,
+        selectable: true,
+        selectedRowKeys: ['NN-0001', 'NN-0002'],
+        columns: [
+          { key: 'name', title: '用户昵称', width: '28%' },
+          { key: 'checkInTime', title: '入驻时间', width: '28%', sortable: true },
+          {
+            key: 'status',
+            title: '状态',
+            width: '20%',
+            render: function(value) {
+              return createTableLabel({
+                text: value,
+                color: value === '待处理' ? 'orange' : 'green',
+                type: 'soft',
+                size: 'd'
+              });
+            }
+          },
+          { key: 'content', title: '内容', width: '24%' }
+        ],
+        data: serviceRows.slice(0, 6).map(function(row, index) {
+          return {
+            id: row.id,
+            name: index % 2 === 0 ? 'Apex 英雄' : 'PUBG 玩家',
+            checkInTime: `2024-06-${String(6 + index).padStart(2, '0')}`,
+            status: row.status,
+            content: row.content
+          };
+        })
+      }));
+    });
+  </script>
+</body>
+</html>

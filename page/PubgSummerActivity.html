@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PUBG 夏日福利活动">
+  <title>PUBG 夏日福利活动</title>
+  <link rel="stylesheet" href="../design-variable.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="pubg-summer-activity.css">
+</head>
+<body>
+  <main class="campaign-shell">
+    <section class="hero" aria-labelledby="campaign-title">
+      <div class="hero-haze" aria-hidden="true"></div>
+      <div class="hero-rider" aria-hidden="true">✦</div>
+      <div class="hero-logo" aria-hidden="true"><small>PUBG SUMMER FESTIVAL</small>热浪狂欢</div>
+      <div class="hero-copy">
+        <h1 id="campaign-title">暑期热浪狂欢</h1>
+        <p>解锁夏日福利道具 <strong>iPhone 锦鲤就是你</strong></p>
+        <span>活动时间 2026.08.06 – 2026.08.25</span>
+      </div>
+    </section>
+
+    <nav class="section-tabs" aria-label="活动内容">
+      <button class="is-active" data-target="exchange">积分兑换</button>
+      <button data-target="sign">每日签到</button>
+      <button data-target="tasks">任务中心</button>
+      <button data-target="lottery">幸运抽奖</button>
+      <button data-target="rank">排行榜</button>
+      <button data-target="download">客户端下载</button>
+    </nav>
+
+    <div class="campaign-content">
+      <section id="exchange" class="activity-section" aria-labelledby="exchange-title">
+        <header class="section-heading"><span></span><div><h2 id="exchange-title">PUBG 热浪礼遇</h2><p>SUMMER BENEFITS EXCHANGE</p></div><span></span></header>
+        <div class="account-links"><span>我的积分：<b id="points">5000</b></span><button data-toast="我的奖品功能已打开">我的奖品</button><button data-toast="积分记录功能已打开">积分记录</button><button data-target="tasks">赚积分 &gt;&gt;</button></div>
+        <div class="reward-grid" id="reward-grid"></div>
+        <button class="primary-button" data-toast="兑换成功，奖品已放入背包">立即兑换</button>
+      </section>
+
+      <section id="sign" class="activity-section" aria-labelledby="sign-title">
+        <header class="section-heading"><span></span><div><h2 id="sign-title">每日签到 先领福利</h2><p>DAILY CHECK-IN</p></div><span></span></header>
+        <div class="checkin-list" id="checkin-list"></div>
+      </section>
+
+      <section id="tasks" class="activity-section" aria-labelledby="tasks-title">
+        <header class="section-heading"><span></span><div><h2 id="tasks-title">任务中心 获取每日任务</h2><p>MISSION CENTER</p></div><span></span></header>
+        <div class="task-grid" id="task-grid"></div>
+        <article class="invite-card"><div class="invite-icon">✦</div><div><b>邀请好友参与活动</b><p>成功邀请一位好友，双方可获得额外积分</p></div><button class="small-button" data-toast="邀请链接已复制">去邀请</button></article>
+      </section>
+
+      <section id="lottery" class="activity-section" aria-labelledby="lottery-title">
+        <header class="section-heading"><span></span><div><h2 id="lottery-title">幸运抽奖 好运来临</h2><p>LUCKY DRAW</p></div><span></span></header>
+        <div class="secondary-actions"><button data-toast="已打开抽奖概率">概率公示</button><button data-toast="已打开抽奖记录">抽奖记录</button><button data-toast="已打开我的奖品">我的奖品</button></div>
+        <div class="lottery-layout"><div class="lottery-board" id="lottery-board"></div><aside class="winner-list"><h3>中奖名单</h3><ul id="winner-list"></ul></aside></div>
+      </section>
+
+      <section id="rank" class="activity-section" aria-labelledby="rank-title">
+        <header class="section-heading"><span></span><div><h2 id="rank-title">战力任务 集结好友领奖</h2><p>TEAM UP FOR REWARDS</p></div><span></span></header>
+        <div class="rank-tabs"><button class="is-active">排行榜</button><button>我的战队</button><button>战队奖励</button></div>
+        <div class="rank-table"><div class="rank-header"><span>排名</span><span>玩家昵称</span><span>战力值</span><span>奖励</span></div><div id="rank-rows"></div></div>
+      </section>
+
+      <section id="download" class="download-card"><div class="download-logo" aria-hidden="true">PUBG<br><span>BATTLEGROUNDS</span></div>
+        <div><h2>更多精彩 PC 端玩法</h2><p>体验完整赛事、好友开黑与专属游戏福利</p></div><button class="primary-button" data-toast="正在为你准备客户端下载">立即下载</button>
+      </section>
+    </div>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="pubg-summer-activity.js"></script>
+</body>
+</html>

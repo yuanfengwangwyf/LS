@@ -1,0 +1,16 @@
+const rewards = [
+  ['🪖', '战术头盔', '500 积分'], ['🪙', '金色奖章', '800 积分'], ['🎫', '3000 BP', '300 积分'], ['🔫', '专属武器皮肤', '1000 积分'],
+  ['💎', '精英补给箱', '700 积分'], ['🎁', '夏日礼盒', '600 积分'], ['🪂', '降落伞挂饰', '400 积分'], ['🎧', '游戏耳机抽奖券', '1200 积分'],
+  ['🔷', '蓝色能量石', '200 积分'], ['🎮', '键位皮肤', '350 积分'], ['🟨', '补给代币', '250 积分'], ['🧊', '冰蓝道具包', '550 积分']
+];
+const tasks = ['完成 1 场经典模式', '累计淘汰 5 名敌人', '与好友组队完成对局', '登录活动页面', '分享活动给好友', '完成每日签到', '进入游戏大厅', '完成一局排位赛'];
+const winners = [['NN丶小北', '获得 夏日礼盒'], ['十六夜咲夜', '获得 BP x3000'], ['战场旅人', '获得 武器皮肤'], ['我在圈边等你', '获得 补给箱'], ['闪电冲锋', '获得 金色奖章'], ['今日吃鸡', '获得 抽奖券']];
+
+function showToast(message) { const toast = document.querySelector('#toast'); toast.textContent = message; toast.classList.add('is-visible'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2200); }
+function makeRewards() { document.querySelector('#reward-grid').innerHTML = rewards.map(([icon, title, cost]) => `<article class="reward-card"><div class="reward-image">${icon}</div><h3>${title}</h3><p>限时福利道具</p><button data-toast="已选择 ${title}，消耗 ${cost}">${cost} 兑换</button></article>`).join(''); }
+function makeCheckins() { document.querySelector('#checkin-list').innerHTML = ['第一天', '第二天', '第三天', '第四天', '第五天'].map((day, index) => `<article class="checkin-card ${index === 0 ? 'is-today' : ''}"><strong>${day}</strong><div class="gift">${['🪙','🎁','🪂','🎫','🎮'][index]}</div><button data-toast="${index === 0 ? '签到成功，已获得 100 积分' : `${day} 即将开启`}">${index === 0 ? '立即签到' : '待开启'}</button></article>`).join(''); }
+function makeTasks() { document.querySelector('#task-grid').innerHTML = tasks.map((task, index) => `<article class="task-card"><span class="task-no">MISSION 0${index + 1}</span><h3>${task}</h3><p>完成任务即可获得活动积分，积分可兑换限定福利。</p><button data-toast="已领取任务：${task}">去完成</button></article>`).join(''); }
+function makeLottery() { const gifts = ['🪙', '🎁', '🎫', '🔫', '💎', '🪂', '🎧', '🕹️']; const cells = gifts.slice(0, 4).concat(['draw']).concat(gifts.slice(4)); document.querySelector('#lottery-board').innerHTML = cells.map(item => item === 'draw' ? '<button class="lottery-tile draw" data-toast="抽奖机会不足，完成任务即可获得机会">立即抽奖</button>' : `<div class="lottery-tile"><span>${item}</span><b>惊喜福利</b></div>`).join(''); document.querySelector('#winner-list').innerHTML = winners.map(([name, prize]) => `<li><span>${name}</span><b>${prize}</b></li>`).join(''); }
+function makeRanks() { document.querySelector('#rank-rows').innerHTML = ['北境之王', '锦鲤本鲤', '极限突围者', '胜利小队', '空投猎人'].map((name, index) => `<div class="rank-row"><span>0${index + 1}</span><span>${name}</span><span>${(9800 - index * 860).toLocaleString()}</span><span>${index < 3 ? '限定礼盒' : '活动积分'}</span></div>`).join(''); }
+document.addEventListener('click', event => { const button = event.target.closest('button'); if (!button) return; if (button.dataset.target) { const target = document.querySelector(`#${button.dataset.target}`); target?.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelectorAll('.section-tabs button').forEach(item => item.classList.toggle('is-active', item.dataset.target === button.dataset.target)); } if (button.dataset.toast) showToast(button.dataset.toast); });
+makeRewards(); makeCheckins(); makeTasks(); makeLottery(); makeRanks();

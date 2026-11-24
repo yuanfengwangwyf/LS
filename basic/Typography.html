@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - 字体排版</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">基础</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">字体</span>
+      <h1 class="section-title">字体排版</h1>
+      <p class="description">字体排版用来传达信息内容，并界面看起来有秩序</p>
+
+      <h3 class="section-subtitle">字号</h3>
+      <p class="description">决定不同层级文本的大小</p>
+      
+      <table class="token-table">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>font size / line height</th>
+            <th>预览</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">$font.size.header-1</span></td>
+            <td><span class="token-value">32px / 40px</span></td>
+            <td>
+              <div class="token-preview" style="font-size: 32px; line-height: 40px; color: var(--gray-3);">用于社区欢迎标题</div>
+              <div class="token-description">社区欢迎标题、活动标题、增值服务类标题</div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$font.size.header-2</span></td>
+            <td><span class="token-value">24px / 32px</span></td>
+            <td>
+              <div class="token-preview" style="font-size: 24px; line-height: 32px; color: var(--gray-3);">用于菜单列表标题</div>
+              <div class="token-description">菜单列表标题</div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$font.size.header-3</span></td>
+            <td><span class="token-value">20px / 28px</span></td>
+            <td>
+              <div class="token-preview" style="font-size: 20px; line-height: 28px; color: var(--gray-3);">用于弹窗类标题</div>
+              <div class="token-description">弹窗类标题</div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$font.size.title</span></td>
+            <td><span class="token-value">18px / 24px</span></td>
+            <td>
+              <div class="token-preview" style="font-size: 18px; line-height: 24px; color: var(--gray-3);">用于主标题</div>
+              <div class="token-description">头部功能条标题、卡片标题</div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$font.size.subtitle</span></td>
+            <td><span class="token-value">16px / 22px</span></td>
+            <td>
+              <div class="token-preview" style="font-size: 16px; line-height: 22px; color: var(--gray-3);">用于副标题</div>
+              <div class="token-description">卡片标题、按钮文本、聊天正文</div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$font.size.body</span></td>
+            <td><span class="token-value">14px / 20px</span></td>
+            <td>
+              <div class="token-preview" style="font-size: 14px; line-height: 20px; color: var(--gray-3);">常规文本</div>
+              <div class="token-description">无特别强调的所有场景</div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$font.size.caption</span></td>
+            <td><span class="token-value">12px / 16px</span></td>
+            <td>
+              <div class="token-preview" style="font-size: 12px; line-height: 16px; color: var(--gray-3);">辅助描述性文本</div>
+              <div class="token-description">辅助、描述性文本</div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$font.size.Lable</span></td>
+            <td><span class="token-value">10px / 12px</span></td>
+            <td>
+              <div class="token-preview" style="font-size: 10px; line-height: 12px; color: var(--gray-3);">主要用于标签内文本</div>
+              <div class="token-description">主要用于标签内文本</div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$font.size.mini</span></td>
+            <td><span class="token-value">8px / 10px</span></td>
+            <td>
+              <div class="token-preview" style="font-size: 8px; line-height: 10px; color: var(--gray-3);">主要用于头像下方状态</div>
+              <div class="token-description">头像下方状态类标签内文本，如直播、派对状态</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="section-subtitle">字重</h3>
+      <p class="description">决定不同层级文本的粗细</p>
+      
+      <table class="token-table">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">--font-weight-normal</span></td>
+            <td><span class="token-value">400</span></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">--font-weight-medium</span></td>
+            <td><span class="token-value">500</span></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">--font-weight-semibold</span></td>
+            <td><span class="token-value">600</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="section-subtitle">字体</h3>
+      <p class="description">客户端PC汉字/英文采用【MiSans VF】字体，部分阿拉伯数字采用【DIN Condensed Balanced Bold】字体</p>
+      
+      <div class="font-family-box">
+        <div class="font-family-label">Token: $font-family</div>
+        <div class="font-family-value">'MiSans VF', 'DIN Condensed Balanced Bold'</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">圆角</h2>
+      <p class="description">使用圆角来描述容器与界面元素的轮廓，从一定程度决定产品的视觉调性<br/>按钮/标签/小元素一般采用2px圆角，卡片/弹窗/下拉抽屉等中型元素一般采用4px，框体级一般采用8px</p>
+      
+      <div class="radius-showcase">
+        <div class="radius-item">
+          <div class="radius-box" style="width: 40px; height: 40px; border-radius: var(--border-radius-2r);"></div>
+          <div class="radius-label">--border-radius-2r</div>
+          <div class="token-value">2px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="width: 40px; height: 40px; border-radius: var(--border-radius-4r);"></div>
+          <div class="radius-label">--border-radius-4r</div>
+          <div class="token-value">4px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="width: 40px; height: 40px; border-radius: var(--border-radius-8r);"></div>
+          <div class="radius-label">--border-radius-8r</div>
+          <div class="token-value">8px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="width: 40px; height: 40px; border-radius: var(--border-radius-10r);"></div>
+          <div class="radius-label">--border-radius-10r</div>
+          <div class="token-value">10px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="width: 40px; height: 40px; border-radius: var(--border-radius-12r);"></div>
+          <div class="radius-label">--border-radius-12r</div>
+          <div class="token-value">12px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="width: 40px; height: 40px; border-radius: var(--border-radius-14r);"></div>
+          <div class="radius-label">--border-radius-14r</div>
+          <div class="token-value">14px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="width: 40px; height: 40px; border-radius: var(--border-radius-16r);"></div>
+          <div class="radius-label">--border-radius-16r</div>
+          <div class="token-value">16px</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">间距</h2>
+      <p class="description">间距变量被应用在各个组件内部，或组件与组件之间，用来调整产品整体的密集和紧凑程度</p>
+      
+      <table class="token-table">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Value</th>
+            <th>Token</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">$space0</span></td>
+            <td><span class="token-value">0px</span></td>
+            <td><span class="token-name">$space24</span></td>
+            <td><span class="token-value">24px</span></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$space2</span></td>
+            <td><span class="token-value">2px</span></td>
+            <td><span class="token-name">$space28</span></td>
+            <td><span class="token-value">28px</span></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$space4</span></td>
+            <td><span class="token-value">4px</span></td>
+            <td><span class="token-name">$space32</span></td>
+            <td><span class="token-value">32px</span></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$space6</span></td>
+            <td><span class="token-value">6px</span></td>
+            <td><span class="token-name">$space40</span></td>
+            <td><span class="token-value">40px</span></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$space8</span></td>
+            <td><span class="token-value">8px</span></td>
+            <td><span class="token-name">$space48</span></td>
+            <td><span class="token-value">48px</span></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$space10</span></td>
+            <td><span class="token-value">10px</span></td>
+            <td><span class="token-name">$space60</span></td>
+            <td><span class="token-value">60px</span></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$space12</span></td>
+            <td><span class="token-value">12px</span></td>
+            <td><span class="token-name">$space80</span></td>
+            <td><span class="token-value">80px</span></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$space16</span></td>
+            <td><span class="token-value">16px</span></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">$space20</span></td>
+            <td><span class="token-value">20px</span></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-typography');
+    });
+  </script>
+</body>
+</html>

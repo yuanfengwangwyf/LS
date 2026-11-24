@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Game Home 游戏首页</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    .game-detail-page-shell {
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .game-detail-framework-demo {
+      width: 1280px;
+      min-width: 1280px;
+      height: 900px;
+      overflow: hidden;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .game-detail-state-tabs {
+      display: flex;
+      align-items: center;
+      min-height: 36px;
+      margin: var(--space16) var(--space0);
+    }
+
+    .game-detail-state-tabs .nn-tabs-tertiary {
+      width: fit-content;
+    }
+
+    .game-detail-framework-demo iframe {
+      display: block;
+      width: 1280px;
+      height: 900px;
+      border: 0;
+    }
+
+    body.is-game-detail-framework-fullscreen {
+      overflow: hidden;
+    }
+
+    body.is-game-detail-framework-fullscreen #nav-iframe {
+      display: none;
+    }
+
+    body.is-game-detail-framework-fullscreen .game-detail-framework-demo {
+      position: fixed;
+      inset: var(--space0);
+      z-index: 2001;
+      width: 100vw;
+      min-width: 0;
+      height: 100vh;
+      border: 0;
+      border-radius: var(--space0);
+    }
+
+    body.is-game-detail-framework-fullscreen .game-detail-framework-demo iframe {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&amp;library=page" title="页面展示顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261112-community-game-home-labels" title="NN 页面展示导航" frameborder="0"></iframe>
+
+  <main class="game-detail-page-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">游戏首页</span>
+      <h1 class="section-title">Game Home 游戏首页</h1>
+      <p class="description">在社区公共框架中展示游戏媒体、评分信息、购买入口、游戏简介与相关推荐。</p>
+
+      <div id="game-detail-state-tabs" class="game-detail-state-tabs" aria-label="游戏按钮状态演示"></div>
+
+      <div class="game-detail-framework-demo" data-code-preview="true">
+        <iframe src="../public/CommunityFramework.html?embed=1&amp;mode=game-detail&amp;refresh=20261118-action-state-flow" title="Community Framework 游戏首页"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/tabs.js?v=20261118-game-action-state-tabs"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-game-detail');
+
+      const frameworkDemo = document.querySelector('.game-detail-framework-demo');
+      const frameworkIframe = frameworkDemo && frameworkDemo.querySelector('iframe');
+      if (!frameworkIframe) return;
+
+      let activeGameActionConfig = 'standard';
+
+      function syncGameActionConfig() {
+        if (!frameworkIframe.contentWindow) return;
+        frameworkIframe.contentWindow.postMessage({
+          type: 'game-detail-action-config',
+          value: activeGameActionConfig
+        }, '*');
+      }
+
+      const stateTabsSlot = document.getElementById('game-detail-state-tabs');
+      if (stateTabsSlot && typeof createTabs === 'function') {
+        stateTabsSlot.appendChild(createTabs({
+          type: 'tertiary',
+          tabs: [
+            { name: '无加速配置', value: 'standard' },
+            { name: '有加速配置', value: 'accelerated' },
+            { name: '未购买游戏', value: 'website' }
+          ],
+          defaultActive: 0,
+          onChange: function(payload) {
+            activeGameActionConfig = payload.tab.value;
+            syncGameActionConfig();
+          }
+        }));
+      }
+
+      function syncEmbeddedFrameworkTheme(isDarkMode) {
+        if (!frameworkIframe.contentWindow) return;
+        frameworkIframe.contentWindow.postMessage({
+          type: 'dark-mode',
+          value: isDarkMode
+        }, '*');
+      }
+
+      frameworkIframe.addEventListener('load', function() {
+        syncEmbeddedFrameworkTheme(localStorage.getItem('dark-mode') === 'true');
+        syncGameActionConfig();
+      });
+
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'dark-mode') {
+          syncEmbeddedFrameworkTheme(Boolean(event.data.value));
+        }
+
+        if (event.data && event.data.type === 'game-detail-framework-fullscreen') {
+          document.body.classList.toggle('is-game-detail-framework-fullscreen', Boolean(event.data.value));
+        }
+      });
+
+      window.addEventListener('keydown', function(event) {
+        if (event.key !== 'Escape' || !document.body.classList.contains('is-game-detail-framework-fullscreen')) return;
+        document.body.classList.remove('is-game-detail-framework-fullscreen');
+        frameworkIframe.contentWindow.postMessage({
+          type: 'game-detail-framework-fullscreen',
+          value: false
+        }, '*');
+      });
+    });
+  </script>
+</body>
+</html>

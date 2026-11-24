@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Toast 弹窗</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260512">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">反馈</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">弹窗</span>
+      <h1 class="section-title">Toast 弹窗</h1>
+      <p class="description">Toast 用于承载短流程弹窗内容，支持关闭按钮、内容 Slot 和可配置 Footer 操作区。</p>
+
+      <div class="toast-content">
+        <div class="toast-section">
+          <h2 class="toast-section-title">默认样式</h2>
+          <p class="toast-section-desc">默认宽度 400px，包含标题、内容 Slot、关闭按钮和底部主按钮。</p>
+          <div class="toast-page-demo toast-page-with-border">
+            <div class="toast-demo-grid" id="toast-default-demo"></div>
+          </div>
+        </div>
+
+        <div class="toast-section">
+          <h2 class="toast-section-title">单纵向按钮</h2>
+          <p class="toast-section-desc">Footer 展示 checkbox 和单个纵向主按钮。</p>
+          <div class="toast-page-demo toast-page-with-border">
+            <div class="toast-demo-grid" id="toast-single-vertical-demo"></div>
+          </div>
+        </div>
+
+        <div class="toast-section">
+          <h2 class="toast-section-title">双纵向按钮</h2>
+          <p class="toast-section-desc">Footer 展示 checkbox 和上下排列的两个按钮。</p>
+          <div class="toast-page-demo toast-page-with-border">
+            <div class="toast-demo-grid" id="toast-double-vertical-demo"></div>
+          </div>
+        </div>
+
+        <div class="toast-section">
+          <h2 class="toast-section-title">双横向按钮</h2>
+          <p class="toast-section-desc">Footer 展示 checkbox 和左右排列的两个按钮。</p>
+          <div class="toast-page-demo toast-page-with-border">
+            <div class="toast-demo-grid" id="toast-double-horizontal-demo"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="toast-api-section">
+        <h2 class="toast-api-title">API 参考</h2>
+        <table class="toast-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>title</td><td>弹窗标题</td><td>string</td><td>-</td><td>Toast-title</td></tr>
+            <tr><td>subtitle</td><td>标题下方辅助文本</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>content</td><td>内容 Slot，可传 DOM 节点、节点数组、函数或文本</td><td>Node | array | function | string</td><td>-</td><td>null</td></tr>
+            <tr><td>showHeader</td><td>是否展示标题区域</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>scrollableContent</td><td>内容区为长内容并需要内部滚动时启用独立框架；普通内容保持整体 24px 间距框架</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>showClose</td><td>是否展示关闭按钮</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>showFooter</td><td>是否展示底部操作区</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>footer.layout</td><td>底部按钮排列方式</td><td>string</td><td>single-vertical | double-vertical | double-horizontal</td><td>single-vertical</td></tr>
+            <tr><td>footer.showCheckbox</td><td>是否展示 checkbox</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>footer.buttons</td><td>按钮配置，默认调用 Button 组件</td><td>array</td><td>-</td><td>null</td></tr>
+            <tr><td>footer.slot</td><td>Footer 按钮区 Slot，可嵌入组件或自定义内容</td><td>Node | array | function | string</td><td>-</td><td>null</td></tr>
+            <tr><td>onClose</td><td>关闭按钮点击回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>bindToastScrollbar(dialog, target, options)</td><td>将实际滚动目标绑定到 Toast 根节点右侧轨道；用于 Table、列表等嵌套长内容</td><td>function</td><td>dialog、target、可选配置</td><td>-</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/input.js?v=20260525-toast-input-slot"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/checkbox.js?v=20260525-toast"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-toast');
+      injectToastStyles();
+
+      const defaultDemo = document.getElementById('toast-default-demo');
+      const singleVerticalDemo = document.getElementById('toast-single-vertical-demo');
+      const doubleVerticalDemo = document.getElementById('toast-double-vertical-demo');
+      const doubleHorizontalDemo = document.getElementById('toast-double-horizontal-demo');
+
+      defaultDemo.appendChild(createToast({
+        title: 'Toast-title',
+        footer: {
+          layout: 'single-vertical',
+          buttons: [{ text: 'button', level: 'primary' }]
+        }
+      }));
+
+      singleVerticalDemo.appendChild(createToast({
+        title: 'Toast-title',
+        footer: {
+          layout: 'single-vertical',
+          showCheckbox: true,
+          buttons: [{ text: 'button', level: 'primary' }]
+        }
+      }));
+
+      doubleVerticalDemo.appendChild(createToast({
+        title: 'Toast-title',
+        footer: {
+          layout: 'double-vertical',
+          showCheckbox: true,
+          buttons: [
+            { text: 'button', level: 'primary' },
+            { text: 'button', level: 'secondary' }
+          ]
+        }
+      }));
+
+      doubleHorizontalDemo.appendChild(createToast({
+        title: 'Toast-title',
+        footer: {
+          layout: 'double-horizontal',
+          showCheckbox: true,
+          buttons: [
+            { text: 'Primary', level: 'primary' },
+            { text: 'button', level: 'secondary' }
+          ]
+        }
+      }));
+
+    });
+  </script>
+</body>
+</html>

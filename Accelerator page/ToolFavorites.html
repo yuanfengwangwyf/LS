@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面 - 我的收藏</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');</script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-page-preview-control">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261119-accelerator-tools">
+  <link rel="stylesheet" href="Tools.css?v=20261121-section-title-18">
+  <link rel="stylesheet" href="ToolFavorites.css?v=20261123-empty-state">
+</head>
+<body class="accelerator-tools-page accelerator-tool-favorites-page">
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261030-game-detail&amp;library=accelerator-page" title="加速器页面顶部导航" frameborder="0" style="width:100%;height:60px;border:0;display:block;position:fixed;top:0;left:0;z-index:1000"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-p-nav.html?v=20261030-game-detail" title="加速器页面导航" frameborder="0"></iframe>
+  <main class="accelerator-tools-page-shell accelerator-home-shell">
+    <section class="section">
+      <span class="breadcrumb-part">加速器页面</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">我的收藏</span>
+      <h1 class="section-title">我的收藏</h1>
+      <p class="description">收藏常用电脑工具，方便快速查看与使用。</p>
+      <div class="accelerator-tools-stage accelerator-home-stage" data-code-preview="true">
+        <div class="accelerator-tools-frame accelerator-home-frame">
+          <header class="accelerator-tools-frame__header" id="accelerator-tool-favorites-header"></header>
+          <div class="accelerator-tools-frame__body accelerator-home-frame__body">
+            <aside class="accelerator-tools-frame__sidebar" id="accelerator-tool-favorites-sidebar" aria-label="加速器侧边导航"></aside>
+            <section class="accelerator-tools-content accelerator-home-frame__content accelerator-tool-favorites-content" id="accelerator-tool-favorites-content" aria-label="我的收藏工具">
+              <div class="accelerator-tool-favorites-toolbar">
+                <div>
+                  <h2>我的收藏</h2>
+                </div>
+              </div>
+              <div class="accelerator-tool-favorites-filters" id="tool-favorites-filters" aria-label="搜索与筛选收藏工具"></div>
+              <div class="accelerator-tool-favorites-list accelerator-tools-card-grid" id="tool-favorites-list"></div>
+              <div class="accelerator-tool-favorites-empty" id="tool-favorites-empty" hidden></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="../main.js?v=20261123-history-back"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/input.js?v=20261114-accelerator-search-sync"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20261030-dropdown-menu"></script>
+  <script src="../basic%20components/label.js?v=20261111-certification-icon-20px"></script>
+  <script src="../basic%20components/tabs.js?v=20261029-accelerator-home"></script>
+  <script src="../basic%20components/avatar.js?v=20261120-tools-ranking"></script>
+  <script src="../basic%20components/scrollbar.js?v=20261120-tools-ranking"></script>
+  <script src="../basic%20components/empty.js?v=20260610-empty-type-common-default"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261123-global-search"></script>
+  <script src="../Accelerator%20business%20components/game-search.js?v=20261120-search-modal-header-shine"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../Accelerator%20business%20components/header.js?v=20261123-global-interactions"></script>
+  <script src="../Accelerator%20business%20components/side-navigation.js?v=20261123-global-game-navigation"></script>
+  <script src="ToolFavorites.js?v=20261124-tool-reconfiguration"></script>
+</body>
+</html>

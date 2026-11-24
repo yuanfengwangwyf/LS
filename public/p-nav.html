@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>页面展示导航</title>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    body {
+      background: var(--gray-2);
+      margin: var(--space0);
+      padding: var(--space0);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <div class="nav-title">NN页面展示</div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">页面展示</div>
+      <ul class="nav-list">
+        <li><a href="../public/CommunityFramework.html?refresh=20260608-page-nav-under-community" id="p-nav-community-framework" target="_parent"><span class="nav-link-label">Community Framework 社区框架</span></a></li>
+        <li><a href="../page/Home.html?refresh=20261112-community-home" id="p-nav-home" target="_parent"><span class="nav-link-label">Community Home 社区首页</span></a></li>
+        <li><a href="../page/PersonalCenter.html?refresh=20261114-personal-center-my" id="p-nav-personal-center" target="_parent"><span class="nav-link-label">Personal Center 我的</span></a></li>
+        <li><a href="../page/GameDetail.html?refresh=20261112-launching-state" id="p-nav-game-detail" target="_parent"><span class="nav-link-label">Game Home 游戏首页</span></a></li>
+        <li><a href="../page/discover.html?refresh=20260608-page-nav-under-community" id="p-nav-discover" target="_parent"><span class="nav-link-label">Discover 发现</span></a></li>
+        <li><a href="../page/UnderCommunity.html?refresh=20260608-page-nav-under-community" id="p-nav-under-community" target="_parent"><span class="nav-link-label">Under community 旗下战队社区</span></a></li>
+        <li><a href="../page/InteractiveVoiceRoomSeatCount.html?refresh=20260813-interactive-voice-seat-count" id="p-nav-interactive-voice-room" target="_parent"><span class="nav-link-label">Interactive Voice Room 互动语音房</span></a></li>
+        <li><a href="../page/PlayCenter.html?refresh=20260608-play-center" id="p-nav-play-center" target="_parent"><span class="nav-link-label">Play Center 陪玩中心</span></a></li>
+        <li><a href="../page/RecordStandings.html?refresh=20260807-record-standings" id="p-nav-record" target="_parent"><span class="nav-link-label">Record 战绩·排行</span></a></li>
+        <li><a href="../page/VoiceRoom.html?refresh=20260812-voice-room" id="p-nav-voice-room" target="_parent"><span class="nav-link-label">Voice Room 语音房</span></a></li>
+        <li><a href="../page/MemberHall.html" id="p-nav-member-hall" target="_parent"><span class="nav-link-label">Member Hall 成员大厅</span></a></li>
+      </ul>
+    </div>
+    </div>
+  </nav>
+
+  <script>
+    function applyInit(data) {
+      document.documentElement.classList.toggle('dark-mode', Boolean(data.darkMode));
+      document.body.classList.toggle('dark-mode', Boolean(data.darkMode));
+
+      if (data.activeNavId) {
+        document.querySelectorAll('.nav-list a.active').forEach(function(link) {
+          link.classList.remove('active');
+        });
+
+        var activeLink = document.getElementById(data.activeNavId);
+        if (activeLink) {
+          activeLink.classList.add('active');
+        }
+      }
+    }
+
+    function applyDarkMode(isDark) {
+      document.documentElement.classList.toggle('dark-mode', Boolean(isDark));
+      document.body.classList.toggle('dark-mode', Boolean(isDark));
+    }
+
+    function saveScrollPosition() {
+      var nav = document.querySelector('.nav-content');
+      if (nav) {
+        sessionStorage.setItem('p-nav-scrollTop', nav.scrollTop);
+      }
+    }
+
+    function restoreScrollPosition() {
+      var nav = document.querySelector('.nav-content');
+      if (!nav) return;
+
+      var savedPosition = sessionStorage.getItem('p-nav-scrollTop');
+      if (savedPosition !== null) {
+        nav.scrollTop = parseInt(savedPosition, 10);
+      }
+      updateNavFadeState();
+    }
+
+    function updateNavFadeState() {
+      var nav = document.querySelector('.nav');
+      var content = document.querySelector('.nav-content');
+      if (!nav || !content) return;
+
+      var maxScrollTop = Math.max(0, content.scrollHeight - content.clientHeight);
+      nav.classList.toggle('is-scroll-top', content.scrollTop > 0);
+      nav.classList.toggle('is-scroll-bottom', content.scrollTop < maxScrollTop - 1);
+    }
+
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'init') {
+        applyInit(e.data);
+        restoreScrollPosition();
+      } else if (e.data && e.data.type === 'dark-mode') {
+        applyDarkMode(e.data.value);
+      }
+    });
+
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.documentElement.classList.add('dark-mode');
+        document.body.classList.add('dark-mode');
+      }
+      restoreScrollPosition();
+      updateNavFadeState();
+      var navContent = document.querySelector('.nav-content');
+      if (navContent) {
+        navContent.addEventListener('scroll', updateNavFadeState, { passive: true });
+      }
+      window.addEventListener('resize', updateNavFadeState);
+    })();
+
+    window.addEventListener('beforeunload', saveScrollPosition);
+  </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Input Number 数字输入</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260512">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">数据输入</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">数字输入</span>
+      <h1 class="section-title">Input Number 数字输入</h1>
+      <p class="description">Input Number 用于精确输入数值，支持键盘输入、点击加减和禁用状态。</p>
+
+      <div class="input-number-content">
+        <div class="input-number-section">
+          <h2 class="input-number-section-title">交互示例</h2>
+          <p class="input-number-section-desc">点击左右按钮或直接输入数值，组件会按步进值更新并限制在可配置范围内。</p>
+          <div class="input-number-page-demo input-number-page-with-border">
+            <div class="input-number-row" id="input-number-interactive"></div>
+          </div>
+        </div>
+
+        <div class="input-number-section">
+          <h2 class="input-number-section-title">组件尺寸</h2>
+          <p class="input-number-section-desc">提供 Large、default、Small 三种尺寸，对应 Figma 中的三档高度和图标大小。</p>
+          <div class="input-number-page-demo input-number-page-with-border">
+            <div class="input-number-size-grid" id="input-number-sizes"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="input-number-api-section">
+        <h2 class="input-number-api-title">API 参考</h2>
+        <table class="input-number-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>value</td><td>初始数值</td><td>number | string</td><td>-</td><td>6</td></tr>
+            <tr><td>min</td><td>最小值</td><td>number</td><td>-</td><td>-Infinity</td></tr>
+            <tr><td>max</td><td>最大值</td><td>number</td><td>-</td><td>Infinity</td></tr>
+            <tr><td>step</td><td>每次加减的步进值</td><td>number</td><td>-</td><td>1</td></tr>
+            <tr><td>size</td><td>组件尺寸</td><td>string</td><td>'large' | 'default' | 'small'</td><td>'large'</td></tr>
+            <tr><td>disabled</td><td>是否禁用</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>onChange</td><td>数值提交变化回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>onInput</td><td>输入过程回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/input-number.js?v=20260521"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-input-number');
+      injectInputNumberStyles();
+
+      const interactive = document.getElementById('input-number-interactive');
+      interactive.appendChild(createInputNumber({
+        value: 6,
+        min: 0,
+        max: 99,
+        step: 1,
+        size: 'large'
+      }));
+
+      const sizes = document.getElementById('input-number-sizes');
+      [
+        { size: 'large' },
+        { size: 'default' },
+        { size: 'small' }
+      ].forEach(function(item) {
+        const group = document.createElement('div');
+        group.className = 'input-number-demo-group';
+        group.appendChild(createInputNumber({ value: 6, size: item.size }));
+        sizes.appendChild(group);
+      });
+
+    });
+  </script>
+</body>
+</html>

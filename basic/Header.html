@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Header 头部</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260512">
+  <style>
+    .container {
+      max-width: none;
+    }
+
+    .header-page-demo {
+      width: fit-content;
+      overflow-x: auto;
+    }
+
+    .header-demo-shell {
+      width: fit-content;
+      overflow: visible;
+    }
+
+    .header-demo-content {
+      border-top: 1px solid var(--gray-8);
+    }
+
+    .header-room-demo-frame {
+      width: 690px;
+      padding: var(--space0) var(--space24);
+      box-sizing: border-box;
+    }
+
+    .header-room-demo-frame--play-with {
+      width: 930px;
+    }
+
+    .header-room-demo-frame .nn-header {
+      width: 100% !important;
+      min-width: 0;
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">通用</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">头部</span>
+      <h1 class="section-title">Header 头部</h1>
+      <p class="description">Header 用于承载业务品牌、搜索、通知和快捷入口。</p>
+
+      <div class="header-content">
+        <div class="header-section">
+          <h2 class="header-section-title">组件展示</h2>
+          <p class="header-section-desc">保留当前确认正确的展示样式，统一用于组件验收和后续细节微调。</p>
+          <div class="header-page-demo header-page-with-border">
+            <div class="header-demo-shell">
+              <div id="header-demo"></div>
+              <div class="header-demo-content">
+                <div class="header-demo-card">
+                  <h3>布局说明</h3>
+                  <p>当前页面仅展示单一确认版本，用于观察搜索框、提示条、头像组以及右侧图标的最终排布。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-section">
+          <h2 class="header-section-title">Room Header IM</h2>
+          <p class="header-section-desc">IM 房间头部变体，包含会话信息、快捷操作按钮以及右侧工具 icon。</p>
+          <div class="header-page-demo header-page-with-border">
+            <div class="header-demo-shell">
+              <div id="header-room-im" class="header-room-demo-frame"></div>
+              <div class="header-demo-content">
+                <div class="header-demo-card">
+                  <h3>布局说明</h3>
+                  <p>该变体使用项目按钮组件和 iconfont，适用于私聊或 IM 会话场景的房间头部。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-section">
+          <h2 class="header-section-title">Room Header Voice</h2>
+          <p class="header-section-desc">语音房头部变体，包含房间信息、邀请按钮、密码开关和右侧更多操作。</p>
+          <div class="header-page-demo header-page-with-border">
+            <div class="header-demo-shell">
+              <div id="header-room-voice" class="header-room-demo-frame"></div>
+              <div class="header-demo-content">
+                <div class="header-demo-card">
+                  <h3>布局说明</h3>
+                  <p>该变体复用项目按钮、switch 密码样式和 iconfont，适用于语音房场景的房间头部。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-section">
+          <h2 class="header-section-title">Room Header Exclusive Room</h2>
+          <p class="header-section-desc">专属房间头部变体，包含房间入口、搜索框和创建房间按钮。</p>
+          <div class="header-page-demo header-page-with-border">
+            <div class="header-demo-shell">
+              <div id="header-room-exclusive-room" class="header-room-demo-frame"></div>
+              <div class="header-demo-content">
+                <div class="header-demo-card">
+                  <h3>布局说明</h3>
+                  <p>该变体复用项目 Input 和 Button 组件，适用于专属房间的检索与创建场景。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-section">
+          <h2 class="header-section-title">Room Header Community Hall</h2>
+          <p class="header-section-desc">社区大厅头部变体，包含大厅图标、标题、邀请/分享按钮和公告信息。</p>
+          <div class="header-page-demo header-page-with-border">
+            <div class="header-demo-shell">
+              <div id="header-room-community-hall" class="header-room-demo-frame"></div>
+              <div class="header-demo-content">
+                <div class="header-demo-card">
+                  <h3>布局说明</h3>
+                  <p>该变体适用于社区大厅场景，保留左侧大厅信息、邀请/分享操作和公告信息。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-section">
+          <h2 class="header-section-title">Room Header Under Community</h2>
+          <p class="header-section-desc">旗下社区头部变体，包含战队图标、标题和创建战队社区按钮。</p>
+          <div class="header-page-demo header-page-with-border">
+            <div class="header-demo-shell">
+              <div id="header-room-under-community" class="header-room-demo-frame"></div>
+              <div class="header-demo-content">
+                <div class="header-demo-card">
+                  <h3>布局说明</h3>
+                  <p>该变体适用于旗下社区页面顶部，右侧创建入口复用项目 Button 组件。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-section">
+          <h2 class="header-section-title">Room Header Play With</h2>
+          <p class="header-section-desc">游戏服务头部变体，包含游戏服务标题、公告、订单动态和陪玩操作。</p>
+          <div class="header-page-demo header-page-with-border">
+            <div class="header-demo-shell">
+              <div id="header-room-play-with" class="header-room-demo-frame header-room-demo-frame--play-with"></div>
+              <div class="header-demo-content">
+                <div class="header-demo-card">
+                  <h3>布局说明</h3>
+                  <p>该变体适用于陪玩/游戏服务页面顶部，右侧成为陪玩和联系客服操作复用项目 Button 组件。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-api-section">
+        <h2 class="header-api-title">API 参考</h2>
+        <table class="header-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>variant</td>
+              <td>Header 变体类型，支持默认头部、IM 房间头部、语音房头部、专属房间头部、社区大厅头部、旗下社区头部和游戏服务头部</td>
+              <td>string</td>
+              <td>'default' | 'room-header-im' | 'room-header-voice' | 'room-header-exclusive-room' | 'room-header-community-hall' | 'room-header-under-community' | 'room-header-play-with'</td>
+              <td>'default'</td>
+            </tr>
+            <tr>
+              <td>width</td>
+              <td>组件宽度，支持数字或 CSS 宽度字符串</td>
+              <td>number | string</td>
+              <td>-</td>
+              <td>'100%'</td>
+            </tr>
+            <tr>
+              <td>brandName</td>
+              <td>品牌名称，仅用于 logo 图片的 alt 文本</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'NN.COM'</td>
+            </tr>
+            <tr>
+              <td>logoSrc</td>
+              <td>默认头部品牌 Logo 地址；暗色模式会保留蓝色标志并自动适配文字颜色</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'../image/Header/NN-logo.svg'</td>
+            </tr>
+            <tr>
+              <td>showBack</td>
+              <td>默认头部中是否显示返回区域</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>true</td>
+            </tr>
+            <tr>
+              <td>backText</td>
+              <td>返回区域文案；传入后返回区域显示为可点击态</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'返回'</td>
+            </tr>
+            <tr>
+              <td>backHref</td>
+              <td>返回区域跳转链接</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+            <tr>
+              <td>onBackClick</td>
+              <td>返回区域点击回调</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>searchPlaceholder</td>
+              <td>默认头部搜索输入框的原生占位文案</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'搜索游戏、社区、用户名称/ID'</td>
+            </tr>
+            <tr>
+              <td>searchKeywords</td>
+              <td>默认头部搜索框展示文案列表，当前仅使用第一项固定展示</td>
+              <td>string[]</td>
+              <td>-</td>
+              <td>['搜索游戏、社区、用户名称/ID']</td>
+            </tr>
+            <tr>
+              <td>noticeText</td>
+              <td>兼容旧版默认头部消息条文案；新版默认不展示</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+            <tr>
+              <td>showNoticeDot</td>
+              <td>默认头部消息条右上角是否显示红点徽标</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>true</td>
+            </tr>
+            <tr>
+              <td>avatarItems</td>
+              <td>默认头部右侧头像组数据，支持头像图、尺寸和徽标</td>
+              <td>array</td>
+              <td>-</td>
+              <td>[]</td>
+            </tr>
+            <tr>
+              <td>rightIcons</td>
+              <td>默认头部消息入口和系统图标配置；消息入口自动放在头像组之前</td>
+              <td>array</td>
+              <td>-</td>
+              <td>[]</td>
+            </tr>
+            <tr>
+              <td>showAvatarMore</td>
+              <td>头像组末尾是否显示更多入口</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>true</td>
+            </tr>
+            <tr>
+              <td>showGameReport</td>
+              <td>右侧是否显示游戏申报按钮</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>true</td>
+            </tr>
+            <tr>
+              <td>showWindowControls</td>
+              <td>默认头部是否显示最右侧系统 icon 组</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>true</td>
+            </tr>
+            <tr>
+              <td>nickname</td>
+              <td>room-header-im 左侧用户昵称</td>
+              <td>string</td>
+              <td>-</td>
+              <td>"User's nickname"</td>
+            </tr>
+            <tr>
+              <td>metaText</td>
+              <td>room-header-im 左侧辅助文案</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'临时会话'</td>
+            </tr>
+            <tr>
+              <td>actions</td>
+              <td>各 Room Header 的操作按钮列表，复用项目 button 组件</td>
+              <td>array</td>
+              <td>-</td>
+              <td>[]</td>
+            </tr>
+            <tr>
+              <td>iconActions</td>
+              <td>room-header-im / room-header-voice 右侧 icon 列表</td>
+              <td>array</td>
+              <td>-</td>
+              <td>[]</td>
+            </tr>
+            <tr>
+              <td>roomCount</td>
+              <td>room-header-voice 左侧房间计数徽标文案</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'52'</td>
+            </tr>
+            <tr>
+              <td>roomTitle</td>
+              <td>room-header-voice 房间标题</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'语音房名称多少度'</td>
+            </tr>
+            <tr>
+              <td>infoTooltip</td>
+              <td>room-header-voice 左侧整个语音房信息 box 的 tooltip 文案</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'编辑招募信息'</td>
+            </tr>
+            <tr>
+              <td>roomStats</td>
+              <td>room-header-voice 房间人数统计</td>
+              <td>object</td>
+              <td>{ current, total }</td>
+              <td>{ current: '8', total: '10' }</td>
+            </tr>
+            <tr>
+              <td>passwordSwitch</td>
+              <td>room-header-voice 密码开关配置，复用 switch 组件的 password 样式</td>
+              <td>object</td>
+              <td>{ passwordState, passwordCode, hiddenCode }</td>
+              <td>{ passwordState: 'filled', passwordCode: '8538', hiddenCode: '••••' }</td>
+            </tr>
+            <tr>
+              <td>rightButtons</td>
+              <td>room-header-voice 右侧更多 icon 前的按钮组，复用 System button 组件</td>
+              <td>array</td>
+              <td>-</td>
+              <td>[]</td>
+            </tr>
+            <tr>
+              <td>exclusiveTitle</td>
+              <td>room-header-exclusive-room 左侧标题</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'专属房间'</td>
+            </tr>
+            <tr>
+              <td>exclusiveIconClass</td>
+              <td>room-header-exclusive-room 左侧专属房间 icon 的 iconfont 类名</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'nicon-a-Exclusiveroom-Linezhuanshufangjian-xianxing'</td>
+            </tr>
+            <tr>
+              <td>searchPlaceholder</td>
+              <td>room-header-exclusive-room 搜索框占位文案</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'搜索房间内容/房间号'</td>
+            </tr>
+            <tr>
+              <td>searchValue / onSearch</td>
+              <td>room-header-exclusive-room 搜索初始值与搜索 icon 点击回调</td>
+              <td>string / function</td>
+              <td>-</td>
+              <td>'' / null</td>
+            </tr>
+            <tr>
+              <td>createAction</td>
+              <td>room-header-exclusive-room 创建房间按钮配置，复用项目 Button 组件</td>
+              <td>object</td>
+              <td>{ text, variant, level, size }</td>
+              <td>{ text: '创建房间', variant: 'system', level: 'primary', size: 'default' }</td>
+            </tr>
+            <tr>
+              <td>hallTitle</td>
+              <td>room-header-community-hall 左侧大厅标题</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'英雄联盟社区'</td>
+            </tr>
+            <tr>
+              <td>hallIconClass</td>
+              <td>room-header-community-hall 左侧大厅 icon 的 iconfont 类名</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'nicon-a-Lounge-Linexianliaodating-xianxing'</td>
+            </tr>
+            <tr>
+              <td>announcement</td>
+              <td>room-header-community-hall / room-header-play-with 公告文案；传入空字符串时不展示</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'新用户进入群时默认访问的频道已设置'</td>
+            </tr>
+            <tr>
+              <td>showAnnouncementDot</td>
+              <td>公告条是否展示未读红点</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>true</td>
+            </tr>
+            <tr>
+              <td>underTitle</td>
+              <td>room-header-under-community 左侧标题</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'旗下社区'</td>
+            </tr>
+            <tr>
+              <td>underIconClass</td>
+              <td>room-header-under-community 左侧战队 icon 的 iconfont 类名</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'nicon-a-BattleTeam-Linezhandui-xianxing'</td>
+            </tr>
+            <tr>
+              <td>playTitle</td>
+              <td>room-header-play-with 左侧标题</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'游戏服务'</td>
+            </tr>
+            <tr>
+              <td>playIconClass</td>
+              <td>room-header-play-with 左侧游戏服务 icon 的 iconfont 类名</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'nicon-a-GameswithPlay-Lineyouxidaiwan-xianxing'</td>
+            </tr>
+            <tr>
+              <td>orderActivity</td>
+              <td>room-header-play-with 订单动态配置；传入 null 时不展示</td>
+              <td>object</td>
+              <td>{ name, text, service }</td>
+              <td>{ name: 'Candice', text: '刚刚下单了', service: 'TR阳光彩虹' }</td>
+            </tr>
+            <tr>
+              <td>className</td>
+              <td>自定义类名</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/input.js?v=20260512"></script>
+  <script src="../basic%20components/switch.js?v=20260512"></script>
+  <script src="../basic%20components/tooltips.js?v=20260512"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-header');
+
+      const headerDemo = document.getElementById('header-demo');
+      const headerRoomIm = document.getElementById('header-room-im');
+      const headerRoomVoice = document.getElementById('header-room-voice');
+      const headerRoomExclusiveRoom = document.getElementById('header-room-exclusive-room');
+      const headerRoomCommunityHall = document.getElementById('header-room-community-hall');
+      const headerRoomUnderCommunity = document.getElementById('header-room-under-community');
+      const headerRoomPlayWith = document.getElementById('header-room-play-with');
+
+      headerDemo.appendChild(createHeader({ width: 1280 }));
+
+      headerRoomIm.appendChild(createHeader({
+        variant: 'room-header-im',
+        width: '100%',
+        nickname: "User's nickname",
+        metaText: '临时会话',
+        actions: [
+          { text: '添加好友', variant: 'system', level: 'secondary', size: 'small' },
+          { text: '邀请进房', variant: 'system', level: 'secondary', size: 'small' },
+          { text: '创建订单', variant: 'system', level: 'primary', size: 'small' }
+        ],
+        iconActions: [
+          { iconClass: 'nicon-a-Human-Lineren-xianxing', label: '隐藏联系人资料' },
+          { iconClass: 'nicon-a-report-linejubao-xianxing', label: '举报' }
+        ]
+      }));
+
+      headerRoomVoice.appendChild(createHeader({
+        variant: 'room-header-voice',
+        width: '100%',
+        roomCount: '52',
+        roomTitle: '语音房名称多少度',
+        infoTooltip: '编辑招募信息',
+        roomStats: { current: '8', total: '10' },
+        actions: [
+          { text: '邀请/分享', variant: 'system', level: 'primary', size: 'small' }
+        ],
+        passwordSwitch: {
+          passwordState: 'filled',
+          passwordCode: '8538',
+          hiddenCode: 'hidden password'
+        },
+        rightButtons: [
+          {
+            text: '语音房设置',
+            variant: 'system',
+            level: 'tertiary',
+            size: 'small',
+            icon: '<i class="nnicon nicon-a-settings-lineshezhi-xianxing"></i>',
+            iconPosition: 'left'
+          }
+        ],
+        iconActions: [
+          { iconClass: 'nicon-a-moregengduo', label: '更多' }
+        ]
+      }));
+
+      headerRoomExclusiveRoom.appendChild(createHeader({
+        variant: 'room-header-exclusive-room',
+        width: '100%',
+        exclusiveTitle: '专属房间',
+        searchPlaceholder: '搜索房间内容/房间号',
+        createAction: {
+          text: '创建房间',
+          variant: 'system',
+          level: 'primary',
+          size: 'default'
+        }
+      }));
+
+      headerRoomCommunityHall.appendChild(createHeader({
+        variant: 'room-header-community-hall',
+        width: '100%',
+        hallTitle: '英雄联盟社区',
+        hallIconClass: 'nicon-a-Lounge-Linexianliaodating-xianxing',
+        actions: [
+          { text: '邀请/分享', variant: 'system', level: 'primary', size: 'small' }
+        ],
+        noticeText: '新用户进入群时默认访问的频道已...',
+        showNoticeDot: true
+      }));
+
+      headerRoomUnderCommunity.appendChild(createHeader({
+        variant: 'room-header-under-community',
+        width: '100%',
+        underTitle: '旗下社区',
+        actions: [
+          {
+            text: '创建战队社区',
+            variant: 'system',
+            level: 'primary',
+            size: 'default',
+            icon: '<i class="nnicon nicon-a-add-linetianjia-xianxing"></i>',
+            iconPosition: 'left'
+          }
+        ]
+      }));
+
+      headerRoomPlayWith.appendChild(createHeader({
+        variant: 'room-header-play-with',
+        width: '100%'
+      }));
+    });
+  </script>
+</body>
+</html>

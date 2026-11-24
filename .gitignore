@@ -1,0 +1,7 @@
+.DS_Store
+.preview-server.log
+.preview-server.pid
+node_modules/
+dist/
+build/
+*.log

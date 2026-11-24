@@ -1,0 +1,270 @@
+@font-face {
+      font-family: "DIN Condensed Balanced Bold";
+      src: url("./font/DIN%20Condensed%20Balanced%20Bold.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+:root {
+      /* BaseColor */
+      --Neutral-0: #FFFFFF;
+      --Neutral-1: #1D1D1F;
+      --Neutral-2: #101013;
+      --Esports-Blue: #245eff;
+      --Esports-Blue-dark: #2951BD;
+      --Green: #1BB373;
+      --Pink: #FD526F;
+      --Red: #DA3639;
+      --Orange: #F37F19;
+      --Yellow: #FFCC48;
+      --PUBG-Yellow: #F1AD1B;
+      --Purple: #8262FF;
+      --Magenta: #EB2F96;
+      --Cyan: #28B9E5;
+      --Link: #6172F3;
+      --Media-Carousel-Ambient-Bg: #101113;
+      --Community-Role-Super-Admin: #F92D56;
+      --Community-Role-Senior-Admin: #5D26CC;
+      --Community-Role-Admin: #2757D0;
+      --Community-Role-Core: #0A9EB1;
+      --Record-Power-Rank: #FF9000;
+      --Steam-Data-Rank: #E79F4D;
+      --Record-Rank: #B13A60;
+      --Record-Rank-Border: rgba(177, 58, 96, 0.2);
+      --Record-Honor-CP: #57A3FF;
+      --Record-Honor-New-Start: #F5D1AD;
+      --Record-Honor-New-End: #C5A17D;
+      --Record-Honor-New-Text: #171412;
+      --Record-Match-Winner: #FF6200;
+      --Record-Match-Runner-Up: rgba(93, 109, 230, 0.9);
+      --Record-Match-Third-Place: rgba(174, 118, 106, 0.9);
+      --Leaderboard-Rank-First: #FFBC14;
+      --Leaderboard-Rank-Second: #8AC9FF;
+      --Leaderboard-Rank-Third: #E4AE7B;
+      --Leaderboard-Rank-First-Bar: rgba(255, 215, 114, 0.2);
+      --Leaderboard-Rank-First-Bar-Hover: rgba(255, 215, 114, 0.3);
+      --Leaderboard-Rank-Second-Bar: rgba(138, 201, 255, 0.2);
+      --Leaderboard-Rank-Second-Bar-Hover: rgba(138, 201, 255, 0.3);
+      --Leaderboard-Rank-Third-Bar: rgba(228, 174, 123, 0.2);
+      --Leaderboard-Rank-Third-Bar-Hover: rgba(228, 174, 123, 0.3);
+      --Heatmap-Level-1: #3F3F56;
+      --Heatmap-Level-2: #4B43A8;
+      --Heatmap-Level-3: #6B5EFF;
+      --Heatmap-Level-4: #8883F2;
+
+      /* Alpha - 白 */
+      --White-A0: rgba(255, 255, 255, 0);
+      --White-A2: rgba(255, 255, 255, 0.02);
+      --White-A4: rgba(255, 255, 255, 0.04);
+      --White-A6: rgba(255, 255, 255, 0.06);
+      --White-A8: rgba(255, 255, 255, 0.08);
+      --White-A10: rgba(255, 255, 255, 0.1);
+      --White-A12: rgba(255, 255, 255, 0.12);
+      --White-A14: rgba(255, 255, 255, 0.14);
+      --White-A16: rgba(255, 255, 255, 0.16);
+      --White-A18: rgba(255, 255, 255, 0.18);
+      --White-A20: rgba(255, 255, 255, 0.2);
+      --White-A30: rgba(255, 255, 255, 0.3);
+      --White-A40: rgba(255, 255, 255, 0.4);
+      --White-A50: rgba(255, 255, 255, 0.5);
+      --White-A60: rgba(255, 255, 255, 0.6);
+      --White-A70: rgba(255, 255, 255, 0.7);
+      --White-A80: rgba(255, 255, 255, 0.8);
+      --White-A90: rgba(255, 255, 255, 0.9);
+
+      /* Alpha - 黑 */
+      --Black-A0: rgba(0, 0, 0, 0);
+      --Black-A2: rgba(0, 0, 0, 0.02);
+      --Black-A4: rgba(0, 0, 0, 0.04);
+      --Black-A6: rgba(0, 0, 0, 0.06);
+      --Black-A8: rgba(0, 0, 0, 0.08);
+      --Black-A10: rgba(0, 0, 0, 0.1);
+      --Black-A12: rgba(0, 0, 0, 0.12);
+      --Black-A14: rgba(0, 0, 0, 0.14);
+      --Black-A16: rgba(0, 0, 0, 0.16);
+      --Black-A18: rgba(0, 0, 0, 0.18);
+      --Black-A20: rgba(0, 0, 0, 0.2);
+      --Black-A30: rgba(0, 0, 0, 0.3);
+      --Black-A40: rgba(0, 0, 0, 0.4);
+      --Black-A50: rgba(0, 0, 0, 0.5);
+      --Black-A60: rgba(0, 0, 0, 0.6);
+      --Black-A70: rgba(0, 0, 0, 0.7);
+      --Black-A80: rgba(0, 0, 0, 0.8);
+      --Black-A90: rgba(0, 0, 0, 0.9);
+
+      /* Semantic Alias Token - Light Mode (Default) */
+      --gray-1: var(--Neutral-0);
+      --gray-2: var(--Neutral-0);
+      --gray-3: var(--Black-A90);
+      --gray-3-reverse: var(--White-A90);
+      --gray-4: var(--Black-A80);
+      --gray-5: var(--Black-A70);
+      --gray-6: var(--Black-A50);
+      --gray-7: var(--Black-A30);
+      --gray-8: var(--Black-A10);
+      --gray-9: var(--Black-A6);
+      --gray-10: var(--Black-A4);
+      --gray-11: var(--White-A90);
+      --gray-12: var(--White-A90);
+      --gray-13: var(--Black-A10);
+      --gray-14: var(--White-A50);
+      --gray-15: var(--Black-A90);
+      --gray-16: var(--Black-A60);
+      --transparent: var(--Black-A0);
+      --transparent-reverse: var(--White-A0);
+      --mask: var(--Black-A60);
+      --shadow: var(--Black-A12);
+      --shadow-sm: 0 3px 6px var(--shadow);
+      --shadow-stroke-inset: inset 0 0 0 1px var(--gray-8);
+      --shadow-stroke-inset-subtle: inset 0 0 0 1px var(--gray-9);
+      --shadow-md: 0 6px 18px var(--shadow);
+      --shadow-lg: 0 12px 36px var(--shadow);
+      --shadow-xl: 0 24px 48px -4px var(--shadow);
+      --Search-Shine-Start: #4E41DB;
+      --Search-Shine-End: #7C60FF;
+      --Search-Shine-Inset: 3px;
+      --Search-Shine-Filter: drop-shadow(0 0 5px rgba(124, 96, 255, 0.32));
+      --Esports-Blue-LD: var(--Esports-Blue);
+
+      /* PUBG summer campaign — sourced from Figma node 100:47148 */
+      --campaign-night: #151632;
+      --campaign-night-deep: #090b25;
+      --campaign-panel: #352a83;
+      --campaign-panel-light: #4b3eb2;
+      --campaign-gold: #ffe56e;
+      --campaign-pink: #ff69f7;
+      --campaign-copy: #cfc6eb;
+
+      /* Header */
+      --header-height: 60px;
+
+      /* Accelerator Steam information card */
+      --steam-card-bg-center: #223D5A;
+      --steam-card-bg-middle: #182C40;
+      --steam-card-bg-edge: #0E1A26;
+    }
+
+    .dark-mode {
+      /* Semantic Alias Token - Dark Mode */
+      --gray-1: var(--Neutral-2);
+      --gray-2: var(--Neutral-1);
+      --gray-3: var(--White-A90);
+      --gray-3-reverse: var(--Black-A90);
+      --gray-4: var(--White-A80);
+      --gray-5: var(--White-A70);
+      --gray-6: var(--White-A50);
+      --gray-7: var(--White-A20);
+      --gray-8: var(--White-A10);
+      --gray-9: var(--White-A6);
+      --gray-10: var(--White-A4);
+      --gray-11: var(--White-A10);
+      --gray-12: var(--White-A4);
+      --gray-13: var(--White-A50);
+      --gray-14: var(--Black-A20);
+      --gray-15: var(--Esports-Blue);
+      --gray-16: var(--White-A60);
+      --transparent: var(--White-A0);
+      --transparent-reverse: var(--Black-A0);
+      --mask: var(--Black-A80);
+      --shadow: var(--Black-A20);
+      --shadow-sm: 0 3px 6px var(--shadow);
+      --shadow-stroke-inset: inset 0 0 0 1px var(--gray-8);
+      --shadow-stroke-inset-subtle: inset 0 0 0 1px var(--gray-9);
+      --shadow-md: 0 6px 18px var(--shadow);
+      --shadow-lg: 0 12px 36px var(--shadow);
+      --shadow-xl: 0 24px 48px -4px var(--shadow);
+      --Esports-Blue-LD: var(--Esports-Blue-dark);
+    }
+
+
+
+/* 字体变量 */
+    :root {
+      --font-size-header-1: 32px;
+      --font-size-data-number: 36px;
+      --font-size-header-2: 24px;
+      --font-size-header-3: 20px;
+      --font-size-honor-title: 22px;
+      --font-size-title: 18px;
+      --font-size-subtitle: 16px;
+      --font-size-equity-id: 15px;
+      --font-size-body: 14px;
+      --font-size-caption: 12px;
+      --font-size-badge: 11px;
+      --font-size-label: 10px;
+      --font-size-mini: 8px;
+
+      --line-height-header-1: 40px;
+      --line-height-header-2: 32px;
+      --line-height-header-3: 28px;
+      --line-height-title: 24px;
+      --line-height-number-18: 26px;
+      --line-height-subtitle: 22px;
+      --line-height-body: 20px;
+      --line-height-caption: 16px;
+      --line-height-label: 12px;
+      --line-height-mini: 10px;
+
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+
+      --font-family-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --font-family-din: "DIN Condensed Balanced Bold", "Arial Narrow", sans-serif;
+      --font-family-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+      /* 间距变量 */
+      --space0: 0px;
+      --space2: 2px;
+      --space3: 3px;
+      --space4: 4px;
+      --space6: 6px;
+      --space8: 8px;
+      --space10: 10px;
+      --space12: 12px;
+      --space14: 14px;
+      --space16: 16px;
+      --space20: 20px;
+      --space24: 24px;
+      --space28: 28px;
+      --space32: 32px;
+      --space40: 40px;
+      --space48: 48px;
+      --space60: 60px;
+      --space80: 80px;
+
+      /* 图标尺寸变量 */
+      --icon-size-x4: 8px;
+      --icon-size-x5: 10px;
+      --icon-size-x6: 12px;
+      --icon-size-x7: 14px;
+      --icon-size-x8: 16px;
+      --icon-size-x9: 18px;
+      --icon-size-x10: 20px;
+      --icon-size-x12: 24px;
+      --icon-size-x14: 28px;
+      --icon-size-x16: 32px;
+      --icon-size-x18: 36px;
+      --icon-size-x20: 40px;
+      --icon-size-x22: 44px;
+      --icon-size-x24: 48px;
+      --icon-size-x26: 52px;
+      --icon-size-x30: 60px;
+      --icon-size-x32: 64px;
+      --icon-size-x40: 80px;
+
+      --border-radius-1r: 1px;
+      --border-radius-2r: 2px;
+      --border-radius-3r: 3px;
+      --border-radius-4r: 4px;
+      --border-radius-6r: 6px;
+      --border-radius-8r: 8px;
+      --border-radius-10r: 10px;
+      --border-radius-12r: 12px;
+      --border-radius-14r: 14px;
+      --border-radius-16r: 16px;
+      --border-radius-20r: 20px;
+      --border-radius-round: 50%;
+    }

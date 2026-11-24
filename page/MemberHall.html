@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Member Hall 成员大厅</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    .member-hall-shell {
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .member-hall-framework-demo {
+      width: 1280px;
+      height: 900px;
+      overflow: hidden;
+      border: 0;
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .member-hall-framework-demo iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    body.is-member-hall-fullscreen {
+      overflow: hidden;
+    }
+
+    body.is-member-hall-fullscreen #nav-iframe {
+      display: none;
+    }
+
+    body.is-member-hall-fullscreen .member-hall-framework-demo {
+      position: fixed;
+      inset: var(--space0);
+      z-index: 2001;
+      width: 100vw;
+      height: 100vh;
+      border: 0;
+      border-radius: 0;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&library=page" title="页面展示顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261029-nn-page-theme-first-paint" title="页面展示导航" frameborder="0"></iframe>
+
+  <main class="member-hall-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">成员大厅</span>
+      <h1 class="section-title">Member Hall 成员大厅</h1>
+      <div class="member-hall-framework-demo">
+        <iframe src="../public/CommunityFramework.html?embed=1&mode=member-hall&v=20260922-discover-label" title="成员大厅社区框架"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-member-hall');
+      const frameworkIframe = document.querySelector('.member-hall-framework-demo iframe');
+
+      function syncTheme(isDark) {
+        frameworkIframe.contentWindow.postMessage({ type: 'dark-mode', value: isDark }, '*');
+      }
+
+      frameworkIframe.addEventListener('load', function() {
+        syncTheme(localStorage.getItem('dark-mode') === 'true');
+      });
+      syncTheme(localStorage.getItem('dark-mode') === 'true');
+
+      window.addEventListener('message', function(event) {
+        if (!event.data) return;
+        if (event.data.type === 'dark-mode') {
+          syncTheme(Boolean(event.data.value));
+        }
+        if (event.source === frameworkIframe.contentWindow && event.data.type === 'member-hall-framework-fullscreen') {
+          document.body.classList.toggle('is-member-hall-fullscreen', Boolean(event.data.value));
+        }
+      });
+
+      window.addEventListener('keydown', function(event) {
+        if (event.key !== 'Escape' || !document.body.classList.contains('is-member-hall-fullscreen')) return;
+        document.body.classList.remove('is-member-hall-fullscreen');
+        frameworkIframe.contentWindow.postMessage({ type: 'member-hall-framework-fullscreen', value: false }, '*');
+      });
+    });
+  </script>
+</body>
+</html>

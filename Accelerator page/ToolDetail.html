@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面 - 工具详情</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');</script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-page-preview-control">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261119-accelerator-tools">
+  <link rel="stylesheet" href="Tools.css?v=20261120-tool-detail-links">
+  <link rel="stylesheet" href="ToolDetail.css?v=20261124-review-publish-spacing">
+</head>
+<body class="accelerator-tools-page accelerator-tool-detail-page">
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261030-game-detail&amp;library=accelerator-page" title="加速器页面顶部导航" frameborder="0" style="width:100%;height:60px;border:0;display:block;position:fixed;top:0;left:0;z-index:1000"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-p-nav.html?v=20261030-game-detail" title="加速器页面导航" frameborder="0"></iframe>
+  <main class="accelerator-tools-page-shell accelerator-home-shell">
+    <section class="section">
+      <span class="breadcrumb-part">加速器页面</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">工具详情</span>
+      <h1 class="section-title" id="tool-detail-preview-title">工具详情</h1>
+      <p class="description">查看工具能力、使用说明与用户点评。</p>
+      <div class="accelerator-tools-stage accelerator-home-stage" data-code-preview="true">
+        <div class="accelerator-tools-frame accelerator-home-frame">
+          <header class="accelerator-tools-frame__header" id="accelerator-tool-detail-header"></header>
+          <div class="accelerator-tools-frame__body accelerator-home-frame__body">
+            <aside class="accelerator-tools-frame__sidebar" id="accelerator-tool-detail-sidebar" aria-label="加速器侧边导航"></aside>
+            <section class="accelerator-tools-content accelerator-home-frame__content accelerator-tool-detail-content" id="accelerator-tool-detail-content" aria-label="工具详情页">
+              <div class="accelerator-tool-detail-tabs" id="accelerator-tool-detail-tabs"></div>
+
+              <div class="accelerator-tool-detail-view" id="tool-introduction-view">
+                <section class="accelerator-tool-detail-media" aria-label="工具截图">
+                  <div id="accelerator-tool-detail-media"></div>
+                </section>
+
+                <section class="accelerator-tool-detail-summary" aria-labelledby="tool-detail-name">
+                  <div class="accelerator-tool-detail-columns">
+                    <div class="accelerator-tool-detail-overview">
+                      <div class="accelerator-tool-detail-heading">
+                        <h2 id="tool-detail-name"></h2>
+                        <span class="accelerator-tool-detail-category" id="tool-detail-category"></span>
+                      </div>
+                      <div class="accelerator-tool-detail-engagement">
+                        <div class="accelerator-tool-detail-rating">
+                          <strong id="tool-detail-rating"></strong>
+                          <small>好评率</small>
+                        </div>
+                        <div class="accelerator-tool-detail-feedback">
+                          <span class="accelerator-tool-detail-reaction" id="tool-detail-likes"></span>
+                          <span class="accelerator-tool-detail-reaction" id="tool-detail-dislikes"></span>
+                          <span class="accelerator-tool-detail-review-count" id="tool-detail-review-count"></span>
+                        </div>
+                      </div>
+                      <div class="accelerator-tool-detail-metrics" id="tool-detail-metrics"></div>
+                    </div>
+
+                    <aside class="accelerator-tool-detail-facts">
+                      <div class="accelerator-tool-detail-author">
+                        <div id="tool-detail-author-avatar"></div>
+                        <span class="accelerator-tool-detail-author__copy">
+                          <strong id="tool-detail-author-name"></strong>
+                          <span class="accelerator-tool-detail-author-id"><span id="tool-detail-author-id"></span></span>
+                        </span>
+                      </div>
+                      <dl>
+                        <div><dt>发布时间</dt><dd id="tool-detail-published"></dd></div>
+                        <div><dt>适用系统</dt><dd id="tool-detail-system"></dd></div>
+                        <div><dt>工具版本</dt><dd id="tool-detail-version"></dd></div>
+                      </dl>
+                      <div class="accelerator-tool-detail-actions">
+                        <div id="tool-detail-download"></div>
+                        <div id="tool-detail-favorite"></div>
+                      </div>
+                    </aside>
+                  </div>
+                </section>
+
+                <section class="accelerator-tool-detail-section" aria-labelledby="tool-detail-usage-title">
+                  <h2 id="tool-detail-usage-title">使用说明</h2>
+                  <div class="accelerator-tool-detail-usage" id="tool-detail-usage"></div>
+                </section>
+
+                <section class="accelerator-tool-detail-section accelerator-tool-detail-section--recommendations" aria-labelledby="tool-detail-recommendations-title">
+                  <h2 id="tool-detail-recommendations-title">推荐工具</h2>
+                  <div class="accelerator-tools-card-grid accelerator-tool-detail-recommendations" id="tool-detail-recommendations"></div>
+                </section>
+              </div>
+
+              <div class="accelerator-tool-detail-view accelerator-tool-detail-reviews" id="tool-reviews-view" hidden>
+                <div class="accelerator-tool-detail-reviews-heading">
+                  <div id="tool-detail-review-tabs"></div>
+                </div>
+                <div class="accelerator-tool-detail-review-publish" id="tool-detail-review-publish"></div>
+                <div class="accelerator-tool-detail-review-list" id="tool-detail-review-list"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="../main.js?v=20261123-history-back"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20261123-global-header"></script>
+  <script src="../basic%20components/input.js?v=20261114-accelerator-search-sync"></script>
+  <script src="../basic%20components/label.js?v=20261111-certification-icon-20px"></script>
+  <script src="../basic%20components/tabs.js?v=20261029-accelerator-home"></script>
+  <script src="../basic%20components/avatar.js?v=20261120-tools-ranking"></script>
+  <script src="../basic%20components/scrollbar.js?v=20261120-tools-ranking"></script>
+  <script src="../basic%20components/empty.js?v=20260610-empty-type-common-default"></script>
+  <script src="../basic%20components/video-player.js?v=20261118-game-detail-media"></script>
+  <script src="../NN%20business%20components/carousel.js?v=20261118-game-detail-media"></script>
+  <script src="../NN%20business%20components/comment.js?v=20261118-game-detail-comment"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261123-global-search"></script>
+  <script src="../Accelerator%20business%20components/game-search.js?v=20261120-search-modal-header-shine"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../Accelerator%20business%20components/header.js?v=20261123-global-interactions"></script>
+  <script src="../Accelerator%20business%20components/side-navigation.js?v=20261123-global-game-navigation"></script>
+  <script src="ToolDetail.js?v=20261124-tool-reconfiguration"></script>
+</body>
+</html>

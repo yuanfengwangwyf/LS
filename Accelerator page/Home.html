@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面 - Home 首页</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../Accelerator%20business%20components/home.css?v=20261114-home-state-sync">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261029-accelerator-home">
+</head>
+<body class="accelerator-home-page">
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-accelerator-home&amp;library=accelerator-page" title="加速器页面顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-p-nav.html?v=20261029-my-games" title="加速器页面导航" frameborder="0"></iframe>
+
+  <main class="accelerator-home-shell">
+    <section class="section">
+      <span class="breadcrumb-part">加速器页面</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">首页</span>
+      <h1 class="section-title">Home 首页</h1>
+      <p class="description">展示账号资产、排名、游戏推荐和心愿单。</p>
+
+      <div class="accelerator-home-stage" data-code-preview="true">
+        <div class="accelerator-home-frame" aria-label="加速器首页">
+          <header class="accelerator-home-frame__header" id="accelerator-home-header"></header>
+          <div class="accelerator-home-frame__body">
+            <aside class="accelerator-home-frame__sidebar" id="accelerator-home-sidebar" aria-label="加速器侧边导航"></aside>
+            <div class="accelerator-home-frame__content" role="main">
+              <div class="accelerator-home-content">
+                <section class="accelerator-home-hero" id="accelerator-home-hero">
+                  <div class="accelerator-home-carousel-wrap" id="accelerator-home-carousel-wrap">
+                    <div id="accelerator-home-hero-close"></div>
+                    <div id="accelerator-home-carousel"></div>
+                  </div>
+                  <div class="accelerator-home-steam-wrap">
+                    <div id="accelerator-home-carousel-restore"></div>
+                    <div id="accelerator-home-steam"></div>
+                  </div>
+                </section>
+
+                <section class="accelerator-home-section accelerator-home-asset-section">
+                  <div class="accelerator-home-section__heading">
+                    <h2 class="accelerator-home-section__title">资产与排名</h2>
+                  </div>
+                  <div class="accelerator-home-data-grid" id="accelerator-home-data-grid"></div>
+                </section>
+
+                <section class="accelerator-home-section accelerator-home-store-section">
+                  <div class="accelerator-home-store-heading">
+                    <div class="accelerator-home-store-tabs" id="accelerator-home-store-tabs"></div>
+                    <div class="accelerator-home-store-search" id="accelerator-home-store-search"></div>
+                    <div id="accelerator-home-store-more"></div>
+                  </div>
+                  <div class="accelerator-home-store-panel" id="accelerator-home-store-recommendations">
+                    <div class="accelerator-home-product-grid" id="accelerator-home-product-grid"></div>
+                    <p class="accelerator-home-store-search-status" id="accelerator-home-store-search-status" role="status" hidden>未找到相关游戏</p>
+                  </div>
+                  <div class="accelerator-home-store-panel" id="accelerator-home-store-wishlist" hidden>
+                    <div class="accelerator-home-card-grid" id="accelerator-home-wishlist-grid"></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+            <div class="accelerator-home-frame__account-management" id="accelerator-home-account-management" role="main" hidden></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261123-history-back"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261114-accelerator-state-sync"></script>
+  <script src="../basic%20components/input.js?v=20261114-accelerator-search-sync"></script>
+  <script src="../basic%20components/checkbox.js?v=20261113-steam-authorization"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20261103-accelerator-header-duration"></script>
+  <script src="../basic%20components/message.js?v=20261114-scoped-message"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/label.js?v=20261111-certification-icon-20px"></script>
+  <script src="../basic%20components/scrollbar.js?v=20261102-steam-friends-modal-2"></script>
+  <script src="../basic%20components/tabs.js?v=20261029-accelerator-home"></script>
+  <script src="../basic%20components/tooltips.js?v=20261030-tooltip-beak-align"></script>
+  <script src="../Accelerator%20business%20components/header.js?v=20261123-global-interactions"></script>
+  <script src="../Accelerator%20business%20components/side-navigation.js?v=20261123-global-game-navigation"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-search-resource-library"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+  <script src="../Accelerator%20business%20components/steam-account-management.js?v=20261114-home-state-sync"></script>
+  <script src="../Accelerator%20business%20components/steam-authorization.js?v=20261119-smooth-progress"></script>
+  <script src="../basic%20components/empty.js?v=20260610-empty-type-common-default"></script>
+  <script src="../Accelerator%20business%20components/game-search.js?v=20261120-search-modal-header-shine"></script>
+  <script src="../Accelerator%20business%20components/heatmap.js?v=20261119-din-unit-shift"></script>
+</body>
+</html>

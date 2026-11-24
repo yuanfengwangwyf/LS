@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Input 输入框</title>
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260515">
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">通用</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">输入框</span>
+      <h1 class="section-title">Input 输入框</h1>
+      <p class="description">输入框用于接收用户文本输入，提供不同的状态反馈帮助用户理解当前输入状态。</p>
+
+      <div class="input-content">
+        <div class="input-section">
+          <h2 class="input-section-title">交互示例</h2>
+          <p class="input-section-desc">点击输入框体验交互效果，观察状态变化。</p>
+          <div class="input-page-demo input-page-with-border">
+            <div class="input-row" id="interactive-inputs"></div>
+          </div>
+        </div>
+
+        <div class="input-section">
+          <h2 class="input-section-title">输入框尺寸</h2>
+          <p class="input-section-desc">输入框定义了两种尺寸（large， default），分别为 40px 和 32px。</p>
+          <div class="input-page-demo input-page-with-border">
+            <div class="input-row" id="size-inputs"></div>
+          </div>
+        </div>
+
+        <div class="input-section">
+          <h2 class="input-section-title">输入框状态</h2>
+          <p class="input-section-desc">输入框的错误状态和禁用状态。</p>
+          <div class="input-page-demo input-page-with-border">
+            <div class="input-row" id="state-inputs"></div>
+          </div>
+        </div>
+
+        <div class="input-section">
+          <h2 class="input-section-title">字符限制</h2>
+          <p class="input-section-desc">输入框右侧显示字符计数，超过限制时显示错误状态。</p>
+          <div class="input-page-demo input-page-with-border">
+            <div class="input-row" id="char-limit-inputs"></div>
+          </div>
+        </div>
+
+        <div class="input-section">
+          <h2 class="input-section-title">搜索功能</h2>
+          <p class="input-section-desc">输入框右侧显示搜索图标，有内容时显示清除图标。</p>
+          <div class="input-page-demo input-page-with-border">
+            <div class="input-row" id="search-inputs"></div>
+          </div>
+        </div>
+
+        <div class="input-section">
+          <h2 class="input-section-title">链接复制</h2>
+          <p class="input-section-desc">输入框左侧显示链接图标，右侧显示复制按钮。</p>
+          <div class="input-page-demo input-page-with-border">
+            <div class="input-row" id="link-copy-inputs"></div>
+          </div>
+        </div>
+
+        <div class="input-section">
+          <h2 class="input-section-title">富文本输入框</h2>
+          <p class="input-section-desc">多行文本输入框，适用于长文本输入场景。</p>
+          <div class="input-page-demo input-page-with-border">
+            <div class="input-row" id="textarea-inputs"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-api-section">
+        <h2 class="input-api-title">API 参考</h2>
+        <table class="input-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>placeholder</td>
+              <td>输入框占位文本</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'Placeholder'</td>
+            </tr>
+            <tr>
+              <td>value</td>
+              <td>输入框初始值</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+            <tr>
+              <td>state</td>
+              <td>输入框状态</td>
+              <td>string</td>
+              <td>'default' | 'error'</td>
+              <td>'default'</td>
+            </tr>
+            <tr>
+              <td>size</td>
+              <td>输入框尺寸</td>
+              <td>string</td>
+              <td>'large' | 'default'</td>
+              <td>'large'</td>
+            </tr>
+            <tr>
+              <td>type</td>
+              <td>输入框类型</td>
+              <td>string</td>
+              <td>'default' | 'textarea'</td>
+              <td>'default'</td>
+            </tr>
+            <tr>
+              <td>disabled</td>
+              <td>是否禁用</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>false</td>
+            </tr>
+            <tr>
+              <td>charLimit</td>
+              <td>字符限制数量，设置后显示计数</td>
+              <td>number</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>showSearch</td>
+              <td>显示搜索图标</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>false</td>
+            </tr>
+            <tr>
+              <td>effect</td>
+              <td>输入框进入时的视觉效果</td>
+              <td>string</td>
+              <td>'none' | 'shine'</td>
+              <td>'none'</td>
+            </tr>
+            <tr>
+              <td>prefixIcon</td>
+              <td>输入框前置图标 HTML</td>
+              <td>string</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>searchIconHtml / clearIconHtml</td>
+              <td>搜索态和清空态图标 HTML</td>
+              <td>string</td>
+              <td>-</td>
+              <td>内置搜索 / 关闭图标</td>
+            </tr>
+            <tr>
+              <td>showLinkCopy</td>
+              <td>显示链接复制功能</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>false</td>
+            </tr>
+            <tr>
+              <td>linkActionText</td>
+              <td>链接输入框右侧操作文案</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'COPY'</td>
+            </tr>
+            <tr>
+              <td>linkActionAriaLabel</td>
+              <td>链接输入框右侧操作的无障碍名称</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+            <tr>
+              <td>onLinkAction</td>
+              <td>自定义右侧操作回调；配置后不执行默认复制</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>onInput</td>
+              <td>输入事件回调</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>onFocus</td>
+              <td>聚焦事件回调</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>onBlur</td>
+              <td>失焦事件回调</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>onChange</td>
+              <td>值变化事件回调</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>onSearch</td>
+              <td>搜索事件回调</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>onClear</td>
+              <td>清除事件回调</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>onCopy</td>
+              <td>复制事件回调</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>className</td>
+              <td>自定义类名</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+            <tr>
+              <td>id</td>
+              <td>自定义 id</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/input.js?v=20261113-input-button-reuse"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-input');
+      injectInputStyles();
+
+      const interactiveInputs = document.getElementById('interactive-inputs');
+      const sizeInputs = document.getElementById('size-inputs');
+      const stateInputs = document.getElementById('state-inputs');
+      const charLimitInputs = document.getElementById('char-limit-inputs');
+      const searchInputs = document.getElementById('search-inputs');
+      const linkCopyInputs = document.getElementById('link-copy-inputs');
+
+      const interactiveRow = document.createElement('div');
+      interactiveRow.className = 'input-row';
+      const interactiveInput1 = createInput({ state: 'default', size: 'large', placeholder: 'Placeholder' });
+      interactiveRow.appendChild(interactiveInput1);
+      interactiveInputs.appendChild(interactiveRow);
+
+      const sizeRow = document.createElement('div');
+      sizeRow.className = 'input-row';
+      sizeRow.appendChild(createInput({ size: 'large', placeholder: 'Large' }));
+      sizeRow.appendChild(createInput({ size: 'default', placeholder: 'Default' }));
+      sizeInputs.appendChild(sizeRow);
+
+      const stateRow = document.createElement('div');
+      stateRow.className = 'input-row';
+      stateRow.appendChild(createInput({ state: 'error', size: 'large', placeholder: 'Error' }));
+      stateRow.appendChild(createInput({ state: 'default', size: 'large', placeholder: 'Disabled', disabled: true }));
+      stateInputs.appendChild(stateRow);
+
+      const charLimitRow = document.createElement('div');
+      charLimitRow.className = 'input-row';
+      charLimitRow.appendChild(createInput({ charLimit: 10, placeholder: '请输入内容', size: 'large' }));
+      charLimitRow.appendChild(createInput({ charLimit: 10, placeholder: '请输入内容', size: 'default' }));
+      charLimitInputs.appendChild(charLimitRow);
+
+      const searchRow = document.createElement('div');
+      searchRow.className = 'input-row';
+      searchRow.appendChild(createInput({ showSearch: true, placeholder: '搜索', size: 'large' }));
+      searchRow.appendChild(createInput({ showSearch: true, placeholder: '搜索', size: 'default' }));
+      searchInputs.appendChild(searchRow);
+
+      const linkCopyRow = document.createElement('div');
+      linkCopyRow.className = 'input-row';
+      linkCopyRow.appendChild(createInput({ showLinkCopy: true, value: 'http://test.nnplay.cn/0yD9c5', size: 'large' }));
+      linkCopyRow.appendChild(createInput({ showLinkCopy: true, value: 'http://test.nnplay.cn/0yD9c5', size: 'default' }));
+      linkCopyInputs.appendChild(linkCopyRow);
+
+      const textareaRow = document.createElement('div');
+      textareaRow.className = 'input-row';
+      textareaRow.appendChild(createInput({ type: 'textarea', placeholder: 'Enter long form text here', value: '' }));
+      document.getElementById('textarea-inputs').appendChild(textareaRow);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Tooltip 文字提示</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">通用</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">文字提示</span>
+      <h1 class="section-title">Tooltip 文字提示</h1>
+      <p class="description">Tooltip 用于显示补充信息，当鼠标悬停或获得焦点时显示。</p>
+
+      <div class="tooltip-content">
+        <div class="tooltip-section">
+          <h2 class="tooltip-section-title">基本用法</h2>
+          <p class="tooltip-section-desc">元素 + Hover 触发。</p>
+
+          <div class="tooltip-page-demo tooltip-page-with-border">
+            <div class="tooltip-layout">
+              <div class="tooltip-row">
+                <div class="tooltip-item" id="demo-basic"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tooltip-section">
+          <h2 class="tooltip-section-title">位置</h2>
+          <p class="tooltip-section-desc">Hover 按钮查看不同方向的 Tooltip。</p>
+
+          <div class="tooltip-page-demo tooltip-page-with-border">
+            <div class="tooltip-layout">
+              <div class="tooltip-row">
+                <div class="tooltip-item" id="demo-top-left"></div>
+                <div class="tooltip-item" id="demo-top"></div>
+                <div class="tooltip-item" id="demo-top-right"></div>
+              </div>
+              <div class="tooltip-row">
+                <div class="tooltip-item" id="demo-left"></div>
+                <div class="tooltip-item"></div>
+                <div class="tooltip-item" id="demo-right"></div>
+              </div>
+              <div class="tooltip-row">
+                <div class="tooltip-item" id="demo-bottom-left"></div>
+                <div class="tooltip-item" id="demo-bottom"></div>
+                <div class="tooltip-item" id="demo-bottom-right"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tooltip-section">
+          <h2 class="tooltip-section-title">带标题的 Tooltip</h2>
+          <p class="tooltip-section-desc">可自定义宽度，Hover 按钮查看不同方向的 Tooltip。</p>
+
+          <div class="tooltip-page-demo tooltip-page-with-border">
+            <div class="tooltip-layout">
+              <div class="tooltip-row">
+                <div class="tooltip-item" id="demo-rich-top-left"></div>
+                <div class="tooltip-item" id="demo-rich-top"></div>
+                <div class="tooltip-item" id="demo-rich-top-right"></div>
+              </div>
+              <div class="tooltip-row">
+                <div class="tooltip-item" id="demo-rich-left"></div>
+                <div class="tooltip-item"></div>
+                <div class="tooltip-item" id="demo-rich-right"></div>
+              </div>
+              <div class="tooltip-row">
+                <div class="tooltip-item" id="demo-rich-bottom-left"></div>
+                <div class="tooltip-item" id="demo-rich-bottom"></div>
+                <div class="tooltip-item" id="demo-rich-bottom-right"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tooltip-api-section">
+        <h2 class="tooltip-api-title">API 参考</h2>
+        <table class="tooltip-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>content</td>
+              <td>提示内容</td>
+              <td>string</td>
+              <td>-</td>
+              <td>'Tooltip text'</td>
+            </tr>
+            <tr>
+              <td>direction</td>
+              <td>提示方向</td>
+              <td>string</td>
+              <td>'top' | 'top-left' | 'top-right' | 'bottom' | 'bottom-left' | 'bottom-right' | 'left' | 'right'</td>
+              <td>'top'</td>
+            </tr>
+            <tr>
+              <td>trigger</td>
+              <td>触发元素</td>
+              <td>HTMLElement | string</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>type</td>
+              <td>样式类型</td>
+              <td>string</td>
+              <td>'default' | 'rich'</td>
+              <td>'default'</td>
+            </tr>
+            <tr>
+              <td>title</td>
+              <td>标题（仅 rich 类型）</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+            <tr>
+              <td>width</td>
+              <td>固定宽度（仅 rich 类型）</td>
+              <td>number | string</td>
+              <td>-</td>
+              <td>'auto'</td>
+            </tr>
+            <tr>
+              <td>portal</td>
+              <td>是否挂载到 body，避免被父容器裁切</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>false</td>
+            </tr>
+            <tr>
+              <td>portal</td>
+              <td>是否挂载到 body，避免被父容器裁切</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>false</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/tooltips.js"></script>
+  <script src="../main.js?v=20260525-clean"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-tooltips');
+    });
+  </script>
+  <script>
+    (function() {
+      var basicContainer = document.getElementById('demo-basic');
+      if (basicContainer) {
+        var basicBtn = nnButton({
+          variant: 'system',
+          level: 'primary',
+          size: 'default',
+          text: 'Tooltip'
+        });
+        basicBtn.style.width = '80px';
+
+        var basicTooltip = createTooltip({
+          content: 'prompt text',
+          direction: 'top',
+          trigger: basicBtn
+        });
+
+        basicContainer.appendChild(basicTooltip);
+      }
+
+      const directions = [
+        'top',
+        'top-left',
+        'top-right',
+        'bottom',
+        'bottom-left',
+        'bottom-right',
+        'left',
+        'right'
+      ];
+
+      const directionLabels = {
+        'top': 'T',
+        'top-left': 'TL',
+        'top-right': 'TR',
+        'bottom': 'B',
+        'bottom-left': 'BL',
+        'bottom-right': 'BR',
+        'left': 'L',
+        'right': 'R'
+      };
+
+      directions.forEach(function(direction) {
+        var container = document.getElementById('demo-' + direction);
+        if (!container) return;
+
+        var btn = nnButton({
+          variant: 'system',
+          level: 'secondary',
+          size: 'default',
+          text: directionLabels[direction]
+        });
+        btn.style.width = '80px';
+
+        var tooltip = createTooltip({
+          content: 'prompt text',
+          direction: direction,
+          trigger: btn
+        });
+
+        container.appendChild(tooltip);
+      });
+
+      const richDirections = [
+        'top',
+        'top-left',
+        'top-right',
+        'bottom',
+        'bottom-left',
+        'bottom-right',
+        'left',
+        'right'
+      ];
+
+      richDirections.forEach(function(direction) {
+        var container = document.getElementById('demo-rich-' + direction);
+        if (!container) return;
+
+        var btn = nnButton({
+          variant: 'system',
+          level: 'secondary',
+          size: 'default',
+          text: directionLabels[direction]
+        });
+        btn.style.width = '80px';
+
+        var tooltip = createTooltip({
+          type: 'rich',
+          title: 'Title',
+          content: 'Content text',
+          direction: direction,
+          width: 200,
+          trigger: btn
+        });
+
+        container.appendChild(tooltip);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面 - Game Detail 游戏详情</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261030-game-detail">
+</head>
+<body class="accelerator-game-detail-page">
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261030-game-detail&amp;library=accelerator-page" title="加速器页面顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-p-nav.html?v=20261030-game-detail" title="加速器页面导航" frameborder="0"></iframe>
+
+  <main class="accelerator-game-detail-page-shell">
+    <section class="section">
+      <span class="breadcrumb-part">加速器页面</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">游戏详情</span>
+      <h1 class="section-title">Game Detail 游戏详情</h1>
+      <p class="description">展示游戏媒体、商品购买、游戏介绍与相关推荐。</p>
+
+      <div class="accelerator-game-detail-stage" id="accelerator-game-detail-stage" data-code-preview="true">
+        <div class="accelerator-game-detail-frame" aria-label="加速器游戏详情页">
+          <header class="accelerator-game-detail-frame__header" id="accelerator-game-detail-header"></header>
+          <div class="accelerator-game-detail-frame__body">
+            <aside class="accelerator-game-detail-frame__sidebar" id="accelerator-game-detail-sidebar" aria-label="加速器侧边导航"></aside>
+            <div class="accelerator-game-detail-frame__content" role="main">
+              <div class="accelerator-game-detail-layout">
+                <article class="accelerator-game-detail-main">
+                  <section class="accelerator-game-detail-media">
+                    <div class="accelerator-game-detail-player" id="accelerator-game-detail-player"></div>
+                    <div class="accelerator-game-detail-thumbnails" id="accelerator-game-detail-thumbnails"></div>
+                  </section>
+                  <section class="accelerator-game-detail-overview" id="accelerator-game-detail-overview"></section>
+                  <section class="accelerator-game-detail-content-section">
+                    <div id="accelerator-game-detail-tabs"></div>
+                    <div class="accelerator-game-detail-description" id="accelerator-game-detail-description"></div>
+                  </section>
+                  <section class="accelerator-game-detail-requirements" id="accelerator-game-detail-requirements"></section>
+                </article>
+                <aside class="accelerator-game-detail-aside">
+                  <section class="accelerator-game-detail-purchase" id="accelerator-game-detail-purchase"></section>
+                  <section class="accelerator-game-detail-recommendations">
+                    <h2>推荐游戏</h2>
+                    <div id="accelerator-game-detail-recommendation-list"></div>
+                  </section>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261123-history-back"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/input.js?v=20261114-accelerator-search-sync"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20261103-accelerator-header-duration"></script>
+  <script src="../basic%20components/switch.js?v=20261103-accelerator-header-duration"></script>
+  <script src="../basic%20components/input-number.js?v=20261030-game-detail"></script>
+  <script src="../basic%20components/tabs.js?v=20261030-game-detail"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/empty.js?v=20260610-empty-type-common-default"></script>
+  <script src="../basic%20components/scrollbar.js?v=20261120-tools-ranking"></script>
+  <script src="../basic%20components/message.js?v=20261030-game-detail"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261123-global-search"></script>
+  <script src="../Accelerator%20business%20components/game-search.js?v=20261120-search-modal-header-shine"></script>
+  <script src="../Accelerator%20business%20components/header.js?v=20261123-global-interactions"></script>
+  <script src="../Accelerator%20business%20components/side-navigation.js?v=20261123-global-game-navigation"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+</body>
+</html>

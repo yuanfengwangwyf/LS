@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - 基础组件库</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section id="basecolor" class="section">
+      <span class="breadcrumb-part">基础</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">颜色</span>
+      <h2 class="section-title">BaseColor 基础颜色</h2>
+      <p class="text">基础颜色系统，包含中性色和主题色。</p>
+
+      <div class="group-section">
+        <h3 class="group-title">中性色</h3>
+        <div class="token-grid">
+          <div class="token-card">
+            <div class="token-name">Neutral-0</div>
+            <div class="token-value">#FFFFFF</div>
+            <div class="token-color" style="background: var(--Neutral-0);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Neutral-1</div>
+            <div class="token-value">#1D1D1F</div>
+            <div class="token-color" style="background: var(--Neutral-1);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Neutral-2</div>
+            <div class="token-value">#101013</div>
+            <div class="token-color" style="background: var(--Neutral-2);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group-section">
+        <h3 class="group-title">主题色</h3>
+        <div class="token-grid">
+          <div class="token-card">
+            <div class="token-name">Esports Blue</div>
+            <div class="token-value">#4E41DB</div>
+            <div class="token-color" style="background: var(--Esports-Blue);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Esports Blue-dark</div>
+            <div class="token-value">#6B5EFF</div>
+            <div class="token-color" style="background: var(--Esports-Blue-dark);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Green</div>
+            <div class="token-value">#1BB373</div>
+            <div class="token-color" style="background: var(--Green);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Pink</div>
+            <div class="token-value">#FD526F</div>
+            <div class="token-color" style="background: var(--Pink);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Red</div>
+            <div class="token-value">#DA3639</div>
+            <div class="token-color" style="background: var(--Red);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Orange</div>
+            <div class="token-value">#F37F19</div>
+            <div class="token-color" style="background: var(--Orange);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Yellow</div>
+            <div class="token-value">#FFCC48</div>
+            <div class="token-color" style="background: var(--Yellow);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Purple</div>
+            <div class="token-value">#8262FF</div>
+            <div class="token-color" style="background: var(--Purple);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Magenta</div>
+            <div class="token-value">#EB2F96</div>
+            <div class="token-color" style="background: var(--Magenta);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Cyan</div>
+            <div class="token-value">#28B9E5</div>
+            <div class="token-color" style="background: var(--Cyan);"></div>
+          </div>
+          <div class="token-card">
+            <div class="token-name">Link</div>
+            <div class="token-value">#6172F3</div>
+            <div class="token-color" style="background: var(--Link);"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="alpha" class="section">
+      <h2 class="section-title">Alpha 透明度</h2>
+      <p class="text">透明度系统，包含白色和黑色的不同透明度值。</p>
+
+      <div class="group-section">
+        <h3 class="group-title">白色透明度</h3>
+        <div class="alpha-grid">
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A0);"></div>
+            <div class="alpha-name">White-A0 (0%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A2);"></div>
+            <div class="alpha-name">White-A2 (2%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A4);"></div>
+            <div class="alpha-name">White-A4 (4%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A6);"></div>
+            <div class="alpha-name">White-A6 (6%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A8);"></div>
+            <div class="alpha-name">White-A8 (8%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A10);"></div>
+            <div class="alpha-name">White-A10 (10%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A12);"></div>
+            <div class="alpha-name">White-A12 (12%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A14);"></div>
+            <div class="alpha-name">White-A14 (14%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A16);"></div>
+            <div class="alpha-name">White-A16 (16%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A18);"></div>
+            <div class="alpha-name">White-A18 (18%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A20);"></div>
+            <div class="alpha-name">White-A20 (20%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A30);"></div>
+            <div class="alpha-name">White-A30 (30%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A40);"></div>
+            <div class="alpha-name">White-A40 (40%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A50);"></div>
+            <div class="alpha-name">White-A50 (50%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A60);"></div>
+            <div class="alpha-name">White-A60 (60%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A70);"></div>
+            <div class="alpha-name">White-A70 (70%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A80);"></div>
+            <div class="alpha-name">White-A80 (80%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--White-A90);"></div>
+            <div class="alpha-name">White-A90 (90%)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group-section">
+        <h3 class="group-title">黑色透明度</h3>
+        <div class="alpha-grid">
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A0);"></div>
+            <div class="alpha-name">Black-A0 (0%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A2);"></div>
+            <div class="alpha-name">Black-A2 (2%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A4);"></div>
+            <div class="alpha-name">Black-A4 (4%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A6);"></div>
+            <div class="alpha-name">Black-A6 (6%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A8);"></div>
+            <div class="alpha-name">Black-A8 (8%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A10);"></div>
+            <div class="alpha-name">Black-A10 (10%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A12);"></div>
+            <div class="alpha-name">Black-A12 (12%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A14);"></div>
+            <div class="alpha-name">Black-A14 (14%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A16);"></div>
+            <div class="alpha-name">Black-A16 (16%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A18);"></div>
+            <div class="alpha-name">Black-A18 (18%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A20);"></div>
+            <div class="alpha-name">Black-A20 (20%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A30);"></div>
+            <div class="alpha-name">Black-A30 (30%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A40);"></div>
+            <div class="alpha-name">Black-A40 (40%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A50);"></div>
+            <div class="alpha-name">Black-A50 (50%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A60);"></div>
+            <div class="alpha-name">Black-A60 (60%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A70);"></div>
+            <div class="alpha-name">Black-A70 (70%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A80);"></div>
+            <div class="alpha-name">Black-A80 (80%)</div>
+          </div>
+          <div class="alpha-card">
+            <div class="alpha-color" style="background: var(--Black-A90);"></div>
+            <div class="alpha-name">Black-A90 (90%)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="alias" class="section">
+      <h2 class="section-title">Alias Token 语义化</h2>
+      <p class="text">语义化令牌，包含亮模式和暗模式的映射。</p>
+
+      <div class="alias-grid">
+        <div class="alias-card">
+          <div class="alias-name">gray-1</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Neutral-0);"></div>
+              <div class="alias-color-value">Neutral-0</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Neutral-2);"></div>
+              <div class="alias-color-value">Neutral-2</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-2</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Neutral-0);"></div>
+              <div class="alias-color-value">Neutral-0</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Neutral-1);"></div>
+              <div class="alias-color-value">Neutral-1</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-3</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A90);"></div>
+              <div class="alias-color-value">Black-A90</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A90);"></div>
+              <div class="alias-color-value">White-A90</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-3-reverse</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A90);"></div>
+              <div class="alias-color-value">White-A90</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A90);"></div>
+              <div class="alias-color-value">Black-A90</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-4</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A80);"></div>
+              <div class="alias-color-value">Black-A80</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A80);"></div>
+              <div class="alias-color-value">White-A80</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-5</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A70);"></div>
+              <div class="alias-color-value">Black-A70</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A70);"></div>
+              <div class="alias-color-value">White-A70</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-6</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A4);"></div>
+              <div class="alias-color-value">White-A4</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A50);"></div>
+              <div class="alias-color-value">White-A50</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-7</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A30);"></div>
+              <div class="alias-color-value">Black-A30</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A20);"></div>
+              <div class="alias-color-value">White-A20</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-8</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A10);"></div>
+              <div class="alias-color-value">Black-A10</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A10);"></div>
+              <div class="alias-color-value">White-A10</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-9</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A6);"></div>
+              <div class="alias-color-value">Black-A6</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A6);"></div>
+              <div class="alias-color-value">White-A6</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-10</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A4);"></div>
+              <div class="alias-color-value">Black-A4</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A4);"></div>
+              <div class="alias-color-value">White-A4</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-11</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A90);"></div>
+              <div class="alias-color-value">White-A90</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A10);"></div>
+              <div class="alias-color-value">White-A10</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-12</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A90);"></div>
+              <div class="alias-color-value">White-A90</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A4);"></div>
+              <div class="alias-color-value">White-A4</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-13</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A10);"></div>
+              <div class="alias-color-value">Black-A10</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A50);"></div>
+              <div class="alias-color-value">White-A50</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-14</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A50);"></div>
+              <div class="alias-color-value">White-A50</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A20);"></div>
+              <div class="alias-color-value">Black-A20</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-15<span class="alias-special-badge">特殊</span></div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A90);"></div>
+              <div class="alias-color-value">Black-A90</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Esports-Blue);"></div>
+              <div class="alias-color-value">Esports Blue</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">gray-16</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A60);"></div>
+              <div class="alias-color-value">Black-A60</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A60);"></div>
+              <div class="alias-color-value">White-A60</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">transparent</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A0);"></div>
+              <div class="alias-color-value">Black-A0</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A0);"></div>
+              <div class="alias-color-value">White-A0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">transparent-reverse</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--White-A0);"></div>
+              <div class="alias-color-value">White-A0</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A0);"></div>
+              <div class="alias-color-value">Black-A0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">mask</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A60);"></div>
+              <div class="alias-color-value">Black-A60</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A80);"></div>
+              <div class="alias-color-value">Black-A80</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">shadow</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A12);"></div>
+              <div class="alias-color-value">Black-A12</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Black-A20);"></div>
+              <div class="alias-color-value">Black-A20</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alias-card">
+          <div class="alias-name">Esports Blue-LD</div>
+          <div class="alias-colors">
+            <div class="alias-color-item">
+              <div class="alias-color-label">Light Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Esports-Blue);"></div>
+              <div class="alias-color-value">Esports Blue</div>
+            </div>
+            <div class="alias-color-item">
+              <div class="alias-color-label">Dark Mode</div>
+              <div class="alias-color-swatch" style="background: var(--Esports-Blue-dark);"></div>
+              <div class="alias-color-value">Esports Blue-dark</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-colors');
+    });
+  </script>
+</body>
+</html>

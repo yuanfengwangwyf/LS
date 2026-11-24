@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Empty 空状态</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    .empty-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space80);
+    }
+
+    .empty-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .empty-section-title,
+    .empty-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .empty-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .empty-demo-surface {
+      display: flex;
+      width: 100%;
+      padding: var(--space48);
+      overflow: visible;
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .empty-demo-surface.empty-demo-with-border {
+      border: 1px solid var(--gray-8);
+    }
+
+    .empty-demo-surface--center {
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+    }
+
+    .empty-demo-surface--usage {
+      min-height: 520px;
+    }
+
+    .empty-demo-surface--module {
+      min-height: 360px;
+      background: var(--gray-10);
+    }
+
+    .empty-scenario {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space80);
+      width: 100%;
+      margin-top: var(--space60);
+    }
+
+    .empty-scenario__section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      box-sizing: border-box;
+    }
+
+    .empty-scenario__heading {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .empty-scenario__desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .empty-scenario__frame {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space60);
+      width: 100%;
+      padding: var(--space48);
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .empty-scenario__grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
+      gap: var(--space60) var(--space80);
+      width: 100%;
+      justify-items: center;
+      align-items: start;
+    }
+
+    .empty-scene-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space10);
+      min-width: 0;
+    }
+
+    .empty-scene-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space4);
+      color: var(--gray-5);
+      font-family: var(--font-family-main);
+      text-align: center;
+    }
+
+    .empty-scene-label__title {
+      font-size: 14px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 20px;
+    }
+
+    .empty-demo-subtitle {
+      margin: var(--space0);
+      color: var(--gray-5);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 20px;
+    }
+
+    .empty-guideline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      gap: var(--space16);
+    }
+
+    .empty-guideline__image-area {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 263px;
+      height: 157px;
+      border-radius: var(--border-radius-2r);
+      background: rgba(253, 82, 111, 0.08);
+    }
+
+    .empty-guideline__image-area::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 266px;
+      height: 10px;
+      transform: translateX(-50%);
+      border-radius: var(--border-radius-2r);
+      background: rgba(253, 82, 111, 0.18);
+    }
+
+    .empty-guideline__image-area img {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 132px;
+      height: 81px;
+      object-fit: contain;
+    }
+
+    .empty-guideline__note {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 12px;
+      line-height: 16px;
+      text-align: center;
+    }
+
+    .empty-placement-frame {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 320px;
+      border: 1px dashed var(--gray-8);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-1);
+      box-sizing: border-box;
+    }
+
+    .empty-placement-frame--page {
+      min-height: 420px;
+    }
+
+    .empty-placement-frame--module {
+      min-height: 260px;
+      background: var(--gray-2);
+    }
+
+    .empty-type-switcher {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space32);
+      width: 100%;
+    }
+
+    .empty-type-switcher__toolbar {
+      display: flex;
+      align-items: center;
+      gap: var(--space24);
+      width: 100%;
+    }
+
+    .empty-type-switcher__label {
+      flex: 0 0 auto;
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .empty-type-switcher__tabs {
+      display: flex;
+      align-items: center;
+    }
+
+    .empty-type-switcher__panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 360px;
+      box-sizing: border-box;
+    }
+
+    .empty-api-section {
+      margin-top: var(--space80);
+    }
+
+    .empty-api-title {
+      margin-bottom: var(--space24);
+      line-height: 26px;
+    }
+
+    .empty-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .empty-api-table th,
+    .empty-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .empty-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .empty-api-table td {
+      color: var(--gray-5);
+    }
+
+    .empty-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260609-nav-active-scroll" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">数据展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">空状态</span>
+      <h1 class="section-title">Empty 空状态</h1>
+      <p class="description">Empty 用于在列表、页面或弹窗中展示暂无内容、搜索无结果、网络异常等空状态，可配置图片、文案和操作按钮。</p>
+
+      <div class="empty-content">
+        <div class="empty-section">
+          <h2 class="empty-section-title">场景分类</h2>
+          <p class="empty-section-desc">按页面场景与浮窗场景分类展示，不传 type 时默认展示通用类型「暂无数据」。</p>
+          <div class="empty-scenario" id="empty-size-demo"></div>
+        </div>
+
+        <div class="empty-section">
+          <h2 class="empty-section-title">使用</h2>
+          <p class="empty-section-desc">空状态可与按钮组合使用，引导用户直接新建或添加；通过 type 属性调用不同类型的空状态。</p>
+          <div class="empty-demo-surface empty-demo-with-border empty-demo-surface--usage">
+            <div class="empty-type-demo" id="empty-type-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-api-section">
+        <h2 class="empty-api-title">API 参考</h2>
+        <table class="empty-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>scene</td><td>空状态使用场景，控制尺寸、间距和按钮规格</td><td>string</td><td>page | popup</td><td>page</td></tr>
+            <tr><td>type</td><td>内置空状态类型，控制默认图片、主文案和辅助文案</td><td>string</td><td>common | search | team | placeholder | message | order | network</td><td>common</td></tr>
+            <tr><td>imageSrc</td><td>自定义空状态图片资源，优先级高于 type</td><td>string</td><td>-</td><td>按 type 匹配</td></tr>
+            <tr><td>title</td><td>自定义主文案，优先级高于 type 默认文案</td><td>string</td><td>-</td><td>按 type 匹配</td></tr>
+            <tr><td>description</td><td>自定义辅助文案，优先级高于 type 默认文案</td><td>string</td><td>-</td><td>按 type 匹配</td></tr>
+            <tr><td>showDescription</td><td>是否展示辅助文案</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>actions</td><td>操作按钮配置，最多展示 2 个，透传给 Button 组件</td><td>object[]</td><td>-</td><td>两个 Button</td></tr>
+            <tr><td>showActions</td><td>是否展示操作按钮</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>paddingTop</td><td>自定义组件顶部间距，不解组调整上下留白</td><td>number</td><td>-</td><td>null</td></tr>
+            <tr><td>paddingBottom</td><td>自定义组件底部间距，不解组调整上下留白</td><td>number</td><td>-</td><td>null</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-indicator-resize"></script>
+  <script src="../basic%20components/empty.js?v=20260610-empty-type-common-default"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-empty');
+      injectButtonStyles();
+      injectTabsStyles();
+      injectEmptyStyles();
+
+      const sizeDemo = document.getElementById('empty-size-demo');
+      function createSceneDemoItem(title, emptyNode) {
+        const item = document.createElement('div');
+        item.className = 'empty-scene-card';
+
+        const label = document.createElement('div');
+        label.className = 'empty-scene-label';
+        label.innerHTML = '<span class="empty-scene-label__title">' + title + '</span>';
+
+        item.appendChild(label);
+        item.appendChild(emptyNode);
+        return item;
+      }
+
+      function createScenarioBlock(label, note, demoNodes) {
+      const section = document.createElement('div');
+      section.className = 'empty-scenario__section';
+
+      const heading = document.createElement('p');
+      heading.className = 'empty-scenario__heading';
+      heading.textContent = label;
+
+      const desc = document.createElement('p');
+      desc.className = 'empty-scenario__desc';
+      desc.textContent = note;
+
+      const frame = document.createElement('div');
+      frame.className = 'empty-scenario__frame';
+
+      const grid = document.createElement('div');
+      grid.className = 'empty-scenario__grid';
+      demoNodes.forEach(function(node) {
+        const cell = document.createElement('div');
+        cell.className = 'empty-scene-card';
+        cell.appendChild(node);
+        grid.appendChild(cell);
+      });
+
+      frame.appendChild(grid);
+      section.appendChild(heading);
+      section.appendChild(desc);
+      section.appendChild(frame);
+      return section;
+    }
+
+      sizeDemo.appendChild(createScenarioBlock('页面场景使用', '目前分别用于整个页面或是独立模块的状态展示，在页面、模块内居中', [
+        createEmptyPage({ actions: [{ text: 'Button', variant: 'system', level: 'primary' }] }),
+        createEmptyPage({
+          actions: [
+            { text: 'Button', variant: 'system', level: 'primary' },
+            { text: 'Button', variant: 'system', level: 'secondary' }
+          ]
+        })
+      ]));
+      sizeDemo.appendChild(createScenarioBlock('浮窗场景使用', '下拉框等场景使用', [
+        createEmptyPopup({ actions: [{ text: 'Button', variant: 'system', level: 'primary' }] }),
+        createEmptyPopup({
+          actions: [
+            { text: 'Button', variant: 'system', level: 'primary' },
+            { text: 'Button', variant: 'system', level: 'secondary' }
+          ]
+        })
+      ]));
+
+      const typeDemo = document.getElementById('empty-type-demo');
+      const emptyTypes = [
+        { name: 'common', type: 'common' },
+        { name: 'search', type: 'search' },
+        { name: 'team', type: 'team' },
+        { name: 'placeholder', type: 'placeholder' },
+        { name: 'message', type: 'message' },
+        { name: 'order', type: 'order' },
+        { name: 'network', type: 'network' }
+      ];
+
+      const typeSwitcher = document.createElement('div');
+      typeSwitcher.className = 'empty-type-switcher';
+
+      const typeToolbar = document.createElement('div');
+      typeToolbar.className = 'empty-type-switcher__toolbar';
+
+      const typeLabel = document.createElement('p');
+      typeLabel.className = 'empty-type-switcher__label';
+      typeLabel.textContent = 'Type';
+
+      const typeTabsWrap = document.createElement('div');
+      typeTabsWrap.className = 'empty-type-switcher__tabs';
+
+      const typePanel = document.createElement('div');
+      typePanel.className = 'empty-type-switcher__panel';
+
+      function renderEmptyType(index) {
+        const item = emptyTypes[index] || emptyTypes[0];
+        typePanel.innerHTML = '';
+        typePanel.appendChild(createEmptyPage({
+          type: item.type,
+          actions: [
+            { text: 'Button', variant: 'system', level: 'primary' },
+            { text: 'Button', variant: 'system', level: 'secondary' }
+          ]
+        }));
+      }
+
+      typeTabsWrap.appendChild(createTabs({
+        type: 'tertiary-box',
+        tabs: emptyTypes.map(function(item) {
+          return { name: item.name };
+        }),
+        defaultActive: 0,
+        onChange: function(event) {
+          renderEmptyType(event.index);
+        }
+      }));
+
+      typeToolbar.appendChild(typeLabel);
+      typeToolbar.appendChild(typeTabsWrap);
+      typeSwitcher.appendChild(typeToolbar);
+      typeSwitcher.appendChild(typePanel);
+      typeDemo.appendChild(typeSwitcher);
+      renderEmptyType(0);
+    });
+  </script>
+</body>
+</html>

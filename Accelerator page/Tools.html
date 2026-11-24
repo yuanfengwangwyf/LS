@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面 - 电脑工具</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');</script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-page-preview-control">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261119-accelerator-tools">
+  <link rel="stylesheet" href="Tools.css?v=20261124-hot-carousel-disabled">
+</head>
+<body class="accelerator-tools-page">
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261030-game-detail&amp;library=accelerator-page" title="加速器页面顶部导航" frameborder="0" style="width:100%;height:60px;border:0;display:block;position:fixed;top:0;left:0;z-index:1000"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-p-nav.html?v=20261030-game-detail" title="加速器页面导航" frameborder="0"></iframe>
+  <main class="accelerator-tools-page-shell accelerator-home-shell">
+    <section class="section">
+      <span class="breadcrumb-part">加速器页面</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">电脑工具</span>
+      <h1 class="section-title">电脑工具</h1>
+      <p class="description">汇总热门工具、开发者排行、性能优化、系统工具与游戏福利。</p>
+      <div class="accelerator-tools-stage accelerator-home-stage" data-code-preview="true">
+        <div class="accelerator-tools-frame accelerator-home-frame">
+          <header class="accelerator-tools-frame__header" id="accelerator-tools-header"></header>
+          <div class="accelerator-tools-frame__body accelerator-home-frame__body">
+            <aside class="accelerator-tools-frame__sidebar" id="accelerator-tools-sidebar" aria-label="加速器侧边导航"></aside>
+            <div class="accelerator-tools-column">
+              <div class="accelerator-tools-category-tabs" id="accelerator-tools-category-tabs" aria-label="工具分类"></div>
+              <section class="accelerator-tools-content accelerator-home-frame__content" id="accelerator-tools-content" aria-label="电脑工具发现页">
+              <section class="accelerator-tools-discover" id="tools-discover" aria-label="发现">
+                <div class="accelerator-tools-banner" id="accelerator-tools-banner"></div>
+              </section>
+
+              <section class="accelerator-tools-section accelerator-tools-section--hot" aria-labelledby="tools-hot-title">
+                <div class="accelerator-tools-section__heading">
+                  <h2 id="tools-hot-title">热门工具</h2>
+                  <div class="accelerator-tools-section__actions" id="tools-hot-actions" aria-label="热门工具翻页"></div>
+                </div>
+                <div class="accelerator-tools-hot-viewport" id="tools-hot-viewport">
+                  <div class="accelerator-tools-hot-track" id="tools-hot-track"></div>
+                </div>
+              </section>
+
+              <section class="accelerator-tools-section" id="tools-ranking" aria-label="排行榜">
+                <div class="accelerator-tools-ranking-grid">
+                  <article class="accelerator-tools-ranking-panel" aria-labelledby="developer-ranking-title">
+                    <div class="accelerator-tools-ranking-panel__heading">
+                      <h3 id="developer-ranking-title">开发者排行</h3>
+                    </div>
+                    <div class="accelerator-tools-ranking-scroll" id="developer-ranking-scroll">
+                      <div id="developer-ranking-list"></div>
+                    </div>
+                  </article>
+                  <article class="accelerator-tools-ranking-panel" aria-labelledby="tool-ranking-title">
+                    <div class="accelerator-tools-ranking-panel__heading">
+                      <h3 id="tool-ranking-title">电脑工具排行</h3>
+                    </div>
+                    <div class="accelerator-tools-ranking-scroll" id="tool-ranking-scroll">
+                      <div id="tool-ranking-list"></div>
+                    </div>
+                  </article>
+                </div>
+              </section>
+
+              <section class="accelerator-tools-section" id="tools-performance" aria-labelledby="tools-performance-title">
+                <div class="accelerator-tools-section__heading">
+                  <h2 id="tools-performance-title">电脑性能优化</h2>
+                  <div id="tools-performance-more"></div>
+                </div>
+                <div class="accelerator-tools-card-grid" id="tools-performance-grid"></div>
+              </section>
+
+              <section class="accelerator-tools-section" id="tools-system" aria-labelledby="tools-system-title">
+                <div class="accelerator-tools-section__heading">
+                  <h2 id="tools-system-title">电脑系统工具</h2>
+                  <div id="tools-system-more"></div>
+                </div>
+                <div class="accelerator-tools-card-grid" id="tools-system-grid"></div>
+              </section>
+
+              <section class="accelerator-tools-section" id="tools-freebies" aria-labelledby="tools-freebies-title">
+                <div class="accelerator-tools-section__heading">
+                  <h2 id="tools-freebies-title">喜加一</h2>
+                  <div id="tools-freebies-more"></div>
+                </div>
+                <div class="accelerator-tools-event-grid" id="tools-freebies-grid"></div>
+              </section>
+
+              <section class="accelerator-tools-section" id="tools-twitch" aria-labelledby="tools-twitch-title" hidden>
+                <div class="accelerator-tools-section__heading">
+                  <h2 id="tools-twitch-title">Twitch 掉宝工具</h2>
+                  <div id="tools-twitch-more"></div>
+                </div>
+                <div class="accelerator-tools-event-grid" id="tools-twitch-grid"></div>
+              </section>
+
+              <section class="accelerator-tools-section" id="tools-twitch-stacked" aria-labelledby="tools-twitch-stacked-title">
+                <div class="accelerator-tools-section__heading">
+                  <h2 id="tools-twitch-stacked-title">Twitch 掉宝工具</h2>
+                  <div id="tools-twitch-stacked-more"></div>
+                </div>
+                <div class="accelerator-tools-event-grid accelerator-tools-event-grid--stacked" id="tools-twitch-stacked-grid"></div>
+              </section>
+            </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="../main.js?v=20261123-history-back"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20261123-global-header"></script>
+  <script src="../basic%20components/input.js?v=20261114-accelerator-search-sync"></script>
+  <script src="../basic%20components/label.js?v=20261111-certification-icon-20px"></script>
+  <script src="../basic%20components/tabs.js?v=20261029-accelerator-home"></script>
+  <script src="../basic%20components/avatar.js?v=20261120-tools-ranking"></script>
+  <script src="../basic%20components/scrollbar.js?v=20261120-tools-ranking"></script>
+  <script src="../basic%20components/empty.js?v=20260610-empty-type-common-default"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261119-search-dialog-pages"></script>
+  <script src="../Accelerator%20business%20components/game-search.js?v=20261120-search-modal-header-shine"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../Accelerator%20business%20components/header.js?v=20261123-global-interactions"></script>
+  <script src="../Accelerator%20business%20components/side-navigation.js?v=20261123-global-game-navigation"></script>
+  <script src="Tools.js?v=20261124-hot-carousel-disabled"></script>
+</body>
+</html>

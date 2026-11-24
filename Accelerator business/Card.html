@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器业务组件库 - Card 卡片</title>
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261030-heart-fill">
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    .accelerator-card-content,
+    .accelerator-card-section,
+    .accelerator-card-demo-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .accelerator-card-content {
+      gap: var(--space48);
+    }
+
+    .accelerator-card-section {
+      gap: var(--space16);
+    }
+
+    .accelerator-card-demo-list {
+      gap: var(--space16);
+    }
+
+    .accelerator-card-demo-list--row {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    .accelerator-card-section-title,
+    .accelerator-card-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-title);
+    }
+
+    .accelerator-card-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .accelerator-card-demo {
+      display: flex;
+      width: 100%;
+      padding: var(--space48);
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .accelerator-card-api-section {
+      margin-top: var(--space80);
+    }
+
+    .accelerator-card-api-title {
+      margin-bottom: var(--space24);
+    }
+
+    .accelerator-card-api-title--achievement {
+      margin-top: var(--space48);
+    }
+
+    .accelerator-card-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-body);
+    }
+
+    .accelerator-card-api-table th,
+    .accelerator-card-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .accelerator-card-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .accelerator-card-api-table td {
+      color: var(--gray-5);
+    }
+
+    .accelerator-card-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261028-accelerator-library&amp;library=accelerator-business" title="加速器业务组件顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-b-nav.html?v=20261028-accelerator-card" title="加速器业务组件导航" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">加速器业务组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">卡片</span>
+      <h1 class="section-title">Card 卡片</h1>
+      <p class="description">加速器业务卡片组件，包含游戏资料卡、成就卡、Steam 资料卡、用户数据卡和商品卡。</p>
+
+      <div class="accelerator-card-content">
+        <div class="accelerator-card-section">
+          <h2 class="accelerator-card-section-title">游戏资料卡</h2>
+          <p class="accelerator-card-section-desc">可配置排行、描述文本类型、右侧按钮或数据展示；game-profile 样式增加游戏平台图标与底部四级时长排行。</p>
+          <div class="accelerator-card-demo" data-code-preview="true" id="accelerator-wishlist-card-preview">
+            <div class="accelerator-card-demo-list" id="accelerator-card-demo"></div>
+          </div>
+        </div>
+
+        <div class="accelerator-card-section">
+          <h2 class="accelerator-card-section-title">成就卡</h2>
+          <p class="accelerator-card-section-desc">展示 Steam 游戏成就进度与解锁状态。</p>
+          <div class="accelerator-card-demo" data-code-preview="true" id="accelerator-achievement-card-preview">
+            <div class="accelerator-card-demo-list" id="accelerator-achievement-card-demo"></div>
+          </div>
+        </div>
+
+        <div class="accelerator-card-section">
+          <h2 class="accelerator-card-section-title">Steam资料卡</h2>
+          <p class="accelerator-card-section-desc">包含已绑定和未绑定两种状态，展示账号信息、好友概况和绑定入口。</p>
+          <div class="accelerator-card-demo" data-code-preview="true" id="accelerator-steam-information-card-preview">
+            <div class="accelerator-card-demo-list" id="accelerator-steam-information-card-demo"></div>
+          </div>
+        </div>
+
+        <div class="accelerator-card-section">
+          <h2 class="accelerator-card-section-title">用户数据卡</h2>
+          <p class="accelerator-card-section-desc">展示用户游戏数据、数值单位和当前排名。</p>
+          <div class="accelerator-card-demo" data-code-preview="true" id="accelerator-user-data-card-preview">
+            <div class="accelerator-card-demo-list" id="accelerator-user-data-card-demo"></div>
+          </div>
+        </div>
+
+        <div class="accelerator-card-section">
+          <h2 class="accelerator-card-section-title">商品卡</h2>
+          <p class="accelerator-card-section-desc">包含可购买和未上线可预约两种类型，支持多平台标识、心愿单和已入库状态。</p>
+          <div class="accelerator-card-demo" data-code-preview="true" id="accelerator-product-card-preview">
+            <div class="accelerator-card-demo-list accelerator-card-demo-list--row" id="accelerator-product-card-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accelerator-card-api-section">
+        <h2 class="accelerator-card-api-title">API</h2>
+        <table class="accelerator-card-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>variant</td><td>游戏资料卡样式</td><td>string</td><td>default | game-profile</td><td>default</td></tr>
+            <tr><td>gameTitle</td><td>游戏名称</td><td>string</td><td>-</td><td>《巫师3：狂猎》- 重制版</td></tr>
+            <tr><td>description</td><td>游戏名称下方的描述文本，可配置为日期或其他说明</td><td>string</td><td>-</td><td>可配置描述内容</td></tr>
+            <tr><td>imageSrc</td><td>游戏封面地址</td><td>string</td><td>-</td><td>Steam 商店列表封面</td></tr>
+            <tr><td>coverSize</td><td>封面尺寸规格；large 将封面由 120×67px 等比放大至 160×90px，并同步增高卡片</td><td>string</td><td>default | large</td><td>default</td></tr>
+            <tr><td>rank</td><td>左上角排名序号，可选配置；0 表示不展示</td><td>number</td><td>0 | 1 | 2 | 3 | 4</td><td>0（不展示）</td></tr>
+            <tr><td>rightType</td><td>右侧区域展示类型</td><td>string</td><td>button | data</td><td>button</td></tr>
+            <tr><td>steam</td><td>是否显示前往 Steam 按钮</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>steamText</td><td>Steam 按钮文案</td><td>string</td><td>-</td><td>前往Steam</td></tr>
+            <tr><td>steamVariant</td><td>操作按钮样式</td><td>string</td><td>secondary | primary</td><td>secondary</td></tr>
+            <tr><td>steamIcon</td><td>是否显示按钮图标</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>onSteamClick</td><td>Steam 按钮点击回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>dataValue</td><td>右侧数据数值</td><td>number | string</td><td>-</td><td>36.7</td></tr>
+            <tr><td>dataUnit</td><td>右侧数据单位</td><td>string</td><td>-</td><td>h</td></tr>
+            <tr><td>dataLabel</td><td>右侧数据说明</td><td>string</td><td>-</td><td>总时长</td></tr>
+            <tr><td>platforms</td><td>游戏平台图标；配置后展示在封面左下贴边黑底内，平台名称仅作为无障碍说明</td><td>string[] | object[]</td><td>steam | epic | wg | wegame</td><td>game-profile 为 ['steam']</td></tr>
+            <tr><td>dataRanks</td><td>game-profile 底部四级排行，按全球、全国、省、市顺序展示，最多 4 项</td><td>object[]</td><td>{ label | scope, value }</td><td>-</td></tr>
+            <tr><td>dataRank</td><td>兼容单项排行的数值；未配置 dataRanks 时生效</td><td>number | string</td><td>-</td><td>1</td></tr>
+            <tr><td>dataRankLabel</td><td>兼容单项排行的范围说明；未配置 dataRanks 时生效</td><td>string</td><td>-</td><td>全站排名</td></tr>
+            <tr><td>hideDataRank</td><td>是否隐藏排行数据</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>onClick</td><td>整张卡片点击回调</td><td>function</td><td>-</td><td>null</td></tr>
+          </tbody>
+        </table>
+
+        <h2 class="accelerator-card-api-title accelerator-card-api-title--achievement">Steam资料卡 API</h2>
+        <table class="accelerator-card-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>state</td><td>Steam 账号绑定状态</td><td>string</td><td>bound | not-bound</td><td>bound</td></tr>
+            <tr><td>userName</td><td>已绑定用户名称</td><td>string</td><td>-</td><td>邪恶萨摩耶</td></tr>
+            <tr><td>avatarSrc</td><td>头像地址，通过 Avatar 基础组件渲染</td><td>string</td><td>-</td><td>已绑定使用 Avatar/头像1095.png；未绑定使用 Steam achievements/steam-logo.jpg</td></tr>
+            <tr><td>level</td><td>Steam 等级</td><td>number | string</td><td>-</td><td>6</td></tr>
+            <tr><td>steamId</td><td>Steam ID</td><td>string</td><td>-</td><td>76561198805355097</td></tr>
+            <tr><td>updatedText</td><td>上次更新时间文案</td><td>string</td><td>-</td><td>上次更新：10.28 10:25</td></tr>
+            <tr><td>friends</td><td>Steam 好友弹窗数据；点击好友区域时展示</td><td>object[]</td><td>-</td><td>8 位示例好友</td></tr>
+            <tr><td>onFriendsClick</td><td>好友区域点击回调；配置后替代默认弹窗</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>onFriendAction</td><td>好友弹窗内发消息或加好友按钮回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>unboundTitle</td><td>未绑定状态标题</td><td>string</td><td>-</td><td>绑定Steam账号，参与活动抽奖，100%中奖率</td></tr>
+            <tr><td>onActionClick</td><td>管理账号按钮回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>onBindClick</td><td>立即绑定按钮回调</td><td>function</td><td>-</td><td>null</td></tr>
+          </tbody>
+        </table>
+
+        <h2 class="accelerator-card-api-title accelerator-card-api-title--achievement">成就卡 API</h2>
+        <table class="accelerator-card-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>gameTitle</td><td>成就卡中的游戏名称</td><td>string</td><td>-</td><td>《巫师3：狂猎》- 重制版</td></tr>
+            <tr><td>imageSrc</td><td>Steam 商店列表中的 16:9 游戏封面地址</td><td>string</td><td>-</td><td>Steam 商店列表封面</td></tr>
+            <tr><td>completedCount</td><td>已完成成就数量</td><td>number</td><td>0 及以上</td><td>14</td></tr>
+            <tr><td>totalCount</td><td>成就总数量</td><td>number</td><td>大于等于 completedCount</td><td>37</td></tr>
+            <tr><td>highlightedCount</td><td>当前高亮展示的成就图标数量</td><td>number</td><td>0 至成就图标数量</td><td>6</td></tr>
+            <tr><td>achievements</td><td>Steam 成就图标数组，默认使用本地 Steam 官方资源</td><td>string[] | object[]</td><td>-</td><td>巫师3 成就图标</td></tr>
+            <tr><td>onClick</td><td>成就卡点击回调</td><td>function</td><td>-</td><td>null</td></tr>
+          </tbody>
+        </table>
+
+        <h2 class="accelerator-card-api-title accelerator-card-api-title--achievement">用户数据卡 API</h2>
+        <table class="accelerator-card-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>text</td><td>数据标题</td><td>string</td><td>-</td><td>总游戏时长</td></tr>
+            <tr><td>value</td><td>数据数值</td><td>number | string</td><td>-</td><td>606</td></tr>
+            <tr><td>description</td><td>数值单位或补充文本</td><td>string</td><td>-</td><td>h</td></tr>
+            <tr><td>numericDescription</td><td>是否展示数值单位</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>titleIconClass</td><td>标题右侧图标类名；配置 tooltipContent 时默认使用问号图标</td><td>string</td><td>图标库类名</td><td>问号线性图标</td></tr>
+            <tr><td>tooltipContent</td><td>标题问号图标的提示内容</td><td>string</td><td>-</td><td>-</td></tr>
+            <tr><td>tooltipDirection</td><td>标题提示出现方向</td><td>string</td><td>Tooltip 支持的方向</td><td>top</td></tr>
+            <tr><td>tooltipWidth</td><td>标题提示宽度</td><td>number | string</td><td>-</td><td>280</td></tr>
+            <tr><td>rankLabel</td><td>排名提示文本</td><td>string</td><td>-</td><td>当前排名：</td></tr>
+            <tr><td>rank</td><td>当前排名数值</td><td>number | string</td><td>-</td><td>1906</td></tr>
+            <tr><td>rankHref</td><td>排名区域跳转地址；可与卡片 onClick 分别配置，点击时不会触发卡片回调</td><td>string</td><td>-</td><td>-</td></tr>
+            <tr><td>rankAriaLabel</td><td>排名区域无障碍名称</td><td>string</td><td>-</td><td>数据标题，查看排行榜</td></tr>
+            <tr><td>imageSrc</td><td>右侧装饰图片地址</td><td>string</td><td>-</td><td>Steam achievements/time.png</td></tr>
+            <tr><td>onClick</td><td>卡片点击回调</td><td>function</td><td>-</td><td>null</td></tr>
+          </tbody>
+        </table>
+
+        <h2 class="accelerator-card-api-title accelerator-card-api-title--achievement">商品卡 API</h2>
+        <table class="accelerator-card-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>type</td><td>商品类型</td><td>string</td><td>purchase | reservation</td><td>purchase</td></tr>
+            <tr><td>title</td><td>商品名称</td><td>string</td><td>-</td><td>怪物猎人：荒野-凌越</td></tr>
+            <tr><td>imageSrc</td><td>商品封面地址</td><td>string</td><td>-</td><td>资源库怪物猎人封面</td></tr>
+            <tr><td>platforms</td><td>左上角平台图标类名列表，支持配置多个平台</td><td>string[]</td><td>图标库类名</td><td>Steam 面性图标</td></tr>
+            <tr><td>cornerState</td><td>右上角状态，可展示心愿单按钮或已入库标识</td><td>string</td><td>wishlist | owned</td><td>wishlist</td></tr>
+            <tr><td>ownedText</td><td>已入库状态文案</td><td>string</td><td>-</td><td>已入库</td></tr>
+            <tr><td>wishlisted</td><td>初始是否已加入心愿单</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>meta</td><td>商品标签或上线时间</td><td>string</td><td>-</td><td>根据类型生成</td></tr>
+            <tr><td>currentPrice</td><td>当前售价</td><td>string</td><td>-</td><td>¥90</td></tr>
+            <tr><td>originalPrice</td><td>原价</td><td>string</td><td>-</td><td>¥168</td></tr>
+            <tr><td>discount</td><td>折扣信息</td><td>string</td><td>-</td><td>-30%</td></tr>
+            <tr><td>onWishlistChange</td><td>心愿单状态变化回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>onActionClick</td><td>购买或预约按钮回调</td><td>function</td><td>-</td><td>null</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20261028-accelerator-library"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/button.js?v=20261114-accelerator-state-sync"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/scrollbar.js?v=20261102-steam-friends-modal-2"></script>
+  <script src="../basic%20components/tooltips.js?v=20261030-tooltip-beak-align"></script>
+  <script src="../basic%20components/message.js?v=20261029-accelerator-code-preview"></script>
+  <script src="../basic%20components/code-preview.js?v=20261029-accelerator-code-preview"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('accelerator-b-nav-card');
+
+      var demo = document.getElementById('accelerator-card-demo');
+      demo.appendChild(createAcceleratorWishListCard());
+      demo.appendChild(createAcceleratorWishListCard({
+        description: '过去一周游玩时长：8.2h',
+        coverSize: 'large',
+        platforms: ['steam'],
+        rightType: 'data',
+        dataValue: 36.7,
+        dataUnit: 'h',
+        dataLabel: '总时长'
+      }));
+      demo.appendChild(createAcceleratorWishListCard({
+        variant: 'game-profile',
+        gameTitle: '怪物猎人：荒野-凌越',
+        description: 'Monster Hunter: Wilds - Beyond',
+        imageSrc: '../image/Game Store/game-monster-hunter.png',
+        rank: 1,
+        platforms: ['steam', 'wg'],
+        rightType: 'data',
+        dataValue: 58.7,
+        dataUnit: 'h',
+        dataLabel: '游戏时长',
+        dataRanks: [
+          { label: '全球排名', value: 523 },
+          { label: '全国排名', value: 128 },
+          { label: '湖北省排名', value: 24 },
+          { label: '武汉市排名', value: 8 }
+        ]
+      }));
+      document.getElementById('accelerator-wishlist-card-preview').dataset.codeJs = [
+        "const card = createAcceleratorWishListCard({",
+        "  variant: 'game-profile',",
+        "  gameTitle: '怪物猎人：荒野-凌越',",
+        "  description: 'Monster Hunter: Wilds - Beyond',",
+        "  imageSrc: '../image/Game Store/game-monster-hunter.png',",
+        "  rank: 1,",
+        "  platforms: ['steam', 'wg'],",
+        "  rightType: 'data',",
+        "  dataValue: 58.7,",
+        "  dataUnit: 'h',",
+        "  dataLabel: '游戏时长',",
+        "  dataRanks: [",
+        "    { label: '全球排名', value: 523 },",
+        "    { label: '全国排名', value: 128 },",
+        "    { label: '湖北省排名', value: 24 },",
+        "    { label: '武汉市排名', value: 8 }",
+        "  ]",
+        "});",
+        "document.getElementById('container').appendChild(card);"
+      ].join('\n');
+
+      var achievementDemo = document.getElementById('accelerator-achievement-card-demo');
+      achievementDemo.appendChild(createAcceleratorAchievementCard());
+      document.getElementById('accelerator-achievement-card-preview').dataset.codeJs = [
+        "const achievementCard = createAcceleratorAchievementCard({",
+        "  completedCount: 14,",
+        "  totalCount: 37,",
+        "  highlightedCount: 6",
+        "});",
+        "document.getElementById('container').appendChild(achievementCard);"
+      ].join('\n');
+
+      var steamInformationDemo = document.getElementById('accelerator-steam-information-card-demo');
+      steamInformationDemo.appendChild(createAcceleratorSteamInformationCard());
+      steamInformationDemo.appendChild(createAcceleratorSteamInformationCard({ state: 'not-bound' }));
+      document.getElementById('accelerator-steam-information-card-preview').dataset.codeJs = [
+        "const boundCard = createAcceleratorSteamInformationCard({",
+        "  state: 'bound'",
+        "});",
+        "const unboundCard = createAcceleratorSteamInformationCard({",
+        "  state: 'not-bound'",
+        "});",
+        "const container = document.getElementById('container');",
+        "container.appendChild(boundCard);",
+        "container.appendChild(unboundCard);"
+      ].join('\n');
+
+      var userDataDemo = document.getElementById('accelerator-user-data-card-demo');
+      userDataDemo.appendChild(createAcceleratorUserDataCard({
+        tooltipContent: '当前 Steam 账号在全部游戏中的累计游玩时长'
+      }));
+      document.getElementById('accelerator-user-data-card-preview').dataset.codeJs = [
+        "const userDataCard = createAcceleratorUserDataCard({",
+        "  text: '总游戏时长',",
+        "  value: 606,",
+        "  description: 'h',",
+        "  rank: 1906,",
+        "  tooltipContent: '当前 Steam 账号在全部游戏中的累计游玩时长',",
+        "  rankHref: 'Ranking.html?type=playtime',",
+        "  onClick: () => { window.location.href = 'AssetDetail.html?type=playtime'; }",
+        "});",
+        "document.getElementById('container').appendChild(userDataCard);"
+      ].join('\n');
+
+      var productDemo = document.getElementById('accelerator-product-card-demo');
+      productDemo.appendChild(createAcceleratorProductCard({ type: 'purchase', cornerState: 'owned' }));
+      productDemo.appendChild(createAcceleratorProductCard({ type: 'reservation' }));
+      document.getElementById('accelerator-product-card-preview').dataset.codeJs = [
+        "const purchaseCard = createAcceleratorProductCard({ type: 'purchase', cornerState: 'owned' });",
+        "const reservationCard = createAcceleratorProductCard({ type: 'reservation' });",
+        "document.getElementById('container').append(purchaseCard, reservationCard);"
+      ].join('\n');
+    });
+  </script>
+</body>
+</html>

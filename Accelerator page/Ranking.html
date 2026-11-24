@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面 - Ranking 排行榜</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261029-accelerator-ranking-page">
+</head>
+<body class="accelerator-ranking-page">
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-accelerator-ranking-page&amp;library=accelerator-page" title="加速器页面顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-p-nav.html?v=20261029-my-games" title="加速器页面导航" frameborder="0"></iframe>
+
+  <main class="accelerator-ranking-page-shell">
+    <section class="section">
+      <span class="breadcrumb-part">加速器页面</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">排行榜</span>
+      <h1 class="section-title">Ranking 排行榜</h1>
+      <p class="description">展示四类账号数据榜单与当前用户排名。</p>
+
+      <div class="accelerator-ranking-page-stage" id="accelerator-ranking-page-stage" data-code-preview="true">
+        <div class="accelerator-ranking-page-frame" aria-label="加速器排行榜页面">
+          <header class="accelerator-ranking-page-frame__header" id="accelerator-ranking-page-header"></header>
+          <div class="accelerator-ranking-page-frame__body">
+            <aside class="accelerator-ranking-page-frame__sidebar" id="accelerator-ranking-page-sidebar" aria-label="加速器侧边导航"></aside>
+            <div class="accelerator-ranking-page-frame__content" role="main">
+              <div class="accelerator-ranking-page-content">
+                <div class="accelerator-ranking-page-heading">
+                  <h2 class="accelerator-ranking-page-title">排行榜</h2>
+                  <p class="accelerator-ranking-page-description">数据每60分钟更新一次</p>
+                </div>
+                <div class="accelerator-ranking-page-grid" id="accelerator-ranking-page-grid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261123-history-back"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20261103-accelerator-header-duration"></script>
+  <script src="../basic%20components/message.js?v=20261029-accelerator-ranking-page"></script>
+  <script src="../basic%20components/code-preview.js?v=20261029-accelerator-ranking-page"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/input.js?v=20261114-accelerator-search-sync"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/tabs.js?v=20261029-accelerator-home"></script>
+  <script src="../basic%20components/empty.js?v=20260610-empty-type-common-default"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/scrollbar.js?v=20261029-accelerator-ranking-page"></script>
+  <script src="../Accelerator%20business%20components/header.js?v=20261123-global-interactions"></script>
+  <script src="../Accelerator%20business%20components/side-navigation.js?v=20261123-global-game-navigation"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261119-search-dialog-pages"></script>
+  <script src="../Accelerator%20business%20components/game-search.js?v=20261120-search-modal-header-shine"></script>
+  <script src="../Accelerator%20business%20components/ranking.js?v=20261119-din-balanced"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Checkbox & Radio 多选&单选</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260512">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">数据输入</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">多选/单选</span>
+      <h1 class="section-title">Checkbox & Radio 多选&单选</h1>
+      <p class="description">Checkbox 用于多选，当前页只展示默认未选中态和禁用态，交互示例保留默认态切换。</p>
+
+      <div class="checkbox-radio-content">
+        <div class="checkbox-radio-section">
+          <h2 class="checkbox-radio-section-title">Checkbox</h2>
+          <p class="checkbox-radio-section-desc">只展示默认未选中态和禁用态，默认项保留交互。</p>
+          <div class="checkbox-radio-page-demo checkbox-radio-page-with-border">
+            <div class="checkbox-radio-demo-row" id="checkbox-demo"></div>
+          </div>
+          <p class="checkbox-radio-section-desc">半选交互示例展示全选、多选与半选之间的联动关系。</p>
+          <div class="checkbox-radio-page-demo checkbox-radio-page-with-border">
+            <div class="checkbox-radio-half-demo" id="checkbox-half-demo"></div>
+          </div>
+        </div>
+
+        <div class="checkbox-radio-section">
+          <h2 class="checkbox-radio-section-title">Radio</h2>
+          <p class="checkbox-radio-section-desc">交互示例展示一组单选项的默认、选中与禁用状态。</p>
+          <div class="checkbox-radio-page-demo checkbox-radio-page-with-border">
+            <div class="checkbox-radio-demo-row" id="radio-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="checkbox-radio-api-section">
+        <h2 class="checkbox-radio-api-title">API 参考</h2>
+        <table class="checkbox-radio-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>text</td><td>显示文案</td><td>string</td><td>-</td><td>'Checkbox' / 'Radio'</td></tr>
+            <tr><td>checked</td><td>是否选中</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>half</td><td>Checkbox 半选状态</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>disabled</td><td>是否禁用</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>hover</td><td>是否展示 hover 样式</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>showLabel</td><td>是否展示文本，设为 false 时仅展示多选框或单选框本体</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>onChange</td><td>状态变化回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/checkbox.js?v=20260522"></script>
+  <script src="../basic%20components/radio.js?v=20260522"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-checkbox-radio');
+      injectCheckboxStyles();
+      injectRadioStyles();
+
+      const checkboxDemo = document.getElementById('checkbox-demo');
+      const checkboxHalfDemo = document.getElementById('checkbox-half-demo');
+      const radioDemo = document.getElementById('radio-demo');
+
+      const checkboxStateGroup = document.createElement('div');
+      checkboxStateGroup.className = 'checkbox-radio-state-group';
+      checkboxStateGroup.appendChild(createCheckbox({ text: 'Checkbox', showLabel: true, interactive: true }));
+      checkboxStateGroup.appendChild(createCheckbox({ text: 'Checkbox', showLabel: true, disabled: true }));
+      checkboxStateGroup.appendChild(createCheckbox({ text: 'Checkbox', showLabel: true, disabled: true, checked: true }));
+      checkboxDemo.appendChild(checkboxStateGroup);
+
+      const checkboxHalfState = {
+        options: [true, true, false]
+      };
+
+      function renderCheckboxHalfDemo() {
+        checkboxHalfDemo.innerHTML = '';
+
+        const checkedCount = checkboxHalfState.options.filter(Boolean).length;
+        const allChecked = checkedCount === checkboxHalfState.options.length;
+        const isHalf = checkedCount > 0 && !allChecked;
+
+        const checkboxHalfTop = document.createElement('div');
+        checkboxHalfTop.className = 'checkbox-radio-half-demo-top';
+        checkboxHalfTop.appendChild(createCheckbox({
+          text: 'Check All',
+          showLabel: true,
+          checked: allChecked,
+          half: isHalf,
+          interactive: true,
+          onChange: function() {
+            const nextValue = !allChecked;
+            checkboxHalfState.options = checkboxHalfState.options.map(function() {
+              return nextValue;
+            });
+            renderCheckboxHalfDemo();
+          }
+        }));
+
+        const checkboxHalfBottom = document.createElement('div');
+        checkboxHalfBottom.className = 'checkbox-radio-half-demo-bottom';
+
+        ['Option 1', 'Option 2', 'Option 3'].forEach(function(label, index) {
+          checkboxHalfBottom.appendChild(createCheckbox({
+            text: label,
+            showLabel: true,
+            checked: checkboxHalfState.options[index],
+            interactive: true,
+            onChange: function() {
+              checkboxHalfState.options[index] = !checkboxHalfState.options[index];
+              renderCheckboxHalfDemo();
+            }
+          }));
+        });
+
+        checkboxHalfDemo.appendChild(checkboxHalfTop);
+        checkboxHalfDemo.appendChild(checkboxHalfBottom);
+      }
+
+      renderCheckboxHalfDemo();
+
+      const radioStateGroup = document.createElement('div');
+      radioStateGroup.className = 'checkbox-radio-state-group';
+      radioStateGroup.appendChild(createRadio({ text: 'Radio', showLabel: true, interactive: true }));
+      radioStateGroup.appendChild(createRadio({ text: 'Radio', showLabel: true, disabled: true }));
+      radioStateGroup.appendChild(createRadio({ text: 'Radio', showLabel: true, disabled: true, checked: true }));
+      radioDemo.appendChild(radioStateGroup);
+    });
+  </script>
+</body>
+</html>

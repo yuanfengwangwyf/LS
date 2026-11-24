@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 业务组件库 - Data Card 资料卡</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261111-launch-update-icons">
+  <style>
+    .game-service-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .game-service-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .game-service-section-title,
+    .game-service-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .game-service-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .game-service-page-demo {
+      position: relative;
+      width: 1096px;
+      padding: var(--space48);
+      overflow: hidden;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .game-service-demo-stage {
+      position: relative;
+      width: 1000px;
+      height: 790px;
+      overflow: hidden;
+      border-radius: var(--border-radius-4r);
+      background: transparent;
+    }
+
+    .game-service-demo-stage .play-center-profile-modal {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: var(--space0);
+      background: transparent !important;
+    }
+
+    .game-service-demo-stage .play-center-profile-dialog {
+      height: 790px;
+    }
+
+    .game-service-api-section {
+      margin-top: var(--space80);
+    }
+
+    .game-service-api-title {
+      margin-bottom: var(--space24);
+      line-height: 26px;
+    }
+
+    .game-service-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .game-service-api-table th,
+    .game-service-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .game-service-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .game-service-api-table td {
+      color: var(--gray-5);
+    }
+
+    .game-service-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=business" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/b-nav.html?v=20260612-chat" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">业务组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">Data Card 资料卡</span>
+      <h1 class="section-title">Data Card 资料卡</h1>
+      <p class="description">用于展示用户资料详情与私信入口的业务组件集合，当前包含 Play Data Card 陪玩资料卡组件。</p>
+
+      <div class="game-service-content">
+        <div class="game-service-section">
+          <h2 class="game-service-section-title">Play Data Card 陪玩资料卡</h2>
+          <p class="game-service-section-desc">用于展示用户资料、TA 的服务、服务项目、游戏截图、价格和私信记录；头像背景色会吸取头像整体颜色，服务项选中态沿用游戏选择吸色逻辑。</p>
+          <div class="game-service-page-demo">
+            <div id="game-service-profile-demo" class="game-service-demo-stage"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-service-api-section">
+        <h2 class="game-service-api-title">API 参考</h2>
+        <table class="game-service-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>imageSrc</td><td>资料卡主头像，同时用于头像背景取色</td><td>string</td><td>-</td><td>../image/Accompany play/1.png</td></tr>
+            <tr><td>name</td><td>用户昵称</td><td>string</td><td>-</td><td>赛博机器联盟</td></tr>
+            <tr><td>nn</td><td>NN ID</td><td>string</td><td>-</td><td>555368</td></tr>
+            <tr><td>chatTitle</td><td>右侧私信开头标题</td><td>string</td><td>-</td><td>和你隔了几片海</td></tr>
+            <tr><td>price</td><td>底部价格数字</td><td>string</td><td>-</td><td>1.2</td></tr>
+            <tr><td>priceUnit</td><td>价格单位</td><td>string</td><td>-</td><td>元</td></tr>
+            <tr><td>description</td><td>技能介绍文案</td><td>string</td><td>-</td><td>-</td></tr>
+            <tr><td>voiceAvatars</td><td>顶部临时语音头像组</td><td>string[]</td><td>最多展示 5 个</td><td>[]</td></tr>
+            <tr><td>services</td><td>TA 的服务列表，最多四个一行；支持 icon、fallback、rank</td><td>object[]</td><td>-</td><td>[]</td></tr>
+            <tr><td>items</td><td>服务项目列表</td><td>object[]</td><td>{ name, price }</td><td>[]</td></tr>
+            <tr><td>photos</td><td>游戏截图</td><td>string[]</td><td>-</td><td>[]</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/radio.js?v=20260528-voice-panel-mode"></script>
+  <script src="../basic%20components/input.js?v=20261113-input-button-reuse"></script>
+  <script src="../basic%20components/slider.js?v=20260529-wheel"></script>
+  <script src="../basic%20components/switch.js?v=20261112-duration-details"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-indicator-resize"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../public/vendor/lottie.min.js?v=20260616"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-banner-responsive-nav"></script>
+  <script src="../NN%20business%20components/voice-panel.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/chat.js?v=20260613-chat-action-callback"></script>
+  <script src="../NN%20business%20components/message-sent.js?v=20260615-chat-input-send-callback"></script>
+  <script src="../NN%20business%20components/data-card.js?v=20261119-din-unit-shift"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('b-nav-data-card');
+      const demo = document.getElementById('game-service-profile-demo');
+      const dataCard = createDataCard();
+      demo.appendChild(dataCard);
+      dataCard.open({
+        imageSrc: '../image/Accompany%20play/1.png',
+        name: '赛博机器联盟',
+        nn: '555368',
+        chatTitle: '和你隔了几片海',
+        price: '1.2',
+        description: '是在骂我吗 听不懂 感觉像在撒娇',
+        voiceAvatars: [
+          '../image/Avatar/头像480.png',
+          '../image/Avatar/头像441.png',
+          '../image/Avatar/头像496.png',
+          '../image/Avatar/头像655.png',
+          '../image/Avatar/头像686.png'
+        ],
+        services: [
+          { name: '三角洲', accent: 'rgb(15, 141, 99)', fallback: '#29A874', rank: { lv: 6, text: '翡翠' } },
+          { name: '和平精英', accent: 'rgb(91, 31, 30)', fallback: '#4B7CFF', rank: { lv: 10, text: '王者' } },
+          { name: '无畏契约', accent: 'rgb(106, 60, 197)', fallback: '#E94A5A', rank: { lv: 6, text: '翡翠' } },
+          { name: '穿越火线', accent: 'rgb(242, 67, 81)', fallback: '#8A84E8' }
+        ],
+        items: [
+          { name: '双陪监狱', price: '0.7', accent: '#E79F4D' },
+          { name: '双陪大坝', price: '0.7', accent: '#E79F4D' },
+          { name: '单陪监狱', price: '0.7', accent: '#E79F4D' },
+          { name: '单陪大坝', price: '0.7', accent: '#E79F4D' }
+        ],
+        photos: [
+          '../image/Accompany%20play/1.png',
+          '../image/Accompany%20play/2.png',
+          '../image/Accompany%20play/3.png',
+          '../image/Accompany%20play/4.png',
+          '../image/Accompany%20play/5.png',
+          '../image/Accompany%20play/6.png',
+          '../image/Accompany%20play/7.png',
+          '../image/Accompany%20play/8.png'
+        ]
+      });
+    });
+  </script>
+</body>
+</html>

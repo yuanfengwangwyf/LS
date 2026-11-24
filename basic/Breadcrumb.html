@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Breadcrumb 面包屑</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260512">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">通用</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">面包屑</span>
+      <h1 class="section-title">Breadcrumb 面包屑</h1>
+      <p class="description">Breadcrumb 用于展示当前页面在层级结构中的位置，支持箭头、斜线分隔符和可点击上级页面。</p>
+
+      <div class="breadcrumb-content">
+        <div class="breadcrumb-section">
+          <h2 class="breadcrumb-section-title">基础样式</h2>
+          <p class="breadcrumb-section-desc">提供箭头与斜线两种分隔方式；末级为当前页面，不参与点击。</p>
+          <div class="breadcrumb-page-demo breadcrumb-page-with-border">
+            <div class="breadcrumb-demo-column" id="breadcrumb-basic"></div>
+          </div>
+        </div>
+
+        <div class="breadcrumb-section">
+          <h2 class="breadcrumb-section-title">图标配置</h2>
+          <p class="breadcrumb-section-desc">单个面包屑项可配置左侧或右侧 16px 图标，图标与文本间距为 4px。</p>
+          <div class="breadcrumb-page-demo breadcrumb-page-with-border">
+            <div class="breadcrumb-demo-column" id="breadcrumb-icons"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="breadcrumb-api-section">
+        <h2 class="breadcrumb-api-title">API 参考</h2>
+        <table class="breadcrumb-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>items</td><td>面包屑项目数组</td><td>array</td><td>{ label, href, current, disabled, iconBefore, iconAfter }</td><td>内置 5 项</td></tr>
+            <tr><td>separator</td><td>分隔符样式</td><td>string</td><td>'arrow' | 'slash'</td><td>'arrow'</td></tr>
+            <tr><td>label</td><td>单项文本</td><td>string</td><td>-</td><td>'上级页面'</td></tr>
+            <tr><td>href</td><td>单项链接地址，有值时渲染为 a 标签</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>current</td><td>是否为当前页面</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>disabled</td><td>是否禁用</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>iconBefore</td><td>文本前图标 class 或 HTML</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>iconAfter</td><td>文本后图标 class 或 HTML</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>onNavigate</td><td>点击上级项回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/breadcrumb.js?v=20260523b"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof setActiveNav === 'function') {
+        setActiveNav('nav-breadcrumb');
+      }
+      if (typeof injectBreadcrumbStyles !== 'function' || typeof createBreadcrumb !== 'function') return;
+      injectBreadcrumbStyles();
+
+      const basic = document.getElementById('breadcrumb-basic');
+      basic.innerHTML = '';
+      basic.appendChild(createBreadcrumb({
+        separator: 'arrow'
+      }));
+      basic.appendChild(createBreadcrumb({
+        separator: 'slash'
+      }));
+
+      const icons = document.getElementById('breadcrumb-icons');
+      icons.innerHTML = '';
+      icons.appendChild(createBreadcrumb({
+        items: [
+          { label: '首页', iconBefore: 'nicon-a-AllGames-Linequanbuyouxi-xianxing' },
+          { label: '组件库', iconAfter: 'nicon-a-Arrow-down-linejiantouxia-xianxing' },
+          { label: 'Breadcrumb', current: true }
+        ],
+        separator: 'arrow'
+      }));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Record 战绩·排行</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260606-leaderboard">
+  <style>
+    .record-standings-shell {
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .record-standings-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space32);
+    }
+
+    .record-standings-framework-demo {
+      width: 1280px;
+      min-width: 1280px;
+      height: 900px;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .record-standings-framework-demo iframe {
+      display: block;
+      width: 1280px;
+      height: 900px;
+      border: 0;
+    }
+
+    body.is-record-framework-fullscreen {
+      overflow: hidden;
+    }
+
+    body.is-record-framework-fullscreen #nav-iframe {
+      display: none;
+    }
+
+    body.is-record-framework-fullscreen .record-standings-framework-demo {
+      position: fixed;
+      inset: var(--space0);
+      z-index: 2001;
+      width: 100vw;
+      min-width: 0;
+      height: 100vh;
+      border: 0;
+      border-radius: var(--space0);
+    }
+
+    body.is-record-framework-fullscreen .record-standings-framework-demo iframe {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&library=page" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261029-nn-page-theme-first-paint" frameborder="0"></iframe>
+
+  <main class="record-standings-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">战绩·排行</span>
+      <h1 class="section-title">Record 战绩·排行</h1>
+      <p class="description">面向页面展示的战绩与排行入口，组合战绩档案和社区排行内容。</p>
+
+      <div class="record-standings-content">
+        <div class="record-standings-framework-demo">
+          <iframe src="../public/CommunityFramework.html?embed=1&mode=record-standings&refresh=20260923-community-avatar-badge-red" title="Community Framework 社区框架展示"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-record');
+
+      const frameworkDemo = document.querySelector('.record-standings-framework-demo');
+      if (!frameworkDemo) return;
+
+      const frameworkIframe = frameworkDemo.querySelector('iframe');
+
+      function syncEmbeddedFrameworkTheme(isDarkMode) {
+        if (!frameworkIframe || !frameworkIframe.contentWindow) return;
+        frameworkIframe.contentWindow.postMessage({
+          type: 'dark-mode',
+          value: isDarkMode
+        }, '*');
+      }
+
+      frameworkIframe.addEventListener('load', function() {
+        syncEmbeddedFrameworkTheme(localStorage.getItem('dark-mode') === 'true');
+      });
+
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'dark-mode') {
+          syncEmbeddedFrameworkTheme(Boolean(event.data.value));
+        }
+
+        if (event.data && event.data.type === 'record-framework-fullscreen') {
+          document.body.classList.toggle('is-record-framework-fullscreen', Boolean(event.data.value));
+        }
+      });
+
+      window.addEventListener('keydown', function(event) {
+        if (event.key !== 'Escape' || !document.body.classList.contains('is-record-framework-fullscreen')) return;
+        document.body.classList.remove('is-record-framework-fullscreen');
+        frameworkIframe.contentWindow.postMessage({
+          type: 'record-framework-fullscreen',
+          value: false
+        }, '*');
+      });
+    });
+  </script>
+</body>
+</html>

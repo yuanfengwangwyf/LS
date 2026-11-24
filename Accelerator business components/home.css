@@ -1,0 +1,52 @@
+/* Keep the collapsed banner control above the bound account card (z-index: 10). */
+.accelerator-home-store-heading {
+  justify-content: flex-start;
+  gap: var(--space12);
+}
+
+#accelerator-home-store-more {
+  margin-left: auto;
+}
+
+.accelerator-home-store-search {
+  flex: 0 0 240px;
+}
+
+.accelerator-home-store-search .nn-input-wrapper,
+.accelerator-home-store-search .nn-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.accelerator-home-store-search[hidden],
+.accelerator-home-product-grid > [hidden],
+.accelerator-home-store-search-status[hidden] {
+  display: none;
+}
+
+.accelerator-home-store-search-status {
+  margin: var(--space24) var(--space0);
+  text-align: center;
+  color: var(--gray-6);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+}
+
+#accelerator-home-carousel-restore {
+  z-index: 20;
+}
+
+.accelerator-home-store-ad__image {
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+
+.accelerator-home-store-ad:hover .accelerator-home-store-ad__image {
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accelerator-home-store-ad__image {
+    transition: none;
+  }
+}

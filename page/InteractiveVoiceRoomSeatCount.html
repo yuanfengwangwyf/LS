@@ -1,0 +1,4391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Interactive Voice Room 互动语音房</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261111-launch-update-icons">
+  <script src="../iconfont/iconfont.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 100%;
+      min-height: 100vh;
+      margin: var(--space0);
+      overflow: auto;
+      background: var(--gray-1);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+    }
+
+    body.is-interactive-voice-expanded #nav-iframe {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .interactive-voice-shell {
+      min-width: 1280px;
+      min-height: calc(100vh - 60px);
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .interactive-voice-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-width: 1280px;
+      min-height: 900px;
+    }
+
+    .interactive-voice-variant-frame {
+      display: block;
+      width: 100%;
+      min-width: 1280px;
+      height: 980px;
+      margin-top: var(--space40);
+      border: 0;
+    }
+
+    .interactive-voice-variant-frame.is-expanded {
+      position: fixed;
+      inset: var(--space0);
+      z-index: 2000;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      margin-top: var(--space0);
+      background: var(--gray-1);
+    }
+
+    .community-framework {
+      --interactive-voice-content-edge-fade-width: 120px;
+      --interactive-voice-chat-bottom-fade-height: 148px;
+      --framework-menu-width: 70px;
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+      --framework-content-left: 366px;
+      --framework-voice-height: 60px;
+      --framework-motion-duration: 520ms;
+      --framework-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      width: 1280px;
+      height: 900px;
+      min-width: 1280px;
+      min-height: 900px;
+      overflow: hidden;
+      border: 1px solid var(--gray-8);
+      background: var(--gray-1);
+      color: var(--gray-3);
+    }
+
+    .community-framework.is-menu-collapsed {
+      --framework-community-left: 12px;
+      --framework-community-width: 354px;
+    }
+
+    .community-framework.is-menu-collapsed.is-menu-hovered {
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+    }
+
+    .community-framework.is-expanded {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .community-framework__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      width: 100%;
+      height: 50px;
+    }
+
+    .community-framework__header .nn-header {
+      width: 100% !important;
+      padding-right: var(--space0);
+      border-bottom-color: var(--gray-10);
+    }
+
+    .community-framework__menu {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: 0;
+      z-index: 25;
+      width: var(--framework-menu-width);
+      overflow: visible;
+      background: var(--gray-1);
+      transform: translateX(0);
+      transition: transform var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: transform;
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu {
+      pointer-events: none;
+      transform: translateX(calc(-1 * var(--framework-menu-width)));
+    }
+
+    .community-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu {
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .community-framework__menu-hover-zone {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: 0;
+      z-index: 36;
+      display: none;
+      width: 70px;
+      background: transparent;
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu-hover-zone {
+      display: block;
+    }
+
+    .community-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-hover-zone {
+      z-index: 24;
+      width: 70px;
+    }
+
+    .community-framework__menu .nn-menu {
+      width: var(--framework-menu-width);
+      height: 100%;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .community-framework__menu .nn-menu-list {
+      transform: translateY(calc(-1 * var(--framework-menu-scroll-offset, 0px)));
+      transition: transform 120ms ease;
+      will-change: transform;
+    }
+
+    .community-framework__menu .nn-menu-list-wrapper,
+    .community-framework__menu .nn-menu-list,
+    .community-framework__menu .nn-menu-item {
+      overflow: visible;
+    }
+
+    .community-framework__menu .nn-tooltip {
+      z-index: 80;
+      pointer-events: none;
+    }
+
+    .community-framework__community {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: var(--framework-community-left);
+      z-index: 8;
+      width: var(--framework-community-width);
+      overflow: hidden;
+      background: var(--gray-1);
+      transition:
+        left var(--framework-motion-duration) var(--framework-motion-ease),
+        width var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: left, width;
+    }
+
+    .community-framework__community .nn-community-combo {
+      width: 100%;
+      min-width: 100%;
+      height: 100%;
+      max-height: none;
+      transition:
+        width var(--framework-motion-duration) var(--framework-motion-ease),
+        min-width var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .community-framework__community .nn-community-combo__scroller {
+      height: 100%;
+      min-width: 0;
+      max-height: none;
+      padding-bottom: var(--framework-voice-height);
+    }
+
+    .community-framework__content {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      bottom: 0;
+      left: var(--framework-content-left);
+      z-index: 5;
+      overflow: hidden;
+      padding: var(--space0) var(--space0) var(--space0) var(--space8);
+      background: transparent;
+      transition: left var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .community-framework__content::before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1;
+      width: var(--interactive-voice-content-edge-fade-width);
+      background: linear-gradient(90deg, var(--gray-1) 0%, var(--transparent) 100%);
+      content: "";
+      pointer-events: none;
+    }
+
+    .community-framework__voice {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 40;
+      display: flex;
+      align-items: flex-end;
+      overflow: visible;
+    }
+
+    .community-framework__voice .nn-voice-panel__top {
+      max-height: 80px;
+      opacity: 0.6;
+      overflow: visible;
+      transform: translateY(0);
+      transition:
+        max-height var(--framework-motion-duration) var(--framework-motion-ease),
+        opacity 180ms ease,
+        transform var(--framework-motion-duration) var(--framework-motion-ease),
+        margin var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .community-framework.is-voice-room-hidden .community-framework__voice .nn-voice-panel__top {
+      max-height: 0;
+      margin: calc(var(--space8) * -1) var(--space0) var(--space0);
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    .community-framework__menu-arrow {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      z-index: 23;
+      width: 28px;
+      height: 76px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(0, -50%);
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow,
+    .community-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow,
+    .community-framework.is-menu-restoring .community-framework__menu-arrow {
+      opacity: 1;
+    }
+
+    .community-framework__menu-arrow-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: auto;
+      height: 76px;
+      object-fit: contain;
+      transform-origin: left center;
+      opacity: 0;
+      transform: translateX(-30px);
+      will-change: transform, opacity;
+    }
+
+    .community-framework__menu-arrow-img--light-1 {
+      width: 24px;
+    }
+
+    .community-framework__menu-arrow-img--light-2 {
+      width: 22px;
+    }
+
+    .community-framework__menu-arrow-img--dark {
+      display: none;
+    }
+
+    body.dark-mode .community-framework__menu-arrow-img--light {
+      display: none;
+    }
+
+    body.dark-mode .community-framework__menu-arrow-img--dark {
+      display: block;
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1 {
+      animation: framework-menu-arrow-light-1-first 3000ms linear both;
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2 {
+      animation: framework-menu-arrow-light-2-first 3000ms linear both;
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1-repeat {
+      animation: framework-menu-arrow-light-1-repeat 3000ms linear both;
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2-repeat {
+      animation: framework-menu-arrow-light-2-repeat 3000ms linear both;
+    }
+
+    .community-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow-img,
+    .community-framework.is-menu-restoring .community-framework__menu-arrow-img {
+      animation: framework-menu-arrow-light-exit 280ms cubic-bezier(0.4, 0, 1, 1) both;
+    }
+
+    .interactive-voice-content {
+      position: relative;
+      z-index: 2;
+      isolation: isolate;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .interactive-voice-tooltip-layer {
+      position: absolute;
+      inset: var(--space0);
+      z-index: 3000;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .interactive-voice-tooltip-layer .nn-tooltip.nn-tooltip-top,
+    .interactive-voice-tooltip-layer .nn-tooltip.nn-tooltip-bottom {
+      position: absolute;
+      top: auto;
+      right: auto;
+      bottom: auto;
+      left: auto;
+      display: none;
+      gap: var(--space8);
+      margin: var(--space0);
+      transform: translateX(-50%);
+      pointer-events: auto;
+    }
+
+    .interactive-voice-tooltip-layer .nn-tooltip.is-visible {
+      display: inline-flex;
+      animation: nn-tooltip-appear 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .interactive-voice-tooltip-layer .interactive-voice-wealth-title-tooltip.nn-tooltip {
+      width: 320px;
+      white-space: normal;
+    }
+
+    .interactive-voice-tooltip-layer .interactive-voice-wealth-title-tooltip .nn-tooltip-text {
+      flex-shrink: 1;
+      overflow-wrap: break-word;
+      white-space: normal;
+    }
+
+    .interactive-voice-tooltip-layer .interactive-voice-wealth-title-tooltip.nn-tooltip-bottom .nn-tooltip-beak {
+      left: var(--wealth-title-tooltip-beak-left, 50%);
+    }
+
+    .interactive-voice-wealth-modal-layer {
+      position: absolute;
+      inset: var(--space0);
+      z-index: 120;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: var(--mask);
+    }
+
+    .interactive-voice-wealth-modal-layer.is-open {
+      display: flex;
+    }
+
+    .interactive-voice-gift-layer {
+      position: absolute;
+      right: var(--space0);
+      bottom: var(--space0);
+      left: var(--framework-content-left);
+      z-index: 120;
+      height: 144px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .interactive-voice-gift-layer.is-open {
+      pointer-events: auto;
+    }
+
+    .interactive-voice-gift-drawer {
+      position: absolute;
+      right: var(--space0);
+      bottom: var(--space0);
+      left: var(--space0);
+      display: flex;
+      align-items: flex-end;
+      width: auto;
+      height: 144px;
+      padding: var(--space0) var(--space12);
+      border-top: 1px solid var(--gray-8);
+      background: var(--gray-1);
+      clip-path: inset(-260px 0 0 100%);
+      opacity: 0;
+      will-change: clip-path, opacity;
+      transition:
+        clip-path var(--framework-motion-duration) var(--framework-motion-ease),
+        opacity var(--framework-motion-duration) var(--framework-motion-ease);
+      box-sizing: border-box;
+    }
+
+    .interactive-voice-gift-layer.is-open .interactive-voice-gift-drawer {
+      clip-path: inset(-260px 0 0 0);
+      opacity: 1;
+    }
+
+    .interactive-voice-gift-drawer .nn-gift {
+      width: 100%;
+      max-width: none;
+      height: 128px;
+      background: transparent;
+    }
+
+    .interactive-voice-gift-drawer .nn-gift__main {
+      justify-content: flex-start;
+    }
+
+    .interactive-voice-wealth-dialog.nn-toast {
+      width: 800px;
+      max-height: 796px;
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+
+    .interactive-voice-wealth-dialog .nn-toast__content {
+      color: var(--gray-3);
+    }
+
+    .interactive-voice-wealth-dialog .nn-toast__title-row {
+      gap: var(--space4);
+    }
+
+    .interactive-voice-wealth-dialog.is-wealth-scrollable {
+      overflow-y: auto;
+    }
+
+    .interactive-voice-wealth-dialog:not(.is-wealth-scrollable) > .nn-scrollbar {
+      display: none;
+    }
+
+    .interactive-voice-wealth-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space24);
+      width: 100%;
+      min-width: 0;
+    }
+
+    .interactive-voice-wealth-progress {
+      display: flex;
+      align-items: center;
+      gap: var(--space12);
+      min-height: 98px;
+      padding: var(--space16);
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-4r);
+      background: transparent;
+    }
+
+    .interactive-voice-wealth-progress__main {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: var(--space12);
+      min-width: 0;
+    }
+
+    .interactive-voice-wealth-progress__level {
+      display: flex;
+      align-items: center;
+      gap: var(--space12);
+      color: var(--gray-4);
+      font-size: var(--font-size-header-1);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-header-1);
+    }
+
+    .interactive-voice-wealth-progress__badge {
+      width: auto;
+      height: 30px;
+      object-fit: contain;
+    }
+
+    .interactive-voice-wealth-progress__row {
+      display: flex;
+      align-items: center;
+      gap: var(--space8);
+      min-width: 0;
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .interactive-voice-wealth-progress__track {
+      position: relative;
+      width: 225px;
+      height: 8px;
+      flex: 0 0 auto;
+      background: var(--gray-8);
+    }
+
+    .interactive-voice-wealth-progress__bar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 24px;
+      background: var(--gray-3);
+    }
+
+    .interactive-voice-wealth-distance {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space2);
+      margin-left: var(--space16);
+      min-width: 0;
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .interactive-voice-wealth-distance__value {
+      color: var(--gray-3);
+    }
+
+    .interactive-voice-wealth-help {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--icon-size-x6);
+      height: var(--icon-size-x6);
+      color: var(--gray-6);
+      font-size: var(--icon-size-x6);
+      line-height: var(--icon-size-x6);
+    }
+
+    .interactive-voice-wealth-title-help {
+      width: var(--icon-size-x8);
+      height: var(--icon-size-x8);
+      flex: 0 0 var(--icon-size-x8);
+      color: var(--gray-6);
+      font-size: var(--icon-size-x8);
+      line-height: var(--icon-size-x8);
+      cursor: help;
+    }
+
+    .interactive-voice-wealth-title-help .nnicon {
+      color: currentColor;
+      font-size: inherit;
+      line-height: inherit;
+    }
+
+    .interactive-voice-wealth-tabs.nn-tabs-primary {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      column-gap: var(--space40);
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .interactive-voice-wealth-tabs.nn-tabs-primary .nn-tab {
+      flex: 0 0 auto;
+      height: auto;
+      padding: var(--space0) var(--space0) var(--space16);
+    }
+
+    .interactive-voice-wealth-tabs.nn-tabs-primary .nn-tab-indicator {
+      height: 2px;
+    }
+
+    .interactive-voice-wealth-upgrade.nn-btn {
+      width: 120px;
+    }
+
+    .interactive-voice-wealth-privilege {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      align-items: stretch;
+      gap: var(--space40);
+      max-width: 100%;
+      width: 100%;
+      min-width: 0;
+      padding: var(--space24) var(--space28);
+      border: 1px solid color-mix(in srgb, var(--wealth-card-bg-start) 18%, transparent);
+      border-radius: var(--border-radius-4r);
+      background: linear-gradient(90deg, rgb(from var(--wealth-card-bg-start) r g b / 0.16) 0%, rgb(from var(--wealth-card-bg-start) r g b / 0) 100%);
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .interactive-voice-wealth-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space16);
+      min-height: 270px;
+      padding: var(--space0);
+      border: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .interactive-voice-wealth-card__halo {
+      position: absolute;
+      top: var(--space20);
+      left: 50%;
+      z-index: 0;
+      width: 208px;
+      height: 219px;
+      color: var(--wealth-card-bg-start);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .interactive-voice-wealth-card__icon {
+      position: relative;
+      z-index: 1;
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      transform: translateY(10px);
+    }
+
+    .interactive-voice-wealth-card__text {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space12);
+      width: 100%;
+      text-align: center;
+    }
+
+    .interactive-voice-wealth-card__range {
+      color: var(--gray-3);
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .interactive-voice-wealth-card__name {
+      color: var(--gray-3);
+      font-size: var(--font-size-header-3);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-header-3);
+    }
+
+    .interactive-voice-wealth-benefits {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      justify-content: center;
+      gap: var(--space24);
+      min-width: 0;
+    }
+
+    .interactive-voice-wealth-benefit-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      min-width: 0;
+    }
+
+    .interactive-voice-wealth-benefit-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .interactive-voice-wealth-benefit-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: center;
+      gap: var(--space20);
+      min-width: 0;
+    }
+
+    .interactive-voice-wealth-benefit {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+      gap: var(--space8);
+      color: var(--gray-3);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-subtitle);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .interactive-voice-wealth-benefit__media {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-10);
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .interactive-voice-wealth-benefit__media::before {
+      display: none;
+    }
+
+    .interactive-voice-wealth-benefit__lock {
+      position: absolute;
+      right: var(--space4);
+      bottom: var(--space4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--icon-size-x12);
+      height: var(--icon-size-x12);
+      border-radius: var(--border-radius-20r);
+      background: var(--gray-8);
+      color: var(--gray-6);
+      font-size: var(--icon-size-x8);
+      line-height: var(--icon-size-x8);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .interactive-voice-wealth-benefit__lock .nnicon {
+      font-size: inherit;
+      line-height: inherit;
+    }
+
+    .interactive-voice-wealth-benefit img {
+      position: relative;
+      z-index: 1;
+      width: var(--wealth-benefit-image-size, 66px);
+      height: var(--wealth-benefit-image-size, 66px);
+      object-fit: contain;
+    }
+
+    .interactive-voice-wealth-benefit > div:last-child {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .interactive-voice-wealth-benefit.is-locked .interactive-voice-wealth-benefit__media,
+    .interactive-voice-wealth-benefit.is-locked > div:last-child {
+      opacity: 0.6;
+    }
+
+    .interactive-voice-wealth-settings {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      width: 100%;
+    }
+
+    .interactive-voice-wealth-setting {
+      display: flex;
+      align-items: center;
+      gap: var(--space32);
+      width: 100%;
+    }
+
+    .interactive-voice-wealth-setting__copy {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: var(--space8);
+      min-width: 0;
+    }
+
+    .interactive-voice-wealth-setting__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .interactive-voice-wealth-setting__title {
+      color: var(--gray-3);
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .interactive-voice-wealth-setting__desc {
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .interactive-voice-bg {
+      --interactive-voice-bg-chat-blur: 8px;
+      --interactive-voice-bg-chat-blur-width: 72%;
+      --interactive-voice-bg-chat-blur-height: 58%;
+      position: absolute;
+      inset: var(--space0);
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .interactive-voice-bg__image {
+      position: absolute;
+      inset: var(--space0);
+      width: 100%;
+      height: 100%;
+      opacity: 0.6;
+      object-fit: cover;
+    }
+
+    .interactive-voice-bg__image--dark {
+      display: none;
+    }
+
+    body.dark-mode .interactive-voice-bg__image--light {
+      display: none;
+    }
+
+    body.dark-mode .interactive-voice-bg__image--dark {
+      display: block;
+    }
+
+    .interactive-voice-bg::after {
+      position: absolute;
+      left: var(--space0);
+      bottom: var(--space0);
+      z-index: 1;
+      width: var(--interactive-voice-bg-chat-blur-width);
+      height: var(--interactive-voice-bg-chat-blur-height);
+      background: color-mix(in srgb, var(--gray-1) 18%, transparent);
+      backdrop-filter: blur(var(--interactive-voice-bg-chat-blur));
+      -webkit-backdrop-filter: blur(var(--interactive-voice-bg-chat-blur));
+      content: "";
+      mask-image:
+        linear-gradient(90deg, black 0%, black 72%, transparent 100%),
+        linear-gradient(0deg, black 0%, black 68%, transparent 100%);
+      mask-composite: intersect;
+      -webkit-mask-image:
+        linear-gradient(90deg, black 0%, black 72%, transparent 100%),
+        linear-gradient(0deg, black 0%, black 68%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      pointer-events: none;
+    }
+
+    .interactive-voice-room {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 0 0 auto;
+      overflow: hidden;
+      padding: var(--space8) var(--space16) var(--space12);
+      background: transparent;
+    }
+
+    .interactive-voice-room__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space16);
+      width: 100%;
+      min-width: 0;
+      height: 44px;
+    }
+
+    .interactive-voice-room__title {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space8);
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .interactive-voice-room__no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 20px;
+      padding: var(--space0) var(--space4);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-8);
+      color: var(--gray-5);
+      font-size: var(--font-size-label);
+      line-height: var(--line-height-label);
+    }
+
+    .interactive-voice-room__name {
+      overflow: hidden;
+      color: var(--gray-4);
+      font-size: var(--font-size-header-4);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-header-4);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .interactive-voice-room__actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space8);
+      flex: 0 0 auto;
+    }
+
+    .interactive-voice-room__actions .nn-header__notice {
+      width: auto;
+      max-width: 195px;
+    }
+
+    .interactive-voice-room__online {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--space4);
+      flex: 0 0 auto;
+      margin-left: auto;
+      color: var(--gray-6);
+      font-size: var(--font-size-label);
+      line-height: var(--line-height-label);
+      cursor: pointer;
+    }
+
+    .interactive-voice-room__online:focus {
+      outline: none;
+    }
+
+    .interactive-voice-online-strip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space4);
+      flex: 0 0 auto;
+    }
+
+    .interactive-voice-online-strip__item {
+      display: inline-flex;
+      box-sizing: border-box;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      overflow: hidden;
+      border: 1px solid var(--interactive-voice-online-avatar-border);
+      border-radius: var(--border-radius-20r);
+    }
+
+    .interactive-voice-online-strip__item:nth-child(1) {
+      --interactive-voice-online-avatar-border: #f5df75;
+    }
+
+    .interactive-voice-online-strip__item:nth-child(2) {
+      --interactive-voice-online-avatar-border: #b7cadf;
+    }
+
+    .interactive-voice-online-strip__item:nth-child(3) {
+      --interactive-voice-online-avatar-border: #f1d2ac;
+    }
+
+    .interactive-voice-online-strip .nn-avatar,
+    .interactive-voice-online-strip .nn-avatar > img {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: var(--border-radius-20r) !important;
+    }
+
+    .interactive-voice-room__online > span:last-child {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 24px;
+      padding: var(--space0) var(--space8);
+      border-radius: var(--border-radius-20r);
+      background: var(--gray-8);
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+      transition: color var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .interactive-voice-room__online:hover > span:last-child,
+    .interactive-voice-room__online.is-open > span:last-child,
+    .interactive-voice-room__online > span:last-child:hover {
+      color: var(--gray-3);
+    }
+
+    .interactive-voice-online-popover {
+      position: absolute;
+      top: 56px;
+      right: var(--space16);
+      bottom: 224px;
+      z-index: 85;
+      display: flex;
+      flex-direction: column;
+      width: 360px;
+      overflow: hidden;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-8r);
+      background: var(--gray-1);
+      color: var(--gray-3);
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateX(calc(100% + var(--space16)));
+      transition:
+        transform var(--framework-motion-duration) var(--framework-motion-ease),
+        opacity var(--framework-motion-duration) var(--framework-motion-ease);
+      pointer-events: none;
+    }
+
+    .interactive-voice-online-popover.is-open {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .interactive-voice-online-popover__tabs {
+      display: flex;
+      align-items: center;
+      gap: var(--space16);
+      flex: 0 0 auto;
+      padding: var(--space24) var(--space24) var(--space0);
+    }
+
+    .interactive-voice-online-popover__close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--icon-size-x10);
+      height: var(--icon-size-x10);
+      flex: 0 0 var(--icon-size-x10);
+      padding: var(--space0);
+      border: none;
+      background: transparent;
+      color: var(--gray-5);
+      font-size: var(--icon-size-x10);
+      line-height: 1;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: color var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .interactive-voice-online-popover__close:hover {
+      color: var(--gray-3);
+    }
+
+    .interactive-voice-online-popover__close-icon {
+      width: var(--icon-size-x10);
+      height: var(--icon-size-x10);
+      fill: currentColor;
+    }
+
+    .interactive-voice-online-popover__tabs .nn-tabs-primary {
+      width: 100%;
+      justify-content: space-between;
+      column-gap: var(--space0);
+    }
+
+    .interactive-voice-online-popover__tabs .nn-tabs-primary .nn-tab {
+      flex: 0 0 auto;
+      padding: var(--space10) var(--space0);
+    }
+
+    .interactive-voice-online-popover__body {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      min-height: 0;
+      padding: var(--space16) var(--space24) var(--space20);
+    }
+
+    .interactive-voice-online-popover__summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space12);
+      margin-bottom: var(--space12);
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .interactive-voice-online-popover__search {
+      flex: 0 0 auto;
+      margin-bottom: var(--space12);
+    }
+
+    .interactive-voice-online-popover__search-input.nn-input-wrapper {
+      display: flex;
+      position: relative;
+      width: 100%;
+    }
+
+    .interactive-voice-online-popover__search-input.nn-input-wrapper .nn-input {
+      box-sizing: border-box;
+      width: 100%;
+      padding-right: var(--space40);
+    }
+
+    .interactive-voice-online-popover__search-input.nn-input-wrapper .nn-input-icon {
+      right: var(--space12);
+    }
+
+    .interactive-voice-online-popover__list {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: var(--space4);
+      min-height: 0;
+      margin-right: calc(var(--space24) * -1);
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding-right: var(--space0);
+      scrollbar-color: var(--gray-8) var(--transparent);
+      scrollbar-width: thin;
+    }
+
+    .interactive-voice-online-popover__list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .interactive-voice-online-popover__list::-webkit-scrollbar-track {
+      background: var(--transparent);
+    }
+
+    .interactive-voice-online-popover__list::-webkit-scrollbar-thumb {
+      border-radius: var(--border-radius-20r);
+      background: var(--gray-8);
+    }
+
+    .interactive-voice-online-popover__row {
+      display: flex;
+      align-items: center;
+      gap: var(--space12);
+      min-width: 0;
+      position: relative;
+      width: 100%;
+      height: 52px;
+      flex: 0 0 52px;
+      padding: var(--space6) var(--space32) var(--space6) var(--space8);
+      color: var(--gray-4);
+      box-sizing: border-box;
+    }
+
+    .interactive-voice-online-popover__row::before {
+      content: "";
+      position: absolute;
+      left: var(--space0);
+      top: var(--space0);
+      bottom: var(--space0);
+      z-index: 0;
+      width: var(--interactive-voice-audience-hover-width, 100%);
+      border-radius: var(--border-radius-2r);
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .interactive-voice-online-popover__row:hover::before {
+      background: var(--gray-10);
+    }
+
+    .interactive-voice-online-popover__row > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .interactive-voice-online-popover__copy {
+      display: flex;
+      align-items: center;
+      gap: var(--space4);
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .interactive-voice-online-popover__role {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--icon-size-x10);
+      height: var(--icon-size-x10);
+      flex: 0 0 var(--icon-size-x10);
+      border-radius: var(--border-radius-20r);
+      background: var(--Esports-Blue);
+      color: var(--Neutral-0);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+    }
+
+    .interactive-voice-online-popover__role.is-host {
+      background: var(--Orange);
+    }
+
+    .interactive-voice-online-popover__wealth {
+      display: block;
+      width: auto;
+      height: var(--icon-size-x10);
+      flex: 0 0 auto;
+      object-fit: contain;
+    }
+
+    .interactive-voice-online-popover__name {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--gray-3);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .interactive-voice-online-popover__value {
+      flex: 0 0 auto;
+      color: var(--gray-4);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+      white-space: nowrap;
+    }
+
+    .interactive-voice-online-popover__empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 120px;
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .interactive-voice-online-popover__rank-tabs {
+      display: flex;
+      justify-content: center;
+      flex: 0 0 auto;
+      margin-bottom: var(--space16);
+    }
+
+    .interactive-voice-online-popover__leaderboard-slot {
+      display: flex;
+      position: relative;
+      flex: 1 1 auto;
+      flex-direction: column;
+      margin-right: calc(var(--space24) * -1);
+      min-height: 0;
+      padding-right: var(--space24);
+    }
+
+    .interactive-voice-online-popover__leaderboard.nn-leaderboard {
+      width: 100%;
+      height: 100%;
+      padding: var(--space0);
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .interactive-voice-online-popover__podium {
+      display: grid;
+      grid-template-columns: 96px 112px 96px;
+      align-items: end;
+      justify-content: center;
+      gap: var(--space6);
+      height: 192px;
+      flex: 0 0 192px;
+      width: calc(100% - var(--space24));
+      margin: var(--space0) auto var(--space16);
+      padding-right: var(--space0);
+    }
+
+    .interactive-voice-online-popover__podium-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      min-width: 0;
+      padding-top: var(--space40);
+      color: var(--gray-3);
+      isolation: isolate;
+    }
+
+    .interactive-voice-online-popover__podium-card::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: var(--space0);
+      z-index: 0;
+      width: 96px;
+      height: 154px;
+      border: 1px solid transparent;
+      border-bottom: 0;
+      border-radius: 56px 56px var(--space0) var(--space0);
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--podium-bg-color, var(--podium-color)) 18%, transparent) 0%, color-mix(in srgb, var(--podium-bg-color, var(--podium-color)) 0%, transparent) 100%) padding-box,
+        linear-gradient(180deg, color-mix(in srgb, var(--podium-border-color, var(--podium-color)) 30%, transparent) 0%, color-mix(in srgb, var(--podium-border-color, var(--podium-color)) 0%, transparent) 100%) border-box;
+      transform: translateX(-50%);
+    }
+
+    .interactive-voice-online-popover__podium-card.is-rank-1 {
+      padding-top: var(--space12);
+      transform: translateY(-22px);
+    }
+
+    .interactive-voice-online-popover__podium-card.is-rank-1::before {
+      width: 112px;
+      height: 184px;
+      border-radius: 66px 66px var(--space0) var(--space0);
+      transform: translate(-50%, 16px);
+    }
+
+    .interactive-voice-online-popover__podium-avatar {
+      position: relative;
+      display: inline-flex;
+      z-index: 1;
+      width: 56px;
+      height: 56px;
+      border: 2px solid var(--podium-avatar-color, var(--podium-color));
+      border-radius: 50%;
+    }
+
+    .interactive-voice-online-popover__podium-card.is-rank-1 .interactive-voice-online-popover__podium-avatar {
+      width: 68px;
+      height: 68px;
+    }
+
+    .interactive-voice-online-popover__podium-avatar .nn-avatar,
+    .interactive-voice-online-popover__podium-avatar img {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 50% !important;
+    }
+
+    .interactive-voice-online-popover__podium-crown {
+      position: absolute;
+      left: -2px;
+      top: -15px;
+      width: var(--icon-size-x12);
+      height: var(--icon-size-x12);
+      color: var(--podium-crown-color, var(--podium-color));
+      transform: rotate(-24deg);
+    }
+
+    .interactive-voice-online-popover__podium-card.is-rank-1 .interactive-voice-online-popover__podium-crown {
+      left: -2px;
+      top: -15px;
+      width: var(--icon-size-x14);
+      height: var(--icon-size-x14);
+    }
+
+    .interactive-voice-online-popover__podium-name {
+      position: relative;
+      z-index: 1;
+      max-width: 104px;
+      margin-top: var(--space12);
+      overflow: hidden;
+      color: var(--gray-3);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .interactive-voice-online-popover__podium-rank {
+      display: flex;
+      position: relative;
+      z-index: 1;
+      justify-content: center;
+      margin-top: var(--space6);
+    }
+
+    .interactive-voice-online-popover__podium-value {
+      position: relative;
+      z-index: 1;
+      margin-top: var(--space4);
+      color: var(--Orange);
+      font-family: var(--font-family-din);
+      font-size: var(--font-size-subtitle);
+      line-height: var(--line-height-subtitle);
+      text-align: center;
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__header {
+      display: none;
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__body {
+      gap: var(--space0);
+      min-height: 0;
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__list {
+      gap: var(--space4);
+      padding-right: var(--space0);
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__row {
+      height: 52px;
+      min-height: 52px;
+      padding: var(--space6) var(--space32) var(--space6) var(--space10);
+      border-radius: var(--border-radius-8r);
+      cursor: default;
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__row:hover {
+      background: var(--gray-10);
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__row[data-rank="1"],
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__row[data-rank="2"],
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__row[data-rank="3"] {
+      display: none;
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__self {
+      right: var(--space24);
+      min-height: 64px;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-2);
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__scrollbar.nn-scrollbar {
+      right: calc(var(--space24) * -1);
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__self::before {
+      display: none;
+    }
+
+    .interactive-voice-online-popover__leaderboard .nn-leaderboard__self-rank {
+      display: none;
+    }
+
+    .interactive-voice-room__notice {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      height: 24px;
+      padding: var(--space0) var(--space8);
+      border-radius: var(--border-radius-2r);
+      background: var(--gray-10);
+      color: var(--Esports-Blue-LD);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+      white-space: nowrap;
+    }
+
+    .interactive-voice-room__seats {
+      --interactive-voice-mic-card-height: 146px;
+      --interactive-voice-mic-image-height: 82px;
+      --interactive-voice-mic-footer-height: 58px;
+      --interactive-voice-mic-footer-gap-top: 6px;
+      --interactive-voice-mic-avatar-size: 60px;
+      --interactive-voice-mic-avatar-half-size: 30px;
+      --interactive-voice-mic-avatar-top: 13px;
+      --interactive-voice-mic-avatar-cutout-path: path("M45 0C53.2853 0 60 6.7144 60 15V45C60 45.1268 59.998 45.2532 59.9949 45.3794C58.295 44.1951 56.2288 43.5 54 43.5C48.201 43.5 43.5 48.201 43.5 54C43.5 56.2288 44.1951 58.295 45.3794 59.9949C45.2532 59.998 45.1268 60 45 60H15C6.7144 60 0 53.2853 0 45V15C0 6.7144 6.7144 0 15 0H45Z");
+      --interactive-voice-mic-frame-size: 84px;
+      --interactive-voice-mic-frame-half-size: 42px;
+      --interactive-voice-mic-frame-top: 2px;
+      --interactive-voice-mic-frame-cutout-path: path("M63 0C74.598 0 84 9.402 84 21V63C84 63.2623 83.9952 63.5233 83.9857 63.7833C81.843 62.5814 79.3716 61.8947 76.7384 61.8947C68.529 61.8947 61.8726 68.5511 61.8726 76.7605C61.8726 79.3716 62.5593 81.843 63.7612 83.9857C63.5086 83.995 63.2548 84 63 84H21C9.402 84 0 74.598 0 63V21C0 9.402 9.402 0 21 0H63Z");
+      --interactive-voice-mic-label-top: var(--interactive-voice-mic-avatar-top);
+      --interactive-voice-mic-label-left: calc(50% - var(--interactive-voice-mic-avatar-half-size) - 12px);
+      --interactive-voice-mic-label-height: 20px;
+      --interactive-voice-mic-name-font-size: var(--font-size-body);
+      --interactive-voice-mic-name-line-height: var(--line-height-body);
+      --interactive-voice-mic-corner-height: 16px;
+      --interactive-voice-mic-corner-min-width: 16px;
+      --interactive-voice-mic-corner-font-size: var(--font-size-label);
+      --interactive-voice-mic-corner-line-height: var(--line-height-label);
+      --interactive-voice-mic-user-row-height: 22px;
+      --interactive-voice-mic-score-min-height: 18px;
+      --interactive-voice-mic-score-font-size: var(--font-size-caption);
+      --interactive-voice-mic-score-line-height: var(--line-height-caption);
+      --interactive-voice-mic-score-icon-size: var(--icon-size-x6);
+      --interactive-voice-mic-avatar-mic-size: 22px;
+      --interactive-voice-mic-avatar-mic-half-size: 11px;
+      --interactive-voice-mic-avatar-mic-icon-size: var(--icon-size-x8);
+      --interactive-voice-mic-avatar-cutout-center: 54px;
+      --interactive-voice-mic-frame-cutout-center: 77px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-auto-rows: var(--interactive-voice-mic-card-height);
+      gap: var(--space16);
+      align-items: start;
+      width: 100%;
+      min-width: 0;
+      margin-top: var(--space12);
+    }
+
+    .interactive-voice-room__seats--seven {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .interactive-voice-room__seats--seven .interactive-voice-mic:nth-child(1) {
+      grid-column: 2;
+    }
+
+    .interactive-voice-room__seats--seven .interactive-voice-mic:nth-child(2) {
+      grid-column: 4;
+    }
+
+    .interactive-voice-room__seats--seven .interactive-voice-mic:nth-child(3) {
+      grid-column: 1;
+    }
+
+    .interactive-voice-mic {
+      position: relative;
+      width: 100%;
+      height: var(--interactive-voice-mic-card-height);
+      min-width: 0;
+    }
+
+    .community-framework.is-expanded .interactive-voice-room__seats {
+      --interactive-voice-mic-card-height: 178px;
+      --interactive-voice-mic-image-height: 108px;
+      --interactive-voice-mic-footer-height: 64px;
+      --interactive-voice-mic-footer-gap-top: 6px;
+      --interactive-voice-mic-avatar-size: 80px;
+      --interactive-voice-mic-avatar-half-size: 40px;
+      --interactive-voice-mic-avatar-top: 20px;
+      --interactive-voice-mic-avatar-cutout-path: path("M60 0C71.0471 0 80 8.9526 80 20V60C80 60.169 79.9973 60.3376 79.9932 60.5059C77.7267 58.9268 74.9717 58 72 58C64.268 58 58 64.268 58 72C58 74.9717 58.9268 77.7267 60.5059 79.9932C60.3376 79.9973 60.169 80 60 80H20C8.9526 80 0 71.0471 0 60V20C0 8.9526 8.9526 0 20 0H60Z");
+      --interactive-voice-mic-frame-size: 112px;
+      --interactive-voice-mic-frame-half-size: 56px;
+      --interactive-voice-mic-frame-top: 4px;
+      --interactive-voice-mic-frame-cutout-path: path("M84 0C99.464 0 112 12.536 112 28V84C112 84.3497 111.9937 84.6978 111.981 85.0444C109.124 83.4419 105.8288 82.5263 102.3179 82.5263C91.372 82.5263 82.4968 91.4014 82.4968 102.3474C82.4968 105.8288 83.4124 109.124 85.0149 111.981C84.6782 111.9934 84.3397 112 84 112H28C12.536 112 0 99.464 0 84V28C0 12.536 12.536 0 28 0H84Z");
+      --interactive-voice-mic-label-top: var(--interactive-voice-mic-avatar-top);
+      --interactive-voice-mic-label-left: calc(50% - var(--interactive-voice-mic-avatar-half-size) - 12px);
+      --interactive-voice-mic-label-height: 22px;
+      --interactive-voice-mic-name-font-size: var(--font-size-subtitle);
+      --interactive-voice-mic-name-line-height: var(--line-height-subtitle);
+      --interactive-voice-mic-corner-height: 19px;
+      --interactive-voice-mic-corner-min-width: 19px;
+      --interactive-voice-mic-corner-font-size: var(--font-size-caption);
+      --interactive-voice-mic-corner-line-height: var(--line-height-caption);
+      --interactive-voice-mic-user-row-height: 26px;
+      --interactive-voice-mic-score-min-height: 21px;
+      --interactive-voice-mic-score-font-size: var(--font-size-body);
+      --interactive-voice-mic-score-line-height: var(--line-height-body);
+      --interactive-voice-mic-score-icon-size: var(--icon-size-x7);
+      --interactive-voice-mic-avatar-mic-size: 26px;
+      --interactive-voice-mic-avatar-mic-half-size: 13px;
+      --interactive-voice-mic-avatar-mic-icon-size: var(--icon-size-x10);
+      --interactive-voice-mic-avatar-cutout-center: 72px;
+      --interactive-voice-mic-frame-cutout-center: 102px;
+      gap: var(--space20);
+      margin-top: var(--space20);
+    }
+
+    .interactive-voice-mic .nn-voice-room-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      height: var(--interactive-voice-mic-card-height);
+      border-color: transparent;
+      border-radius: var(--border-radius-8r);
+      background: transparent;
+    }
+
+    .interactive-voice-mic .nn-voice-room-card__image {
+      height: var(--interactive-voice-mic-image-height);
+      aspect-ratio: auto;
+      background: transparent;
+      overflow: visible;
+    }
+
+    .interactive-voice-mic .nn-voice-room-card__user-image {
+      top: var(--interactive-voice-mic-avatar-top);
+      left: 50%;
+      width: var(--interactive-voice-mic-avatar-size);
+      height: var(--interactive-voice-mic-avatar-size);
+      z-index: 1;
+      border-radius: var(--border-radius-16r);
+      clip-path: var(--interactive-voice-mic-avatar-cutout-path);
+      object-fit: cover;
+      transform: translateX(-50%);
+    }
+
+    .interactive-voice-mic__avatar-wings {
+      --interactive-voice-mic-wings-width: calc(var(--interactive-voice-mic-avatar-size) * 0.82);
+      --interactive-voice-mic-wings-height: calc(var(--interactive-voice-mic-avatar-size) * 1.18);
+      position: absolute;
+      top: calc(var(--interactive-voice-mic-avatar-top) + var(--interactive-voice-mic-avatar-half-size) - (var(--interactive-voice-mic-wings-height) / 2) - 16px);
+      left: calc(50% - var(--interactive-voice-mic-avatar-half-size) + 4px);
+      z-index: 0;
+      width: var(--interactive-voice-mic-wings-width);
+      height: var(--interactive-voice-mic-wings-height);
+      object-fit: contain;
+      opacity: 0.92;
+      transform: translateX(-100%);
+      pointer-events: none;
+    }
+
+    .interactive-voice-mic.has-avatar-frame .interactive-voice-mic__avatar-wings {
+      top: calc(var(--interactive-voice-mic-frame-top) + var(--interactive-voice-mic-frame-half-size) - (var(--interactive-voice-mic-wings-height) / 2) - 16px);
+      left: calc(50% - var(--interactive-voice-mic-frame-half-size) + 6px);
+    }
+
+    .interactive-voice-mic.is-boss .interactive-voice-mic__avatar-wings {
+      left: calc(50% + var(--interactive-voice-mic-avatar-half-size) - 4px);
+      transform: scaleX(-1);
+    }
+
+    .interactive-voice-mic.is-waiting .nn-voice-room-card__user-image {
+      background: var(--gray-8);
+      clip-path: none;
+      object-fit: contain;
+      padding: 6%;
+      opacity: 1;
+      box-sizing: border-box;
+    }
+
+    .interactive-voice-mic.is-boss.is-waiting .nn-voice-room-card__user-image {
+      --interactive-voice-boss-seat-bg: rgb(237 105 241 / 40%);
+      background: var(--interactive-voice-boss-seat-bg);
+    }
+
+    .interactive-voice-mic__avatar-frame {
+      position: absolute;
+      top: var(--interactive-voice-mic-frame-top);
+      left: 50%;
+      z-index: 2;
+      display: block;
+      width: var(--interactive-voice-mic-frame-size);
+      height: var(--interactive-voice-mic-frame-size);
+      object-fit: contain;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .interactive-voice-mic__avatar-frame.is-mic-cutout {
+      clip-path: var(--interactive-voice-mic-frame-cutout-path);
+    }
+
+    .interactive-voice-mic__avatar-mic {
+      position: absolute;
+      top: calc(var(--interactive-voice-mic-avatar-top) + var(--interactive-voice-mic-avatar-cutout-center) - var(--interactive-voice-mic-avatar-mic-half-size));
+      left: calc(50% - var(--interactive-voice-mic-avatar-half-size) + var(--interactive-voice-mic-avatar-cutout-center) - var(--interactive-voice-mic-avatar-mic-half-size));
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--interactive-voice-mic-avatar-mic-size);
+      height: var(--interactive-voice-mic-avatar-mic-size);
+      color: var(--gray-6);
+      pointer-events: none;
+    }
+
+    .interactive-voice-mic__avatar-mic.is-framed {
+      top: calc(var(--interactive-voice-mic-frame-top) + var(--interactive-voice-mic-frame-cutout-center) - var(--interactive-voice-mic-avatar-mic-half-size));
+      left: calc(50% - var(--interactive-voice-mic-frame-half-size) + var(--interactive-voice-mic-frame-cutout-center) - var(--interactive-voice-mic-avatar-mic-half-size));
+    }
+
+    .interactive-voice-mic__avatar-mic .nnicon {
+      font-size: var(--interactive-voice-mic-avatar-mic-icon-size);
+      line-height: var(--interactive-voice-mic-avatar-mic-icon-size);
+    }
+
+    .interactive-voice-mic .nn-voice-room-card__footer {
+      height: var(--interactive-voice-mic-footer-height);
+      flex-basis: var(--interactive-voice-mic-footer-height);
+      gap: var(--space6);
+      margin-top: var(--interactive-voice-mic-footer-gap-top);
+      padding: var(--space0) var(--space12) var(--space10);
+      background: transparent;
+    }
+
+    .interactive-voice-mic .nn-voice-room-card.is-speaking .nn-voice-room-card__footer {
+      background: transparent;
+    }
+
+    .interactive-voice-mic .nn-voice-room-card__name {
+      width: auto;
+      min-width: 0;
+      color: var(--gray-4);
+      font-size: var(--interactive-voice-mic-name-font-size);
+      line-height: var(--interactive-voice-mic-name-line-height);
+      text-align: center;
+    }
+
+    .interactive-voice-mic .nn-voice-room-card__user {
+      justify-content: center;
+      gap: var(--space4);
+      height: var(--interactive-voice-mic-user-row-height);
+    }
+
+    .interactive-voice-mic .nn-voice-room-card__user > .nn-voice-room-card__corner {
+      position: static;
+      width: auto;
+      min-width: var(--interactive-voice-mic-corner-min-width);
+      height: var(--interactive-voice-mic-corner-height);
+      flex: 0 0 auto;
+      overflow: visible;
+      border-radius: var(--border-radius-20r);
+      background: var(--gray-10);
+      color: var(--gray-6);
+      font-size: var(--interactive-voice-mic-corner-font-size);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--interactive-voice-mic-corner-line-height);
+      transform: none;
+    }
+
+    .interactive-voice-mic .nn-voice-room-card.is-speaking .nn-voice-room-card__user > .nn-voice-room-card__corner {
+      background: var(--gray-10) !important;
+      color: var(--gray-6) !important;
+    }
+
+    .interactive-voice-mic .nn-voice-room-card__status {
+      justify-content: center;
+      gap: var(--space6);
+      min-height: var(--interactive-voice-mic-score-min-height);
+    }
+
+    .interactive-voice-mic__role {
+      position: absolute;
+      top: var(--interactive-voice-mic-label-top);
+      left: var(--interactive-voice-mic-label-left);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: var(--interactive-voice-mic-label-height);
+      padding: var(--space0) var(--space6);
+      border-radius: var(--border-radius-20r);
+      background: var(--Esports-Blue);
+      color: var(--Neutral-0);
+      font-size: var(--interactive-voice-mic-corner-font-size);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--interactive-voice-mic-corner-line-height);
+    }
+
+    .interactive-voice-mic__role.nn-label {
+      position: absolute;
+      top: var(--interactive-voice-mic-label-top);
+      left: var(--interactive-voice-mic-label-left);
+      z-index: 4;
+      height: var(--interactive-voice-mic-label-height);
+      min-height: var(--interactive-voice-mic-label-height);
+      padding: var(--space0) var(--space6);
+      border: 0;
+      border-radius: var(--border-radius-20r);
+      background: var(--Esports-Blue);
+      color: var(--Neutral-0);
+      font-size: var(--interactive-voice-mic-corner-font-size);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--interactive-voice-mic-corner-line-height);
+    }
+
+    .interactive-voice-mic.has-avatar-frame .interactive-voice-mic__role {
+      top: var(--interactive-voice-mic-label-top);
+      left: calc(50% - var(--interactive-voice-mic-frame-half-size) - 12px);
+    }
+
+    .interactive-voice-mic__role-text {
+      display: block;
+      line-height: var(--interactive-voice-mic-label-height);
+      transform: translateY(1px);
+    }
+
+    .interactive-voice-mic.is-host {
+      --interactive-voice-mic-border: color-mix(in srgb, var(--Magenta) 52%, transparent);
+      --interactive-voice-mic-bg: color-mix(in srgb, var(--Magenta) 10%, var(--gray-14));
+    }
+
+    .interactive-voice-mic.is-boss {
+      --interactive-voice-mic-border: color-mix(in srgb, var(--Esports-Blue) 52%, transparent);
+      --interactive-voice-mic-bg: color-mix(in srgb, var(--Esports-Blue) 10%, var(--gray-14));
+    }
+
+    .interactive-voice-mic.is-host .interactive-voice-mic__role {
+      --nn-label-color-base: var(--Yellow);
+      --nn-label-bg: var(--Yellow);
+      --nn-label-color: var(--Neutral-2);
+      --nn-label-text-on-solid: var(--Neutral-2);
+      background: var(--Yellow);
+      color: var(--Neutral-2);
+    }
+
+    .interactive-voice-mic__role--boss {
+      --nn-label-color-base: var(--Magenta);
+      --nn-label-bg: var(--Magenta);
+      --nn-label-color: var(--Neutral-0);
+      --nn-label-text-on-solid: var(--Neutral-0);
+      background: var(--Magenta);
+      color: var(--Neutral-0);
+    }
+
+    .interactive-voice-mic__role--boss.nn-label {
+      --nn-label-color-base: var(--Magenta);
+      --nn-label-bg: var(--Magenta);
+      --nn-label-color: var(--Neutral-0);
+      --nn-label-text-on-solid: var(--Neutral-0);
+      background: var(--Magenta);
+      color: var(--Neutral-0);
+    }
+
+    .interactive-voice-mic__score,
+    .nn-label.interactive-voice-mic__score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space4);
+      color: var(--gray-4);
+      font-size: var(--interactive-voice-mic-score-font-size);
+      line-height: var(--interactive-voice-mic-score-line-height);
+    }
+
+    .nn-label.interactive-voice-mic__score {
+      min-height: var(--interactive-voice-mic-score-min-height);
+      padding: var(--space0) var(--space6);
+      border-color: var(--gray-8);
+      border-radius: var(--border-radius-20r);
+      background: var(--gray-10);
+      font-weight: var(--font-weight-regular);
+    }
+
+    .interactive-voice-mic__score .nn-label__icon {
+      width: var(--interactive-voice-mic-score-icon-size);
+      height: var(--interactive-voice-mic-score-icon-size);
+      font-size: var(--interactive-voice-mic-score-icon-size);
+      line-height: var(--interactive-voice-mic-score-icon-size);
+    }
+
+    .interactive-voice-mic__score .nnicon {
+      width: var(--interactive-voice-mic-score-icon-size);
+      height: var(--interactive-voice-mic-score-icon-size);
+      font-size: var(--interactive-voice-mic-score-icon-size);
+      line-height: var(--interactive-voice-mic-score-icon-size);
+    }
+
+    .interactive-voice-floating-actions {
+      position: absolute;
+      right: var(--space16);
+      bottom: 96px;
+      z-index: 12;
+    }
+
+    .interactive-voice-floating-actions .nn-voice-room-action-group {
+      gap: var(--space16);
+    }
+
+    .community-framework.is-gift-open .interactive-voice-floating-actions {
+      bottom: calc(144px + var(--space20) + 96px);
+    }
+
+    .interactive-voice-floating-ad {
+      position: absolute;
+      right: var(--space16);
+      bottom: 224px;
+      z-index: 13;
+      width: 120px;
+      height: 130px;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .interactive-voice-floating-ad.is-hidden {
+      display: none;
+    }
+
+    .interactive-voice-floating-ad.is-dragging {
+      cursor: grabbing;
+    }
+
+    .interactive-voice-floating-ad__viewport {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      overflow: hidden;
+      border-radius: var(--border-radius-16r);
+    }
+
+    .interactive-voice-floating-ad__slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .interactive-voice-floating-ad__slide.is-active {
+      opacity: 1;
+    }
+
+    .interactive-voice-floating-ad__image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .interactive-voice-floating-ad__close {
+      position: absolute;
+      top: var(--space0);
+      right: var(--space0);
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-20r);
+      background: var(--gray-14);
+      color: var(--gray-3);
+      cursor: pointer;
+    }
+
+    .interactive-voice-floating-ad__close .nnicon {
+      font-size: var(--icon-size-x8);
+      line-height: var(--icon-size-x8);
+    }
+
+    .interactive-voice-floating-ad__dots {
+      position: absolute;
+      left: 50%;
+      top: 124px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space4);
+      transform: translateX(-50%);
+      pointer-events: auto;
+    }
+
+    .interactive-voice-floating-ad__dot {
+      width: 6px;
+      height: 6px;
+      padding: var(--space0);
+      border: 0;
+      border-radius: var(--border-radius-20r);
+      background: var(--gray-6);
+      cursor: pointer;
+    }
+
+    .interactive-voice-floating-ad__dot.is-active {
+      width: 14px;
+      background: var(--gray-4);
+    }
+
+    .interactive-voice-chat {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      padding: var(--space16) var(--space16) var(--space0);
+      background: transparent;
+    }
+
+    .interactive-voice-chat::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 0;
+      height: var(--interactive-voice-chat-bottom-fade-height);
+      background: linear-gradient(0deg, var(--gray-1) 0%, var(--transparent) 100%);
+      content: "";
+      pointer-events: none;
+    }
+
+    .interactive-voice-chat__log {
+      position: relative;
+      z-index: 1;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .interactive-voice-chat__scroll {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding-right: var(--space0);
+      scrollbar-width: none;
+    }
+
+    .interactive-voice-chat__scroll::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    .interactive-voice-chat__message.nn-chat-message {
+      max-width: 704px;
+    }
+
+    .interactive-voice-chat__message.nn-chat-message--mine {
+      align-self: flex-end;
+    }
+
+    .interactive-voice-chat__message .nn-chat-message__meta {
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: var(--space8);
+    }
+
+    .interactive-voice-chat__message .nn-chat-message__name {
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+
+    .interactive-voice-chat__message .nn-chat-message__time {
+      padding-bottom: var(--space0);
+    }
+
+    .interactive-voice-chat__wealth-level {
+      display: block;
+      width: auto;
+      height: var(--icon-size-x10);
+      flex: 0 0 auto;
+      object-fit: contain;
+    }
+
+    .interactive-voice-chat__wealth-tooltip {
+      position: relative;
+      z-index: 4;
+      flex: 0 0 auto;
+      align-items: center;
+      height: var(--icon-size-x10);
+      overflow: visible;
+    }
+
+    .interactive-voice-chat__wealth-trigger {
+      display: inline-flex;
+      align-items: center;
+      height: var(--icon-size-x10);
+      flex: 0 0 auto;
+      cursor: default;
+    }
+
+    .interactive-voice-wealth-hover-tooltip.nn-tooltip {
+      flex-direction: column;
+      gap: var(--space16);
+      min-width: 160px;
+      min-height: 86px;
+      padding: var(--space16) var(--space24);
+      border-color: var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      background: var(--gray-2);
+      box-shadow: none;
+      pointer-events: auto;
+    }
+
+    .interactive-voice-wealth-hover-tooltip .nn-tooltip-text {
+      color: var(--wealth-hover-color);
+      font-size: 15px;
+      font-weight: var(--font-weight-bold);
+      line-height: 21px;
+    }
+
+    .interactive-voice-wealth-hover-tooltip .nn-tooltip-beak {
+      border-color: var(--gray-8);
+      background: var(--gray-2);
+    }
+
+    .interactive-voice-wealth-hover-tooltip__action {
+      min-width: 128px;
+    }
+
+    .interactive-voice-chat__message--wide.nn-chat-message {
+      max-width: 760px;
+    }
+
+    .interactive-voice-chat__sticker {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space12);
+      color: var(--gray-5);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .interactive-voice-chat__sticker-image {
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
+    }
+
+    .interactive-voice-chat__input {
+      position: relative;
+      z-index: 1;
+      flex: 0 0 auto;
+      padding: var(--space8) var(--space0) var(--space16);
+    }
+
+    .interactive-voice-chat__input .nn-chat-message-input {
+      width: 100%;
+      max-width: none;
+    }
+
+    .interactive-voice-chat__input .nn-chat-message-input__bar {
+      border-radius: var(--border-radius-2r);
+      background: var(--gray-10);
+    }
+
+    .interactive-voice-chat__input .nn-chat-message-input__send {
+      display: none;
+    }
+
+    .interactive-voice-chat__input .nn-chat-message-input__y-scrollbar {
+      display: none;
+    }
+
+    .interactive-voice-chat__quick-tip {
+      position: absolute;
+      left: 50%;
+      bottom: 68px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 176px;
+      height: 24px;
+      padding: var(--space0) var(--space12);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-10);
+      color: var(--gray-6);
+      font-size: var(--font-size-label);
+      line-height: var(--line-height-label);
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    @keyframes framework-menu-arrow-light-1-first {
+      0%, 9% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      12% {
+        opacity: 0.45;
+        transform: translateX(-16px);
+      }
+      16% {
+        opacity: 0.9;
+        transform: translateX(-4px);
+      }
+      18%, 29% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.72;
+        transform: translateX(0);
+      }
+      34% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      35%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-first {
+      0%, 15% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      18% {
+        opacity: 0.42;
+        transform: translateX(-16px);
+      }
+      23% {
+        opacity: 0.92;
+        transform: translateX(-4px);
+      }
+      25%, 27% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      29% {
+        opacity: 0.7;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      32.5%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-1-repeat {
+      0%, 31.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      35.5% {
+        opacity: 0.38;
+        transform: translateX(-17px);
+      }
+      39.5% {
+        opacity: 0.9;
+        transform: translateX(-5px);
+      }
+      42.5%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-repeat {
+      0%, 37.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      41.5% {
+        opacity: 0.34;
+        transform: translateX(-17px);
+      }
+      46.5% {
+        opacity: 0.88;
+        transform: translateX(-5px);
+      }
+      49.5%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-exit {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+  </style>
+  <script>
+    (function() {
+      document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&library=page" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261029-nn-page-theme-first-paint" frameborder="0"></iframe>
+
+  <main class="interactive-voice-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">互动语音房</span>
+      <h1 class="section-title">Interactive Voice Room 互动语音房</h1>
+      <div class="interactive-voice-stage" data-code-preview="true">
+        <div id="interactive-voice-framework" class="community-framework" aria-label="Interactive Voice Room">
+          <div id="interactive-voice-header" class="community-framework__header"></div>
+          <div id="interactive-voice-menu" class="community-framework__menu"></div>
+          <div id="interactive-voice-menu-hover-zone" class="community-framework__menu-hover-zone" aria-hidden="true"></div>
+          <div id="interactive-voice-community" class="community-framework__community"></div>
+          <div class="community-framework__content">
+            <div class="interactive-voice-bg" aria-hidden="true">
+              <video class="interactive-voice-bg__image interactive-voice-bg__image--light" src="../image/Community/interactive-voice-room-bg-light.mp4?v=20260813-bg-light-video" autoplay muted loop playsinline></video>
+              <video class="interactive-voice-bg__image interactive-voice-bg__image--dark" src="../image/Community/interactive-voice-room-bg.mp4?v=20260813-bg-video" autoplay muted loop playsinline></video>
+            </div>
+            <div class="interactive-voice-content" data-nn-header-align>
+              <section class="interactive-voice-room" aria-label="麦位区域">
+                <header class="interactive-voice-room__header">
+                  <div class="interactive-voice-room__title">
+                    <span class="interactive-voice-room__no">52</span>
+                    <span class="interactive-voice-room__name">派单大厅</span>
+                    <div id="interactive-voice-room-buttons" class="interactive-voice-room__actions"></div>
+                  </div>
+                  <div class="interactive-voice-room__online">
+                    <span id="interactive-voice-visitor-avatars"></span>
+                    <span>56</span>
+                  </div>
+                </header>
+
+                <div id="interactive-voice-seats" class="interactive-voice-room__seats"></div>
+              </section>
+
+              <section class="interactive-voice-chat" aria-label="聊天区域">
+                <div class="interactive-voice-chat__log">
+                  <div id="interactive-voice-chat-scroll" class="interactive-voice-chat__scroll"></div>
+                  <div id="interactive-voice-chat-scrollbar"></div>
+                </div>
+
+                <div class="interactive-voice-chat__quick-tip">您撤回了一条消息 <span>重新编辑</span></div>
+                <footer class="interactive-voice-chat__input">
+                  <div id="interactive-voice-message-input"></div>
+                </footer>
+              </section>
+              <div id="interactive-voice-action-group" class="interactive-voice-floating-actions"></div>
+              <div id="interactive-voice-floating-ad" class="interactive-voice-floating-ad" aria-label="活动广告"></div>
+              <div id="interactive-voice-online-popover" class="interactive-voice-online-popover" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div id="interactive-voice-tooltip-layer" class="interactive-voice-tooltip-layer" aria-hidden="true"></div>
+          <div id="interactive-voice-gift-layer" class="interactive-voice-gift-layer" aria-hidden="true"></div>
+          <div id="interactive-voice-wealth-modal-layer" class="interactive-voice-wealth-modal-layer" aria-hidden="true"></div>
+          <div class="community-framework__menu-arrow" aria-hidden="true">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-dark-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-dark-2.svg" alt="">
+          </div>
+          <div id="interactive-voice-panel" class="community-framework__voice"></div>
+        </div>
+      </div>
+      <iframe id="interactive-voice-seven-frame" class="interactive-voice-variant-frame" src="./InteractiveVoiceRoomSeatCountSeven.html?embed=1" title="互动语音房 7 麦位"></iframe>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/radio.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/input.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/switch.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/slider.js?v=20260529-wheel"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/menu.js?v=20261117-menu-avatar-size-selected-stroke"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-indicator-resize"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../NN%20business%20components/pugc.js?v=20260615-pugc-list-label-export"></script>
+  <script src="../NN%20business%20components/community-navigation.js?v=20261116-cover-id-bg80"></script>
+  <script src="../NN%20business%20components/toast-display.js?v=20260611-toast-display-scrollbar-component"></script>
+  <script src="../public/vendor/lottie.min.js?v=20260616"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-banner-responsive-nav"></script>
+  <script src="../NN%20business%20components/voice-panel.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/voice-room.js?v=20260907-guest-button-size"></script>
+  <script src="../NN%20business%20components/chat.js?v=20260911-voice-message-banner-box-gap"></script>
+  <script src="../basic%20components/checkbox.js?v=20260907-gift-checkbox-component"></script>
+  <script src="../NN%20business%20components/gift.js?v=20260911-gift-slide-fade-restored"></script>
+  <script src="../NN%20business%20components/leaderboard.js?v=20261119-din-balanced"></script>
+  <script src="../NN%20business%20components/message-sent.js?v=20260801-message-sent-chat-tools"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-interactive-voice-room');
+
+      const framework = document.getElementById('interactive-voice-framework');
+      const headerSlot = document.getElementById('interactive-voice-header');
+      const menuSlot = document.getElementById('interactive-voice-menu');
+      const menuHoverZone = document.getElementById('interactive-voice-menu-hover-zone');
+      const communitySlot = document.getElementById('interactive-voice-community');
+      const voiceSlot = document.getElementById('interactive-voice-panel');
+      const seatsSlot = document.getElementById('interactive-voice-seats');
+      const roomButtonsSlot = document.getElementById('interactive-voice-room-buttons');
+      const actionGroupSlot = document.getElementById('interactive-voice-action-group');
+      const floatingAdSlot = document.getElementById('interactive-voice-floating-ad');
+      const visitorAvatarsSlot = document.getElementById('interactive-voice-visitor-avatars');
+      const onlineTrigger = document.querySelector('.interactive-voice-room__online');
+      const onlinePopover = document.getElementById('interactive-voice-online-popover');
+      const chatScroll = document.getElementById('interactive-voice-chat-scroll');
+      const chatInputSlot = document.getElementById('interactive-voice-message-input');
+      const tooltipLayer = document.getElementById('interactive-voice-tooltip-layer');
+      const giftLayer = document.getElementById('interactive-voice-gift-layer');
+      const wealthModalLayer = document.getElementById('interactive-voice-wealth-modal-layer');
+      const sevenSeatFrame = document.getElementById('interactive-voice-seven-frame');
+      let giftActionButton = null;
+      const floatingAdItems = [
+        { name: '充值有礼', src: '../image/Community/interactive-voice-room/floating-ad-recharge.png' },
+        { name: '礼物收藏家', src: '../image/Community/interactive-voice-room/floating-ad-gift.png' },
+        { name: '秋日赛季', src: '../image/Community/interactive-voice-room/floating-ad-autumn.png' }
+      ];
+
+      function notifySevenSeatDarkMode(isDark) {
+        if (!sevenSeatFrame || !sevenSeatFrame.contentWindow) return;
+        sevenSeatFrame.contentWindow.postMessage({
+          type: 'dark-mode',
+          value: isDark
+        }, '*');
+      }
+
+      function syncDarkMode(isDark) {
+        localStorage.setItem('dark-mode', String(isDark));
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
+        notifyIframeDarkMode(isDark);
+        notifySevenSeatDarkMode(isDark);
+      }
+
+      function toggleDarkMode() {
+        syncDarkMode(!document.body.classList.contains('dark-mode'));
+      }
+
+      function toggleExpanded() {
+        const isExpanded = framework.classList.toggle('is-expanded');
+        document.body.classList.toggle('is-interactive-voice-expanded', isExpanded);
+      }
+
+      function toggleSevenSeatExpanded(isExpanded) {
+        if (!sevenSeatFrame) return;
+        sevenSeatFrame.classList.toggle('is-expanded', isExpanded);
+        document.body.classList.toggle('is-interactive-voice-expanded', isExpanded);
+      }
+
+      const header = createHeader({
+        width: '100%',
+        showBack: true,
+        noticeText: ''
+      });
+      headerSlot.appendChild(header);
+
+      const themeControl = header.querySelector('.nn-header__theme-toggle, [data-action="theme"]');
+      if (themeControl) {
+        themeControl.addEventListener('click', toggleDarkMode);
+      }
+
+      if (sevenSeatFrame) {
+        sevenSeatFrame.addEventListener('load', function() {
+          notifySevenSeatDarkMode(document.body.classList.contains('dark-mode'));
+        });
+      }
+
+      window.addEventListener('message', function(event) {
+        if (!event.data) return;
+        if (event.data.type === 'dark-mode') {
+          notifySevenSeatDarkMode(Boolean(event.data.value));
+          return;
+        }
+        if (event.data.type === 'interactive-voice-seven-expanded') {
+          toggleSevenSeatExpanded(Boolean(event.data.value));
+        }
+      });
+
+      const windowIcons = header.querySelectorAll('.nn-header__window-icon');
+      if (windowIcons[1]) {
+        windowIcons[1].setAttribute('role', 'button');
+        windowIcons[1].setAttribute('tabindex', '0');
+        windowIcons[1].setAttribute('aria-label', '适配浏览器最大尺寸');
+        windowIcons[1].addEventListener('click', toggleExpanded);
+        windowIcons[1].addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleExpanded();
+          }
+        });
+      }
+
+      menuSlot.appendChild(createInteractiveMenu());
+
+      communitySlot.appendChild(createCommunityNavigationCombo({ communityType: 'game' }));
+      const voicePanel = createVoicePanel({ launchState: 'idle' });
+      voiceSlot.appendChild(voicePanel);
+
+      const communityScroller = communitySlot.querySelector('.nn-community-combo__scroller');
+      const menuList = menuSlot.querySelector('.nn-menu-list');
+      const menuListWrapper = menuSlot.querySelector('.nn-menu-list-wrapper');
+      let frameworkMenuScrollOffset = 0;
+      let frameworkMenuMaxScroll = 0;
+
+      function syncFrameworkMenuScroll() {
+        if (!menuList || !menuListWrapper) return;
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        const wrapperHeight = menuListWrapper.clientHeight;
+        const contentHeight = menuList.scrollHeight;
+        const contentBottom = menuList.offsetTop + contentHeight;
+        const visibleHeightBeforeVoice = Math.max(0, wrapperHeight - voiceHeight);
+        frameworkMenuMaxScroll = Math.max(0, contentBottom - visibleHeightBeforeVoice);
+        frameworkMenuScrollOffset = Math.min(frameworkMenuScrollOffset, frameworkMenuMaxScroll);
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+      }
+
+      function syncFrameworkVoiceHeight() {
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        framework.style.setProperty('--framework-voice-height', `${voiceHeight}px`);
+        syncFrameworkMenuScroll();
+      }
+
+      function scrollFrameworkMenu(deltaY) {
+        syncFrameworkMenuScroll();
+        if (frameworkMenuMaxScroll <= 0) return false;
+        const nextOffset = Math.max(0, Math.min(frameworkMenuMaxScroll, frameworkMenuScrollOffset + deltaY));
+        if (nextOffset === frameworkMenuScrollOffset) return false;
+        frameworkMenuScrollOffset = nextOffset;
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+        return true;
+      }
+
+      function hideVoiceRoomInfo() {
+        framework.classList.add('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      function showVoiceRoomInfo() {
+        framework.classList.remove('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      if (window.ResizeObserver) {
+        const voiceResizeObserver = new ResizeObserver(syncFrameworkVoiceHeight);
+        voiceResizeObserver.observe(voiceSlot);
+        voiceResizeObserver.observe(voicePanel);
+        if (menuList) voiceResizeObserver.observe(menuList);
+        if (menuListWrapper) voiceResizeObserver.observe(menuListWrapper);
+      }
+
+      syncFrameworkVoiceHeight();
+
+      const leaveVoiceButton = voicePanel.querySelector('.nn-voice-panel__leave');
+      if (leaveVoiceButton) {
+        leaveVoiceButton.addEventListener('click', hideVoiceRoomInfo);
+      }
+
+      const firstVoiceRoom = communitySlot.querySelector('.nn-community-room');
+      if (firstVoiceRoom) {
+        firstVoiceRoom.addEventListener('click', showVoiceRoomInfo);
+      }
+
+      if (menuListWrapper) {
+        menuListWrapper.addEventListener('wheel', function(event) {
+          if (scrollFrameworkMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+        }, { passive: false });
+      }
+
+      voiceSlot.addEventListener('wheel', function(event) {
+        if (event.target.closest('.nn-slider, input, textarea, select, [contenteditable="true"], .nn-voice-mode__settings-popover')) return;
+        const menuRect = menuSlot.getBoundingClientRect();
+        const communityRect = communitySlot.getBoundingClientRect();
+
+        if (event.clientX >= menuRect.left && event.clientX <= menuRect.right) {
+          if (scrollFrameworkMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+          return;
+        }
+
+        if (!communityScroller) return;
+        if (event.clientX < communityRect.left || event.clientX > communityRect.right) return;
+
+        const previousScrollTop = communityScroller.scrollTop;
+        communityScroller.scrollTop += event.deltaY;
+        if (communityScroller.scrollTop !== previousScrollTop) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      const voiceBack = voicePanel.querySelector('.nn-voice-panel__back');
+      let restoreMenuTimer = null;
+      let restoreEndTimer = null;
+      let menuHoverTimer = null;
+      let isMenuPointerInside = false;
+
+      function clearMenuRestoreTimers() {
+        if (restoreMenuTimer) {
+          window.clearTimeout(restoreMenuTimer);
+          restoreMenuTimer = null;
+        }
+        if (restoreEndTimer) {
+          window.clearTimeout(restoreEndTimer);
+          restoreEndTimer = null;
+        }
+      }
+
+      function clearMenuHoverTimer() {
+        if (menuHoverTimer) {
+          window.clearTimeout(menuHoverTimer);
+          menuHoverTimer = null;
+        }
+      }
+
+      function showCollapsedMenuPreview() {
+        if (!framework.classList.contains('is-menu-collapsed')) return;
+        clearMenuHoverTimer();
+        framework.classList.remove('is-menu-hovered');
+        void framework.offsetWidth;
+        framework.classList.add('is-menu-hovered');
+      }
+
+      function scheduleCollapsedMenuHide() {
+        clearMenuHoverTimer();
+        menuHoverTimer = window.setTimeout(function() {
+          if (!isMenuPointerInside) {
+            framework.classList.remove('is-menu-hovered');
+          }
+          menuHoverTimer = null;
+        }, 80);
+      }
+
+      if (menuHoverZone) {
+        menuHoverZone.addEventListener('mouseenter', showCollapsedMenuPreview);
+        menuHoverZone.addEventListener('mouseleave', scheduleCollapsedMenuHide);
+      }
+
+      document.addEventListener('mousemove', function(event) {
+        if (!framework.classList.contains('is-menu-collapsed') || !framework.classList.contains('is-menu-hovered')) return;
+        const frameworkRect = framework.getBoundingClientRect();
+        const isInsideVerticalRange = event.clientY >= frameworkRect.top + 50 && event.clientY <= frameworkRect.bottom;
+        const isInsideLeaveZone = event.clientX >= frameworkRect.left && event.clientX <= frameworkRect.left + 70;
+        if (!isInsideVerticalRange || !isInsideLeaveZone) {
+          isMenuPointerInside = false;
+          framework.classList.remove('is-menu-hovered');
+        }
+      });
+
+      menuSlot.addEventListener('mouseenter', function() {
+        isMenuPointerInside = true;
+        showCollapsedMenuPreview();
+      });
+
+      menuSlot.addEventListener('mouseleave', function() {
+        isMenuPointerInside = false;
+        scheduleCollapsedMenuHide();
+      });
+
+      if (voiceBack) {
+        voiceBack.addEventListener('click', function() {
+          if (framework.classList.contains('is-menu-collapsed')) {
+            clearMenuRestoreTimers();
+            clearMenuHoverTimer();
+            framework.classList.remove('is-menu-hovered');
+            framework.classList.add('is-menu-restoring');
+
+            restoreMenuTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-collapsed');
+              restoreMenuTimer = null;
+            }, 80);
+
+            restoreEndTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-restoring');
+              restoreEndTimer = null;
+            }, 360);
+            return;
+          }
+
+          clearMenuRestoreTimers();
+          clearMenuHoverTimer();
+          framework.classList.remove('is-menu-restoring');
+          framework.classList.remove('is-menu-hovered');
+          framework.classList.add('is-menu-collapsed');
+        });
+      }
+
+      const seatData = [
+        { name: 'TR.泡芙/金牌客...', avatar: '../image/Avatar/头像480.png', avatarFrame: '../image/gift/头像框-万圣节.png', index: 1, role: '主持', score: '13.3' },
+        { name: 'SAMSARA', avatar: '../image/Community/interactive-voice-room/waiting-seat-sofa.png', index: 2, role: '老板', boss: true, score: '13.3', empty: true },
+        { name: 'TO荼靡', avatar: '../image/Avatar/头像1095.png', avatarFrame: '../image/gift/头像框-玫瑰花窗.png', index: 3, score: '13.3' },
+        { name: 'TO荼靡', avatar: '../image/Avatar/头像748.png', index: 4, score: '13.3' },
+        { name: 'TO荼靡', avatar: '../image/Avatar/头像562.png', index: 5, score: '13.3' },
+        { name: 'TR.泡芙/金牌客...', avatar: '../image/Avatar/头像827.png', index: 6, score: '13.3' },
+        { name: 'SAMSARA', avatar: '../image/Avatar/头像629.png', index: 7 },
+        { name: 'TO荼靡', avatar: '../image/Avatar/头像826.png', index: 8, score: '13.3' },
+        { name: 'TO荼靡', avatar: '../image/Avatar/头像985.png', index: 9, score: '13.3' },
+        { name: 'TO荼靡', avatar: '../image/Avatar/头像991.png', index: 10, score: '13.3' }
+      ];
+
+      function closeGiftDrawer() {
+        if (!giftLayer) return;
+        giftLayer.classList.remove('is-open');
+        giftLayer.setAttribute('aria-hidden', 'true');
+        framework.classList.remove('is-gift-open');
+        if (giftActionButton) {
+          giftActionButton.setAttribute('aria-pressed', 'false');
+        }
+      }
+
+      function createGiftRecipients() {
+        return seatData.map(function(item, index) {
+          return {
+            id: `interactive-voice-seat-${index + 1}`,
+            seat: item.index,
+            name: item.name,
+            avatar: item.avatar
+          };
+        });
+      }
+
+      function renderGiftDrawer() {
+        if (!giftLayer || typeof window.createGiftBar !== 'function') return;
+        giftLayer.innerHTML = '';
+        const drawer = document.createElement('div');
+        drawer.className = 'interactive-voice-gift-drawer';
+        drawer.addEventListener('click', function(event) {
+          event.stopPropagation();
+        });
+        drawer.appendChild(window.createGiftBar({
+          recipients: createGiftRecipients(),
+          selectedRecipientIds: ['interactive-voice-seat-1'],
+          onClose: closeGiftDrawer
+        }));
+        giftLayer.appendChild(drawer);
+      }
+
+      function openGiftDrawer() {
+        if (!giftLayer || typeof window.createGiftBar !== 'function') return;
+        if (!giftLayer.querySelector('.interactive-voice-gift-drawer')) {
+          renderGiftDrawer();
+        }
+        const gift = giftLayer.querySelector('.nn-gift');
+        if (gift) {
+          gift.classList.remove('is-hidden');
+        }
+        giftLayer.classList.add('is-open');
+        giftLayer.setAttribute('aria-hidden', 'false');
+        framework.classList.add('is-gift-open');
+        if (giftActionButton) {
+          giftActionButton.setAttribute('aria-pressed', 'true');
+        }
+      }
+
+      function toggleGiftDrawer() {
+        if (giftLayer && giftLayer.classList.contains('is-open')) {
+          closeGiftDrawer();
+          return;
+        }
+        openGiftDrawer();
+      }
+
+      function bindGiftAction(group) {
+        const giftButton = group && group.querySelector('button[aria-label="礼物"]');
+        if (!giftButton) return;
+        giftActionButton = giftButton;
+        giftActionButton.setAttribute('aria-pressed', 'false');
+        giftButton.addEventListener('click', function(event) {
+          event.stopPropagation();
+          toggleGiftDrawer();
+        });
+      }
+
+      function renderFloatingAd() {
+        if (!floatingAdSlot || !floatingAdItems.length) return;
+
+        let activeIndex = 0;
+        let autoplayTimer = null;
+        let dragState = null;
+
+        floatingAdSlot.innerHTML = '';
+        floatingAdSlot.classList.remove('is-hidden', 'is-dragging');
+        floatingAdSlot.style.left = '';
+        floatingAdSlot.style.top = '';
+        floatingAdSlot.style.right = '';
+        floatingAdSlot.style.bottom = '';
+
+        const viewport = document.createElement('div');
+        viewport.className = 'interactive-voice-floating-ad__viewport';
+
+        const slides = floatingAdItems.map(function(item, index) {
+          const slide = document.createElement('div');
+          slide.className = [
+            'interactive-voice-floating-ad__slide',
+            index === activeIndex ? 'is-active' : ''
+          ].filter(Boolean).join(' ');
+
+          const image = document.createElement('img');
+          image.className = 'interactive-voice-floating-ad__image';
+          image.src = item.src;
+          image.alt = item.name;
+          image.draggable = false;
+          slide.appendChild(image);
+          viewport.appendChild(slide);
+          return slide;
+        });
+
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'interactive-voice-floating-ad__close';
+        close.setAttribute('aria-label', '关闭广告');
+        close.innerHTML = '<i class="nnicon nicon-a-close-lineguanbi-xianxing" aria-hidden="true"></i>';
+
+        const dotsWrap = document.createElement('div');
+        dotsWrap.className = 'interactive-voice-floating-ad__dots';
+
+        const dots = floatingAdItems.map(function(item, index) {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = [
+            'interactive-voice-floating-ad__dot',
+            index === activeIndex ? 'is-active' : ''
+          ].filter(Boolean).join(' ');
+          dot.setAttribute('aria-label', `切换到${item.name}`);
+          dot.addEventListener('click', function(event) {
+            event.stopPropagation();
+            setActiveAd(index);
+            restartAutoplay();
+          });
+          dotsWrap.appendChild(dot);
+          return dot;
+        });
+
+        function setActiveAd(index) {
+          activeIndex = (index + floatingAdItems.length) % floatingAdItems.length;
+          slides.forEach(function(slide, slideIndex) {
+            slide.classList.toggle('is-active', slideIndex === activeIndex);
+          });
+          dots.forEach(function(dot, dotIndex) {
+            dot.classList.toggle('is-active', dotIndex === activeIndex);
+          });
+        }
+
+        function startAutoplay() {
+          if (floatingAdItems.length <= 1) return;
+          autoplayTimer = window.setInterval(function() {
+            setActiveAd(activeIndex + 1);
+          }, 3600);
+        }
+
+        function restartAutoplay() {
+          if (autoplayTimer) window.clearInterval(autoplayTimer);
+          startAutoplay();
+        }
+
+        function clampFloatingAdPosition(left, top) {
+          const parent = floatingAdSlot.offsetParent;
+          if (!parent) return { left, top };
+          const maxLeft = Math.max(0, parent.clientWidth - floatingAdSlot.offsetWidth);
+          const maxTop = Math.max(0, parent.clientHeight - floatingAdSlot.offsetHeight);
+          return {
+            left: Math.max(0, Math.min(maxLeft, left)),
+            top: Math.max(0, Math.min(maxTop, top))
+          };
+        }
+
+        function syncFloatingAdPosition() {
+          const parent = floatingAdSlot.offsetParent;
+          if (!parent) return;
+          const parentRect = parent.getBoundingClientRect();
+          const adRect = floatingAdSlot.getBoundingClientRect();
+          const next = clampFloatingAdPosition(adRect.left - parentRect.left, adRect.top - parentRect.top);
+          floatingAdSlot.style.left = `${next.left}px`;
+          floatingAdSlot.style.top = `${next.top}px`;
+          floatingAdSlot.style.right = 'auto';
+          floatingAdSlot.style.bottom = 'auto';
+        }
+
+        close.addEventListener('click', function(event) {
+          event.stopPropagation();
+          floatingAdSlot.classList.add('is-hidden');
+          if (autoplayTimer) {
+            window.clearInterval(autoplayTimer);
+            autoplayTimer = null;
+          }
+        });
+
+        floatingAdSlot.addEventListener('pointerdown', function(event) {
+          if (event.button !== 0 && event.pointerType === 'mouse') return;
+          if (event.target.closest('button')) return;
+          const parent = floatingAdSlot.offsetParent;
+          if (!parent) return;
+          const parentRect = parent.getBoundingClientRect();
+          const adRect = floatingAdSlot.getBoundingClientRect();
+          dragState = {
+            startX: event.clientX,
+            startY: event.clientY,
+            left: adRect.left - parentRect.left,
+            top: adRect.top - parentRect.top
+          };
+          floatingAdSlot.style.left = `${dragState.left}px`;
+          floatingAdSlot.style.top = `${dragState.top}px`;
+          floatingAdSlot.style.right = 'auto';
+          floatingAdSlot.style.bottom = 'auto';
+          floatingAdSlot.classList.add('is-dragging');
+          floatingAdSlot.setPointerCapture(event.pointerId);
+          event.preventDefault();
+        });
+
+        floatingAdSlot.addEventListener('pointermove', function(event) {
+          if (!dragState) return;
+          const next = clampFloatingAdPosition(
+            dragState.left + event.clientX - dragState.startX,
+            dragState.top + event.clientY - dragState.startY
+          );
+          floatingAdSlot.style.left = `${next.left}px`;
+          floatingAdSlot.style.top = `${next.top}px`;
+        });
+
+        floatingAdSlot.addEventListener('pointerup', function(event) {
+          if (!dragState) return;
+          dragState = null;
+          floatingAdSlot.classList.remove('is-dragging');
+          if (floatingAdSlot.hasPointerCapture(event.pointerId)) {
+            floatingAdSlot.releasePointerCapture(event.pointerId);
+          }
+        });
+
+        floatingAdSlot.addEventListener('pointercancel', function(event) {
+          dragState = null;
+          floatingAdSlot.classList.remove('is-dragging');
+          if (floatingAdSlot.hasPointerCapture(event.pointerId)) {
+            floatingAdSlot.releasePointerCapture(event.pointerId);
+          }
+        });
+
+        window.addEventListener('resize', syncFloatingAdPosition);
+
+        floatingAdSlot.appendChild(viewport);
+        floatingAdSlot.appendChild(close);
+        floatingAdSlot.appendChild(dotsWrap);
+        startAutoplay();
+      }
+
+      document.addEventListener('click', function(event) {
+        if (!giftLayer || !giftLayer.classList.contains('is-open')) return;
+        if (giftLayer.contains(event.target)) return;
+        if (giftActionButton && giftActionButton.contains(event.target)) return;
+        closeGiftDrawer();
+      });
+
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          closeGiftDrawer();
+          closeOnlinePopover();
+        }
+      });
+
+      function createMicCard(item) {
+        const wrap = document.createElement('div');
+        wrap.className = [
+          'interactive-voice-mic',
+          item.boss ? 'is-boss' : '',
+          item.empty ? 'is-waiting' : '',
+          item.avatarFrame ? 'has-avatar-frame' : '',
+          item.role === '主持' ? 'is-host' : ''
+        ].filter(Boolean).join(' ');
+        const card = window.createVoiceRoomMicCard({
+          state: 'occupied',
+          permission: true,
+          index: item.index,
+          width: '100%',
+          user: {
+            name: item.empty ? '虚位以待' : item.name,
+            avatar: item.avatar,
+            badges: []
+          }
+        });
+        wrap.appendChild(card);
+
+        const imageWrap = card.querySelector('.nn-voice-room-card__image');
+        if ((item.boss || item.role === '主持') && imageWrap) {
+          const wings = document.createElement('img');
+          wings.className = [
+            'interactive-voice-mic__avatar-wings',
+            item.boss ? 'is-boss-wing' : ''
+          ].filter(Boolean).join(' ');
+          wings.src = '../image/Community/interactive-voice-room/butterfly-wings.png';
+          wings.alt = '';
+          wrap.insertBefore(wings, card);
+        }
+        if (!item.empty && item.avatarFrame) {
+          if (imageWrap) {
+            const frame = document.createElement('img');
+            frame.className = 'interactive-voice-mic__avatar-frame is-mic-cutout';
+            frame.src = item.avatarFrame;
+            frame.alt = '';
+            imageWrap.appendChild(frame);
+          }
+        }
+        if (!item.empty && imageWrap) {
+          const avatarMic = document.createElement('span');
+          avatarMic.className = [
+            'interactive-voice-mic__avatar-mic',
+            item.avatarFrame ? 'is-framed' : ''
+          ].filter(Boolean).join(' ');
+          avatarMic.innerHTML = '<i class="nnicon nicon-a-mic-linekaimai-xianxing" aria-label="麦克风"></i>';
+          imageWrap.appendChild(avatarMic);
+        }
+
+        const corner = card.querySelector('.nn-voice-room-card__corner');
+        const userRow = card.querySelector('.nn-voice-room-card__user');
+        if (corner && userRow) {
+          userRow.insertBefore(corner, userRow.firstChild);
+        }
+
+        if (item.role) {
+          const roleClassName = [
+            'interactive-voice-mic__role',
+            item.boss ? 'interactive-voice-mic__role--boss' : ''
+          ].filter(Boolean).join(' ');
+          const role = typeof window.createLabel === 'function'
+            ? window.createLabel({
+              text: item.role,
+              color: item.boss ? 'magenta' : 'orange',
+              type: 'solid',
+              size: 'd',
+              className: roleClassName
+            })
+            : document.createElement('span');
+          if (!role.classList.contains('interactive-voice-mic__role')) {
+            role.className = roleClassName;
+            role.innerHTML = '<span class="interactive-voice-mic__role-text"></span>';
+            role.querySelector('.interactive-voice-mic__role-text').textContent = item.role;
+          }
+          wrap.appendChild(role);
+        }
+
+        const status = card.querySelector('.nn-voice-room-card__status');
+        if (status) {
+          if (!item.empty && item.score) {
+            const score = typeof window.createLabel === 'function'
+              ? window.createLabel({
+                text: item.score,
+                color: 'neutral',
+                type: 'subtle',
+                size: 's',
+                iconBefore: true,
+                beforeIcon: '<i class="nnicon nicon-a-Four-pointedstar-fillsijiaoxing-mianxing"></i>',
+                className: 'interactive-voice-mic__score'
+              })
+              : document.createElement('span');
+            if (!score.classList.contains('interactive-voice-mic__score')) {
+              score.className = 'interactive-voice-mic__score';
+              score.innerHTML = '<i class="nnicon nicon-a-Four-pointedstar-fillsijiaoxing-mianxing"></i><span></span>';
+              score.querySelector('span').textContent = item.score;
+            }
+            status.appendChild(score);
+          }
+        }
+        return wrap;
+      }
+
+      function appendChatMessage(options) {
+        if (typeof window.createChatMessage !== 'function') return;
+        const message = window.createChatMessage(Object.assign({
+          className: 'interactive-voice-chat__message',
+          onMenuAction: function(action) {
+            if (action === 'delete' || action === 'clear') {
+              chatScroll.innerHTML = '';
+            }
+          }
+        }, options));
+        appendWealthLevel(message);
+        chatScroll.appendChild(message);
+      }
+
+      const wealthLevelGroups = [
+        { start: 1, end: 10, name: '见习', iconName: '见习', bgStart: '#ACBFED' },
+        { start: 11, end: 20, name: '骑士', iconName: '骑士', bgStart: '#95ACF7' },
+        { start: 21, end: 30, name: '少爵', iconName: '少爵', bgStart: '#7386E9' },
+        { start: 31, end: 40, name: '男爵', iconName: '男爵', bgStart: '#6874F9' },
+        { start: 41, end: 50, name: '子爵', iconName: '子爵', bgStart: '#615EFF' },
+        { start: 51, end: 60, name: '伯爵', iconName: '伯爵', bgStart: '#4D49F3' },
+        { start: 61, end: 70, name: '侯爵', iconName: '侯爵', bgStart: '#7005EF' },
+        { start: 71, end: 80, name: '郡王', iconName: '郡王', bgStart: '#4B4DDB' },
+        { start: 81, end: 90, name: '亲王', iconName: '亲王', bgStart: '#7300B0' },
+        { start: 91, end: 99, name: '国王', iconName: '国王', bgStart: '#780099' },
+        { start: 100, end: 100, name: '神王', iconName: '国王', bgStart: '#B0774A' }
+      ];
+      const wealthGiftGroups = [
+        [
+          { name: '摸鱼', src: '../image/gift/8.png' },
+          { name: '焦绿', src: '../image/gift/9.png' },
+          { name: '月影佳人', src: '../image/gift/10.png' },
+          { name: '浴火重生', src: '../image/gift/11.png' }
+        ],
+        [
+          { name: '蜂蜜', src: '../image/gift/礼物-honey.png' },
+          { name: '多喝水', src: '../image/gift/礼物-多喝水.png' },
+          { name: '招财进宝', src: '../image/gift/礼物-招财进宝.png' },
+          { name: '棒棒糖', src: '../image/gift/礼物-棒棒糖.png' }
+        ],
+        [
+          { name: '水饺', src: '../image/gift/礼物-水饺.png' },
+          { name: '游艇', src: '../image/gift/礼物-游艇.png' },
+          { name: '疯狂星期四', src: '../image/gift/礼物-疯狂星期四.png' },
+          { name: '相思红豆', src: '../image/gift/礼物-相思红豆.png' }
+        ],
+        [
+          { name: '腊八粥', src: '../image/gift/礼物-腊八粥.png' },
+          { name: '请发电', src: '../image/gift/礼物-请发电.png' },
+          { name: '请发财', src: '../image/gift/礼物-请发财.png' },
+          { name: '跑车', src: '../image/gift/礼物-跑车.png' }
+        ],
+        [
+          { name: '蓝色礼物', src: '../image/gift/1.png' },
+          { name: '摄影礼物', src: '../image/gift/2.png' },
+          { name: '纸袋礼物', src: '../image/gift/3.png' },
+          { name: '糖果礼物', src: '../image/gift/4.png' }
+        ],
+        [
+          { name: '忍者礼物', src: '../image/gift/5.png' },
+          { name: '牛油果礼物', src: '../image/gift/6.png' },
+          { name: '园丁礼物', src: '../image/gift/7.png' },
+          { name: '万圣礼物', src: '../image/gift/8.png' }
+        ],
+        [
+          { name: '潮流礼物', src: '../image/gift/12.png' },
+          { name: '企鹅礼物', src: '../image/gift/13.png' },
+          { name: '安全帽礼物', src: '../image/gift/14.png' },
+          { name: '靶心礼物', src: '../image/gift/15.png' }
+        ],
+        [
+          { name: '相机礼物', src: '../image/gift/16.png' },
+          { name: '飞碟礼物', src: '../image/gift/17.png' },
+          { name: '护目镜礼物', src: '../image/gift/18.png' },
+          { name: '邮件礼物', src: '../image/gift/19.png' }
+        ],
+        [
+          { name: '纸箱礼物', src: '../image/gift/20.png' },
+          { name: '水饺', src: '../image/gift/礼物-水饺.png' },
+          { name: '游艇', src: '../image/gift/礼物-游艇.png' },
+          { name: '跑车', src: '../image/gift/礼物-跑车.png' }
+        ],
+        [
+          { name: '招财进宝', src: '../image/gift/礼物-招财进宝.png' },
+          { name: '请发财', src: '../image/gift/礼物-请发财.png' },
+          { name: '相思红豆', src: '../image/gift/礼物-相思红豆.png' },
+          { name: '浴火重生', src: '../image/gift/礼物-浴火重生.png' }
+        ],
+        [
+          { name: '浴火重生', src: '../image/gift/礼物-浴火重生.png' },
+          { name: '跑车', src: '../image/gift/礼物-跑车.png' },
+          { name: '游艇', src: '../image/gift/礼物-游艇.png' },
+          { name: '请发财', src: '../image/gift/礼物-请发财.png' }
+        ]
+      ];
+      const wealthLevelList = wealthLevelGroups.map(function(group) {
+        return group.start;
+      });
+      const currentUserWealthLevel = 5;
+      const wealthLevelDescription = '财富等级是您在NN尊贵身份的象征，由经验值决定，1N币等于1经验值。通过充值N币可以获得经验值来提升您的等级，随着等级的提升，您的财富徽章样式也会升级。';
+
+      function getWealthLevelMeta(level) {
+        const numericLevel = Number(level);
+        const safeLevel = Number.isFinite(numericLevel) ? Math.max(1, Math.min(100, Math.round(numericLevel))) : 1;
+        const groupIndex = wealthLevelGroups.findIndex(function(group) {
+          return safeLevel >= group.start && safeLevel <= group.end;
+        });
+        const group = wealthLevelGroups[groupIndex] || wealthLevelGroups[0];
+        const nextLevel = safeLevel < 100 ? safeLevel + 1 : 100;
+        return {
+          level: safeLevel,
+          nextLevel,
+          name: group.name,
+          iconName: group.iconName,
+          bgStart: group.bgStart,
+          bgEnd: group.bgEnd || group.bgStart,
+          tabIndex: Math.max(groupIndex, 0),
+          range: group.start === group.end ? `LV.${group.start}` : `LV. (${group.start}-${group.end})`
+        };
+      }
+
+      function appendWealthLevel(message) {
+        const nameEl = message && message.querySelector('.nn-chat-message__name');
+        if (!nameEl) return;
+        const metaEl = nameEl.parentElement;
+        const level = wealthLevelList[Math.floor(Math.random() * wealthLevelList.length)];
+        const badge = document.createElement('img');
+        badge.className = 'interactive-voice-chat__wealth-level';
+        badge.src = `../image/wealth-level/wealth-level-${level}.png`;
+        badge.alt = `财富等级${level}`;
+        if (metaEl) {
+          const trigger = document.createElement('span');
+          trigger.className = 'interactive-voice-chat__wealth-trigger';
+          trigger.appendChild(badge);
+          trigger.classList.add('interactive-voice-chat__wealth-tooltip');
+          bindWealthTooltip(trigger, level);
+          if (message.dataset.type === 'mine') {
+            metaEl.insertBefore(trigger, nameEl);
+          } else {
+            nameEl.insertAdjacentElement('afterend', trigger);
+          }
+        }
+      }
+
+      function bindWealthTooltip(trigger, level) {
+        if (!trigger || !tooltipLayer || typeof window.createTooltip !== 'function') return;
+        const meta = getWealthLevelMeta(level);
+        const tooltipWrapper = window.createTooltip({
+          content: `财富等级Lv.${meta.level}`,
+          direction: 'top',
+          trigger: document.createElement('span')
+        });
+        const tooltip = tooltipWrapper.querySelector('.nn-tooltip');
+        if (!tooltip) return;
+        tooltip.classList.add('interactive-voice-wealth-hover-tooltip');
+        tooltip.style.setProperty('--wealth-hover-color', meta.bgStart);
+        const tooltipText = tooltip.querySelector('.nn-tooltip-text');
+        if (tooltipText) {
+          tooltipText.textContent = `财富等级Lv.${meta.level}`;
+        }
+        const tooltipBeak = tooltip.querySelector('.nn-tooltip-beak');
+        const wealthButton = typeof window.createButton === 'function'
+          ? window.createButton({
+            text: '我的财富等级',
+            variant: 'system',
+            level: 'primary',
+            size: 'small',
+            className: 'interactive-voice-wealth-hover-tooltip__action',
+            onClick: function(event) {
+              event.stopPropagation();
+              hideTooltipNow();
+              openWealthLevelDialog(meta.level);
+            }
+          })
+          : document.createElement('button');
+        if (!wealthButton.classList.contains('interactive-voice-wealth-hover-tooltip__action')) {
+          wealthButton.classList.add('interactive-voice-wealth-hover-tooltip__action');
+        }
+        if (!wealthButton.textContent) {
+          wealthButton.type = 'button';
+          wealthButton.textContent = '我的财富等级';
+          wealthButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            hideTooltipNow();
+            openWealthLevelDialog(meta.level);
+          });
+        }
+        if (tooltipBeak) {
+          tooltip.insertBefore(wealthButton, tooltipBeak);
+        } else {
+          tooltip.appendChild(wealthButton);
+        }
+        tooltipLayer.appendChild(tooltip);
+        let hideTooltipTimer = null;
+
+        function positionTooltip() {
+          const triggerRect = trigger.getBoundingClientRect();
+          const layerRect = tooltipLayer.getBoundingClientRect();
+          tooltip.style.left = `${triggerRect.left + triggerRect.width / 2 - layerRect.left}px`;
+          tooltip.style.top = `${triggerRect.top - layerRect.top - tooltip.offsetHeight - 10}px`;
+        }
+
+        function showTooltip() {
+          if (hideTooltipTimer) {
+            window.clearTimeout(hideTooltipTimer);
+            hideTooltipTimer = null;
+          }
+          tooltip.classList.add('is-visible');
+          positionTooltip();
+        }
+
+        function hideTooltip() {
+          if (hideTooltipTimer) {
+            window.clearTimeout(hideTooltipTimer);
+          }
+          hideTooltipTimer = window.setTimeout(function() {
+            tooltip.classList.remove('is-visible');
+            hideTooltipTimer = null;
+          }, 80);
+        }
+
+        function hideTooltipNow() {
+          tooltip.classList.remove('is-visible');
+        }
+
+        trigger.addEventListener('mouseenter', showTooltip);
+        trigger.addEventListener('mouseleave', hideTooltip);
+        trigger.addEventListener('focus', showTooltip);
+        trigger.addEventListener('blur', hideTooltipNow);
+        tooltip.addEventListener('mouseenter', showTooltip);
+        tooltip.addEventListener('mouseleave', hideTooltip);
+      }
+
+      function closeWealthLevelDialog() {
+        if (!wealthModalLayer) return;
+        wealthModalLayer.classList.remove('is-open');
+        wealthModalLayer.setAttribute('aria-hidden', 'true');
+        wealthModalLayer.innerHTML = '';
+      }
+
+      function openWealthLevelDialog(level) {
+        if (!wealthModalLayer || typeof window.createToast !== 'function') return;
+        wealthModalLayer.innerHTML = '';
+        wealthModalLayer.classList.add('is-open');
+        wealthModalLayer.setAttribute('aria-hidden', 'false');
+        const dialog = window.createToast({
+          title: '我的财富等级',
+          content: createWealthLevelDialogContent(level || 1),
+          showClose: true,
+          showFooter: false,
+          className: 'interactive-voice-wealth-dialog',
+          onClose: closeWealthLevelDialog
+        });
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.setAttribute('aria-label', '我的财富等级');
+        wealthModalLayer.appendChild(dialog);
+        bindWealthTitleTooltip(dialog);
+        syncWealthDialogScrollbar(dialog);
+      }
+
+      function bindWealthTitleTooltip(dialog) {
+        if (!dialog) return;
+        const titleRow = dialog.querySelector('.nn-toast__title-row');
+        if (!titleRow) return;
+        if (titleRow.querySelector('.interactive-voice-wealth-title-help')) return;
+        const help = document.createElement('span');
+        help.className = 'interactive-voice-wealth-help interactive-voice-wealth-title-help';
+        help.setAttribute('tabindex', '0');
+        help.setAttribute('aria-label', '等级说明');
+        help.innerHTML = '<i class="nnicon nicon-a-query-lineyiwen-xianxing"></i>';
+        titleRow.appendChild(help);
+        if (!tooltipLayer || typeof window.createTooltip !== 'function') return;
+
+        const tooltipWrapper = window.createTooltip({
+          content: wealthLevelDescription,
+          direction: 'bottom',
+          trigger: document.createElement('span'),
+          type: 'rich',
+          width: '320px'
+        });
+        const tooltip = tooltipWrapper.querySelector('.nn-tooltip');
+        if (!tooltip) return;
+        tooltip.classList.add('interactive-voice-wealth-title-tooltip');
+        tooltipLayer.appendChild(tooltip);
+        let hideTooltipTimer = null;
+
+        function positionTooltip() {
+          const triggerRect = help.getBoundingClientRect();
+          const layerRect = tooltipLayer.getBoundingClientRect();
+          const dialogRect = dialog.getBoundingClientRect();
+          const tooltipWidth = tooltip.offsetWidth;
+          const triggerCenter = triggerRect.left + triggerRect.width / 2;
+          const minCenter = dialogRect.left + tooltipWidth / 2;
+          const maxCenter = dialogRect.right - tooltipWidth / 2;
+          const tooltipCenter = Math.min(Math.max(triggerCenter, minCenter), maxCenter);
+          const tooltipLeft = tooltipCenter - tooltipWidth / 2;
+          const beakLeft = Math.min(Math.max(triggerCenter - tooltipLeft, 12), tooltipWidth - 12);
+          tooltip.style.left = `${tooltipCenter - layerRect.left}px`;
+          tooltip.style.top = `${triggerRect.bottom - layerRect.top + 10}px`;
+          tooltip.style.setProperty('--wealth-title-tooltip-beak-left', `${beakLeft}px`);
+        }
+
+        function showTooltip() {
+          if (hideTooltipTimer) {
+            window.clearTimeout(hideTooltipTimer);
+            hideTooltipTimer = null;
+          }
+          tooltip.classList.add('is-visible');
+          positionTooltip();
+        }
+
+        function hideTooltip() {
+          if (hideTooltipTimer) {
+            window.clearTimeout(hideTooltipTimer);
+          }
+          hideTooltipTimer = window.setTimeout(function() {
+            tooltip.classList.remove('is-visible');
+            hideTooltipTimer = null;
+          }, 80);
+        }
+
+        function hideTooltipNow() {
+          tooltip.classList.remove('is-visible');
+        }
+
+        help.addEventListener('mouseenter', showTooltip);
+        help.addEventListener('mouseleave', hideTooltip);
+        help.addEventListener('focus', showTooltip);
+        help.addEventListener('blur', hideTooltipNow);
+        tooltip.addEventListener('mouseenter', showTooltip);
+        tooltip.addEventListener('mouseleave', hideTooltip);
+      }
+
+      function syncWealthDialogScrollbar(dialog) {
+        if (!dialog) return;
+        window.requestAnimationFrame(function() {
+          const canScroll = dialog.scrollHeight > dialog.clientHeight + 12;
+          dialog.classList.toggle('is-wealth-scrollable', canScroll);
+          if (!canScroll) {
+            dialog.scrollTop = 0;
+          }
+          const scrollbar = dialog.querySelector(':scope > .nn-scrollbar');
+          if (scrollbar) {
+            scrollbar.style.display = canScroll ? '' : 'none';
+          }
+        });
+      }
+
+      function createTextElement(className, text) {
+        const node = document.createElement('div');
+        node.className = className;
+        node.textContent = text;
+        return node;
+      }
+
+      function createWealthLevelDialogContent(level) {
+        const safeLevel = getWealthLevelMeta(level).level;
+        const content = document.createElement('div');
+        content.className = 'interactive-voice-wealth-content';
+        const progress = createWealthProgress(currentUserWealthLevel);
+        const privilegeSlot = document.createElement('div');
+        privilegeSlot.className = 'interactive-voice-wealth-privilege-slot';
+        function renderPrivilege(selectedLevel) {
+          updateWealthProgressBackground(progress, selectedLevel);
+          privilegeSlot.replaceChildren(createWealthPrivilegeSection(selectedLevel));
+          syncWealthDialogScrollbar(wealthModalLayer && wealthModalLayer.querySelector('.interactive-voice-wealth-dialog'));
+        }
+        content.appendChild(createWealthTabs(safeLevel, renderPrivilege));
+        renderPrivilege(safeLevel);
+        content.appendChild(privilegeSlot);
+        content.appendChild(progress);
+        content.appendChild(createWealthSettings());
+        return content;
+      }
+
+      function updateWealthProgressBackground(progress, level) {
+        if (!progress) return;
+        const meta = getWealthLevelMeta(level);
+        progress.style.setProperty('--wealth-progress-bg-start', meta.bgStart);
+        progress.style.setProperty('--wealth-progress-bg-end', meta.bgEnd);
+      }
+
+      function createWealthProgress(level) {
+        const meta = getWealthLevelMeta(level);
+        const progress = document.createElement('section');
+        progress.className = 'interactive-voice-wealth-progress';
+        updateWealthProgressBackground(progress, level);
+
+        const main = document.createElement('div');
+        main.className = 'interactive-voice-wealth-progress__main';
+        const levelRow = document.createElement('div');
+        levelRow.className = 'interactive-voice-wealth-progress__level';
+        levelRow.appendChild(createTextElement('', `LV${meta.level}`));
+        const badge = document.createElement('img');
+        badge.className = 'interactive-voice-wealth-progress__badge';
+        badge.src = `../image/wealth-level/wealth-level-${meta.level}.png`;
+        badge.alt = `财富等级${meta.level}`;
+        levelRow.appendChild(badge);
+
+        const row = document.createElement('div');
+        row.className = 'interactive-voice-wealth-progress__row';
+        row.appendChild(createTextElement('', `LV.${meta.level}`));
+        const track = document.createElement('span');
+        track.className = 'interactive-voice-wealth-progress__track';
+        const bar = document.createElement('span');
+        bar.className = 'interactive-voice-wealth-progress__bar';
+        track.appendChild(bar);
+        row.appendChild(track);
+        row.appendChild(createTextElement('', `LV.${meta.nextLevel}`));
+        const distance = document.createElement('span');
+        distance.className = 'interactive-voice-wealth-distance';
+        distance.appendChild(createTextElement('', `距离LV${meta.nextLevel}还差`));
+        distance.appendChild(createTextElement('interactive-voice-wealth-distance__value', '10'));
+        distance.appendChild(createTextElement('', '财富值'));
+        row.appendChild(distance);
+
+        main.appendChild(levelRow);
+        main.appendChild(row);
+        progress.appendChild(main);
+
+        if (typeof window.createButton === 'function') {
+          progress.appendChild(window.createButton({
+            text: '一键升级',
+            variant: 'system',
+            level: 'primary',
+            size: 'default',
+            className: 'interactive-voice-wealth-upgrade'
+          }));
+        }
+        return progress;
+      }
+
+      function createWealthTabs(level, onChange) {
+        const meta = getWealthLevelMeta(level);
+        if (typeof window.createTabs === 'function') {
+          const tabs = window.createTabs({
+            type: 'primary',
+            defaultActive: meta.tabIndex,
+            tabs: wealthLevelGroups.map(function(group) {
+              return { name: group.name };
+            }),
+            onChange: function(event) {
+              const group = wealthLevelGroups[event.index] || wealthLevelGroups[0];
+              if (typeof onChange === 'function') {
+                onChange(group.start);
+              }
+            }
+          });
+          tabs.classList.add('interactive-voice-wealth-tabs');
+          return tabs;
+        }
+
+        const fallbackTabs = document.createElement('div');
+        fallbackTabs.className = 'interactive-voice-wealth-tabs nn-tabs nn-tabs-primary';
+        wealthLevelGroups.forEach(function(group, index) {
+          const tab = createTextElement('nn-tab' + (index === meta.tabIndex ? ' active' : ''), group.name);
+          tab.addEventListener('click', function() {
+            fallbackTabs.querySelectorAll('.nn-tab').forEach(function(item) {
+              item.classList.remove('active');
+            });
+            tab.classList.add('active');
+            if (typeof onChange === 'function') {
+              onChange(group.start);
+            }
+          });
+          fallbackTabs.appendChild(tab);
+        });
+        return fallbackTabs;
+      }
+
+      function createWealthPrivilegeSection(level) {
+        const meta = getWealthLevelMeta(level);
+        const isLocked = currentUserWealthLevel < meta.level;
+        const section = document.createElement('section');
+        section.className = 'interactive-voice-wealth-privilege';
+        section.style.setProperty('--wealth-card-bg-start', meta.bgStart);
+        section.style.setProperty('--wealth-card-bg-end', meta.bgEnd);
+
+        const card = document.createElement('div');
+        card.className = 'interactive-voice-wealth-card';
+        card.style.setProperty('--wealth-card-bg-start', meta.bgStart);
+        card.style.setProperty('--wealth-card-bg-end', meta.bgEnd);
+        card.appendChild(createWealthHalo());
+        const cardIcon = document.createElement('img');
+        cardIcon.className = 'interactive-voice-wealth-card__icon';
+        cardIcon.src = `../image/wealth-level/wealth-level-icon-${meta.iconName}.png`;
+        cardIcon.alt = meta.name;
+        card.appendChild(cardIcon);
+        const cardText = document.createElement('div');
+        cardText.className = 'interactive-voice-wealth-card__text';
+        cardText.appendChild(createTextElement('interactive-voice-wealth-card__name', meta.name));
+        cardText.appendChild(createTextElement('interactive-voice-wealth-card__range', meta.range));
+        card.appendChild(cardText);
+        section.appendChild(card);
+
+        const benefits = document.createElement('div');
+        benefits.className = 'interactive-voice-wealth-benefits';
+        benefits.appendChild(createWealthBenefitGroup('可享特权外装', [
+          { name: '头像框', src: '../image/wealth-benefit/avatar-frame.png', imageSize: 66 },
+          { name: '入场特效', src: '../image/wealth-benefit/entrance-effect.png', imageSize: 66 },
+          { name: '聊天气泡框', src: '../image/wealth-benefit/chat-bubble.png', imageSize: 66 },
+          { name: '入场坐骑', src: '../image/wealth-benefit/entrance-mount.png', imageSize: 66 }
+        ], isLocked));
+        benefits.appendChild(createWealthBenefitGroup('可享特权礼物', getWealthGiftItems(meta.tabIndex), isLocked));
+        section.appendChild(benefits);
+        return section;
+      }
+
+      function createWealthHalo() {
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('class', 'interactive-voice-wealth-card__halo');
+        svg.setAttribute('viewBox', '0 0 208 219');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('aria-hidden', 'true');
+
+        const gradientPrefix = 'wealth-halo-ray-' + Math.random().toString(36).slice(2);
+        const ringGradientId = `${gradientPrefix}-ring`;
+        const topGlowId = `${gradientPrefix}-top-glow`;
+        const rayConfigs = [
+          {
+            path: 'M82.5883 79.3348L79.0845 0H107.114L103.611 79.3348H82.5883Z',
+            gradient: ['93.0995', '0', '93.0995', '79.3348']
+          },
+          {
+            path: 'M115.373 102.015L185.831 138.648L171.816 162.923L104.862 120.221L115.373 102.015Z',
+            gradient: ['178.824', '150.786', '110.118', '111.118']
+          },
+          {
+            path: 'M103.11 121.63L106.613 200.965H78.5834L82.0872 121.63H103.11Z',
+            gradient: ['92.5984', '200.965', '92.5984', '121.63']
+          },
+          {
+            path: 'M80.9693 120.473L14.0151 163.175L0.000102502 138.9L70.458 102.267L80.9693 120.473Z',
+            gradient: ['7.0076', '151.037', '75.7136', '111.37']
+          },
+          {
+            path: 'M115.373 99.0742L185.831 62.4412L171.816 38.1665L104.862 80.8682L115.373 99.0742Z',
+            gradient: ['178.824', '50.3038', '110.118', '89.9713']
+          },
+          {
+            path: 'M80.9693 80.6174L14.0151 37.9156L0.000109185 62.1903L70.458 98.8234L80.9693 80.6174Z',
+            gradient: ['7.00761', '50.053', '75.7136', '89.7204']
+          }
+        ];
+        const defs = document.createElementNS(svgNS, 'defs');
+        const ringGradient = document.createElementNS(svgNS, 'linearGradient');
+        ringGradient.setAttribute('id', ringGradientId);
+        ringGradient.setAttribute('x1', '104.502');
+        ringGradient.setAttribute('y1', '12.5558');
+        ringGradient.setAttribute('x2', '104.502');
+        ringGradient.setAttribute('y2', '179.446');
+        ringGradient.setAttribute('gradientUnits', 'userSpaceOnUse');
+        [
+          ['0', '1'],
+          ['0.0722622', '0.33'],
+          ['1', '0']
+        ].forEach(function(stopConfig) {
+          const stop = document.createElementNS(svgNS, 'stop');
+          stop.setAttribute('offset', stopConfig[0]);
+          stop.setAttribute('stop-color', 'currentColor');
+          stop.setAttribute('stop-opacity', stopConfig[1]);
+          ringGradient.appendChild(stop);
+        });
+        defs.appendChild(ringGradient);
+
+        const topGlow = document.createElementNS(svgNS, 'radialGradient');
+        topGlow.setAttribute('id', topGlowId);
+        topGlow.setAttribute('cx', '0');
+        topGlow.setAttribute('cy', '0');
+        topGlow.setAttribute('r', '1');
+        topGlow.setAttribute('gradientUnits', 'userSpaceOnUse');
+        topGlow.setAttribute('gradientTransform', 'translate(105.281 12.1657) rotate(90) scale(11.23)');
+        [
+          ['0', '0.3'],
+          ['0.979167', '1'],
+          ['1', '1']
+        ].forEach(function(stopConfig) {
+          const stop = document.createElementNS(svgNS, 'stop');
+          stop.setAttribute('offset', stopConfig[0]);
+          stop.setAttribute('stop-color', 'currentColor');
+          stop.setAttribute('stop-opacity', stopConfig[1]);
+          topGlow.appendChild(stop);
+        });
+        defs.appendChild(topGlow);
+
+        rayConfigs.forEach(function(config, index) {
+          const rayGradient = document.createElementNS(svgNS, 'linearGradient');
+          rayGradient.setAttribute('id', `${gradientPrefix}-${index}`);
+          rayGradient.setAttribute('x1', config.gradient[0]);
+          rayGradient.setAttribute('y1', config.gradient[1]);
+          rayGradient.setAttribute('x2', config.gradient[2]);
+          rayGradient.setAttribute('y2', config.gradient[3]);
+          rayGradient.setAttribute('gradientUnits', 'userSpaceOnUse');
+          [
+            ['0', '0'],
+            ['1', '0.4']
+          ].forEach(function(stopConfig) {
+            const stop = document.createElementNS(svgNS, 'stop');
+            stop.setAttribute('offset', stopConfig[0]);
+            stop.setAttribute('stop-color', 'currentColor');
+            stop.setAttribute('stop-opacity', stopConfig[1]);
+            rayGradient.appendChild(stop);
+          });
+          defs.appendChild(rayGradient);
+        });
+        svg.appendChild(defs);
+
+        const rayGroup = document.createElementNS(svgNS, 'svg');
+        rayGroup.setAttribute('x', '11');
+        rayGroup.setAttribute('y', '5');
+        rayGroup.setAttribute('width', '185.831');
+        rayGroup.setAttribute('height', '200.965');
+        rayGroup.setAttribute('viewBox', '0 0 185.831 200.965');
+        rayGroup.setAttribute('preserveAspectRatio', 'none');
+        rayConfigs.forEach(function(config, index) {
+          const ray = document.createElementNS(svgNS, 'path');
+          ray.setAttribute('d', config.path);
+          ray.setAttribute('fill', `url(#${gradientPrefix}-${index})`);
+          rayGroup.appendChild(ray);
+        });
+        svg.appendChild(rayGroup);
+
+        const ring = document.createElementNS(svgNS, 'path');
+        ring.setAttribute('fill-rule', 'evenodd');
+        ring.setAttribute('clip-rule', 'evenodd');
+        ring.setAttribute('d', 'M104.112 217.27C160.319 217.27 205.884 171.705 205.884 115.498C205.884 59.2904 160.319 13.7256 104.112 13.7256C47.9045 13.7256 2.33962 59.2904 2.33962 115.498C2.33962 171.705 47.9045 217.27 104.112 217.27ZM104.112 219.609C161.611 219.609 208.223 172.997 208.223 115.498C208.223 57.9983 161.611 11.386 104.112 11.386C46.6124 11.386 0.0000305176 57.9983 0.0000305176 115.498C0.0000305176 172.997 46.6124 219.609 104.112 219.609Z');
+        ring.setAttribute('fill', `url(#${ringGradientId})`);
+        svg.appendChild(ring);
+
+        const topGlowCircle = document.createElementNS(svgNS, 'circle');
+        topGlowCircle.setAttribute('cx', '105.281');
+        topGlowCircle.setAttribute('cy', '12.1657');
+        topGlowCircle.setAttribute('r', '7.01876');
+        topGlowCircle.setAttribute('fill', `url(#${topGlowId})`);
+        topGlowCircle.setAttribute('opacity', '0.5');
+        svg.appendChild(topGlowCircle);
+
+        const star = document.createElementNS(svgNS, 'path');
+        star.setAttribute('d', 'M105.281 0.467896L106.285 11.0908L116.199 12.1658L106.285 13.2409L105.281 23.8638L104.278 13.2409L94.3633 12.1658L104.278 11.0908L105.281 0.467896Z');
+        star.setAttribute('fill', 'currentColor');
+        star.setAttribute('opacity', '0.9');
+        svg.appendChild(star);
+
+        return svg;
+      }
+
+      function getWealthGiftItems(tabIndex) {
+        const group = wealthGiftGroups[tabIndex] || wealthGiftGroups[0];
+        return group.map(function(item) {
+          return Object.assign({ imageSize: 58 }, item);
+        });
+      }
+
+      function createWealthBenefitGroup(title, items, locked) {
+        const group = document.createElement('div');
+        group.className = 'interactive-voice-wealth-benefit-group';
+        const titleEl = document.createElement('p');
+        titleEl.className = 'interactive-voice-wealth-benefit-title';
+        titleEl.textContent = title;
+        group.appendChild(titleEl);
+        const list = document.createElement('div');
+        list.className = 'interactive-voice-wealth-benefit-list';
+        items.forEach(function(item) {
+          const benefit = document.createElement('div');
+          benefit.className = ['interactive-voice-wealth-benefit', locked ? 'is-locked' : ''].filter(Boolean).join(' ');
+          const media = document.createElement('div');
+          media.className = 'interactive-voice-wealth-benefit__media';
+          const image = document.createElement('img');
+          image.src = item.src;
+          image.alt = item.name;
+          if (item.imageSize) {
+            image.style.setProperty('--wealth-benefit-image-size', `${item.imageSize}px`);
+          }
+          media.appendChild(image);
+          if (locked) {
+            const lock = document.createElement('span');
+            lock.className = 'interactive-voice-wealth-benefit__lock';
+            lock.setAttribute('aria-label', '未达到当前等级');
+            lock.innerHTML = '<i class="nnicon nicon-a-lock-fillsuo-mianxing"></i>';
+            media.appendChild(lock);
+          }
+          benefit.appendChild(media);
+          benefit.appendChild(createTextElement('', item.name));
+          list.appendChild(benefit);
+        });
+        group.appendChild(list);
+        return group;
+      }
+
+      function createWealthSettings() {
+        const settings = document.createElement('div');
+        settings.className = 'interactive-voice-wealth-settings';
+        settings.appendChild(createWealthSetting({
+          title: '勋章展示',
+          desc: '关闭后将不会在平台任意场景展示你的财富等级勋章',
+          switcher: true
+        }));
+        return settings;
+      }
+
+      function createWealthSetting(item) {
+        const row = document.createElement('div');
+        row.className = 'interactive-voice-wealth-setting';
+        const copy = document.createElement('div');
+        copy.className = 'interactive-voice-wealth-setting__copy';
+        const header = document.createElement('div');
+        header.className = 'interactive-voice-wealth-setting__header';
+        header.appendChild(createTextElement('interactive-voice-wealth-setting__title', item.title));
+        if (item.switcher && typeof window.createSwitch === 'function') {
+          header.appendChild(window.createSwitch({
+            checked: true,
+            size: 'large'
+          }));
+        }
+        copy.appendChild(header);
+        copy.appendChild(createTextElement('interactive-voice-wealth-setting__desc', item.desc));
+        row.appendChild(copy);
+        return row;
+      }
+
+      if (typeof window.createButton === 'function') {
+        roomButtonsSlot.appendChild(window.createButton({
+          text: '邀请/分享',
+          variant: 'system',
+          level: 'primary',
+          size: 'small'
+        }));
+        const inviteCopyNotice = document.createElement('div');
+        inviteCopyNotice.className = 'nn-header__notice';
+        const inviteCopyText = document.createElement('span');
+        inviteCopyText.className = 'nn-header__notice-text';
+        inviteCopyText.textContent = '我的逆天队友上分无敌';
+        inviteCopyNotice.appendChild(inviteCopyText);
+        roomButtonsSlot.appendChild(inviteCopyNotice);
+      }
+
+      seatData.forEach(function(item) {
+        seatsSlot.appendChild(createMicCard(item));
+      });
+
+      if (typeof window.createVoiceRoomActionGroup === 'function') {
+        const actionGroup = window.createVoiceRoomActionGroup({
+          perspective: 'user',
+          queueEnabled: true,
+          queueCount: 11,
+          showGift: true,
+          showPointsMall: false
+        });
+        bindGiftAction(actionGroup);
+        actionGroupSlot.appendChild(actionGroup);
+      }
+
+      renderFloatingAd();
+
+      function createOnlineAvatarStrip() {
+        const strip = document.createElement('span');
+        strip.className = 'interactive-voice-online-strip';
+        [
+          { src: '../image/Avatar/头像991.png', text: '访客1' },
+          { src: '../image/Avatar/头像824.png', text: '访客2' },
+          { src: '../image/Avatar/头像1078.png', text: '访客3' }
+        ].forEach(function(item) {
+          const avatarItem = document.createElement('span');
+          avatarItem.className = 'interactive-voice-online-strip__item';
+          avatarItem.appendChild(window.createAvatar({ src: item.src, text: item.text, size: 16 }));
+          strip.appendChild(avatarItem);
+        });
+        return strip;
+      }
+
+      visitorAvatarsSlot.appendChild(createOnlineAvatarStrip());
+
+      const onlineAudienceSeeds = [
+        { name: '月亮o3鸭', avatar: '../image/Avatar/头像441.png', role: '管', level: 34, value: '1.41w' },
+        { name: '瓜瓜o3', avatar: '../image/Avatar/头像542.png', role: '持', level: 32, value: '99' },
+        { name: '小小意.o3.手/端', avatar: '../image/Avatar/头像511.png', role: '管', level: 25, value: '0' },
+        { name: '美女o3', avatar: '../image/Avatar/头像824.png', level: 17, value: '0' },
+        { name: '甜心传媒', avatar: '../image/Avatar/头像1078.png', role: '持', level: 23, value: '0' },
+        { name: '关关o3洲跑刀', avatar: '../image/Avatar/头像496.png', role: '持', level: 22, value: '0' },
+        { name: '安冉o3', avatar: '../image/Avatar/头像480.png', role: '持', level: 12, value: '0' },
+        { name: '晚礼o3', avatar: '../image/Avatar/头像1095.png', level: 19, value: '0' },
+        { name: 'Zone', avatar: '../image/Avatar/头像748.png', level: 7, value: '0' }
+      ];
+
+      const onlineAudienceData = Array.from({ length: 54 }, function(_, index) {
+        const seed = onlineAudienceSeeds[index % onlineAudienceSeeds.length];
+        const cycle = Math.floor(index / onlineAudienceSeeds.length);
+        return Object.assign({}, seed, {
+          name: cycle ? `${seed.name}${cycle + 1}` : seed.name,
+          level: Math.max(1, ((seed.level + index * 3 - 1) % 100) + 1),
+          value: index < onlineAudienceSeeds.length ? seed.value : String((index * 13) % 100)
+        });
+      });
+
+      const onlineCharmRankData = [
+        { name: 'NN.音音', avatar: '../image/Avatar/头像480.png', role: '持', level: 51, value: '8.9w' },
+        { name: 'SAMSARA', avatar: '../image/Avatar/头像496.png', level: 41, value: '6.6w' },
+        { name: 'TO荼靡', avatar: '../image/Avatar/头像1095.png', role: '管', level: 31, value: '4.2w' },
+        { name: '顾影', avatar: '../image/Avatar/头像985.png', level: 21, value: '2.7w' },
+        { name: 'TR.泡芙', avatar: '../image/Avatar/头像827.png', role: '持', level: 11, value: '1.3w' },
+        { name: '南栀Echo', avatar: '../image/Avatar/头像441.png', level: 5, value: '998' }
+      ];
+
+      const onlineWealthRankData = [
+        { name: '月亮o3鸭', avatar: '../image/Avatar/头像441.png', role: '管', level: 91, value: 'Lv.91' },
+        { name: '瓜瓜o3', avatar: '../image/Avatar/头像542.png', role: '持', level: 81, value: 'Lv.81' },
+        { name: '晚礼o3', avatar: '../image/Avatar/头像1095.png', level: 71, value: 'Lv.71' },
+        { name: '美女o3', avatar: '../image/Avatar/头像824.png', level: 61, value: 'Lv.61' },
+        { name: 'Zone', avatar: '../image/Avatar/头像748.png', level: 51, value: 'Lv.51' }
+      ];
+
+      const onlineContributionRankData = [
+        { name: '甜心传媒', avatar: '../image/Avatar/头像1078.png', role: '持', level: 43, value: '1.41w' },
+        { name: '关关o3洲跑刀', avatar: '../image/Avatar/头像496.png', role: '持', level: 39, value: '99' },
+        { name: '安冉o3', avatar: '../image/Avatar/头像480.png', role: '持', level: 31, value: '0' },
+        { name: '小小意.o3.手/端', avatar: '../image/Avatar/头像511.png', role: '管', level: 25, value: '0' },
+        { name: '南栀Echo', avatar: '../image/Avatar/头像441.png', level: 21, value: '0' }
+      ];
+
+      function expandRankData(data, size, valueFormatter) {
+        return Array.from({ length: size }, function(_, index) {
+          if (data[index]) return data[index];
+          const seed = onlineAudienceData[index % onlineAudienceData.length];
+          return {
+            name: seed.name,
+            avatar: seed.avatar,
+            role: seed.role,
+            level: Math.max(1, ((seed.level + index * 2 - 1) % 100) + 1),
+            value: valueFormatter(index)
+          };
+        });
+      }
+
+      const onlineCharmRankList = expandRankData(onlineCharmRankData, 12, function(index) {
+        return index < 9 ? `${(12 - index) * 120}` : '0';
+      });
+
+      const onlineWealthRankList = expandRankData(onlineWealthRankData, 12, function(index) {
+        return `Lv.${Math.max(1, 80 - index * 4)}`;
+      });
+
+      const onlineContributionRankList = expandRankData(onlineContributionRankData, 12, function(index) {
+        return index < 8 ? `${(10 - index) * 99}` : '0';
+      });
+
+      const onlinePopoverPanels = [
+        {
+          name: '在线人数',
+          countText: '56 位观众',
+          sortText: '在线观众按照日贡献排序',
+          data: onlineAudienceData
+        },
+        {
+          name: '魅力榜',
+          countText: '魅力榜',
+          sortText: '按照魅力值排序',
+          data: onlineCharmRankList
+        },
+        {
+          name: '财富榜',
+          countText: '财富榜',
+          sortText: '按照财富等级排序',
+          data: onlineWealthRankList
+        },
+        {
+          name: '贡献榜',
+          countText: '贡献榜',
+          sortText: '按照贡献值排序',
+          data: onlineContributionRankList
+        }
+      ];
+
+      function createOnlineLeaderboardRows(data) {
+        return data.map(function(item, index) {
+          return {
+            rank: index + 1,
+            name: item.name,
+            avatar: item.avatar,
+            rankLv: item.level,
+            rankText: '',
+            rankSize: 'small',
+            value: item.value,
+            wins: item.value
+          };
+        });
+      }
+
+      function createRankBadge(level) {
+        const badge = document.createElement('img');
+        const safeLevel = Math.max(1, Math.min(100, Math.round(Number(level) || 1)));
+        badge.className = 'interactive-voice-online-popover__wealth';
+        badge.src = `../image/wealth-level/wealth-level-${safeLevel}.png`;
+        badge.alt = `财富等级${safeLevel}`;
+        return badge;
+      }
+
+      function syncLeaderboardWealthBadges(leaderboard, data) {
+        if (!leaderboard) return;
+        leaderboard.querySelectorAll('.nn-leaderboard__row').forEach(function(row) {
+          const rank = Number(row.dataset.rank || 0);
+          const item = data[rank - 1];
+          if (!item) return;
+          const identity = row.querySelector('.nn-leaderboard__identity');
+          if (!identity) return;
+          identity.querySelectorAll('.nn-equity-rank').forEach(function(node) {
+            node.remove();
+          });
+          identity.appendChild(createRankBadge(item.level));
+        });
+        leaderboard.querySelectorAll('.nn-leaderboard__self-title .nn-equity-rank').forEach(function(node) {
+          node.remove();
+        });
+      }
+
+      function createPodiumCrown() {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'interactive-voice-online-popover__podium-crown');
+        svg.setAttribute('viewBox', '0 0 32 32');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.innerHTML = '<path fill="currentColor" d="M6.4 24.7h19.2l1.7-12.1-6.3 4.1-5-9.2-5 9.2-6.3-4.1 1.7 12.1ZM5 11.1a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Zm11-3.8a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Zm11 3.8a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>';
+        return svg;
+      }
+
+      function createLeaderboardPodium(data) {
+        const podium = document.createElement('div');
+        podium.className = 'interactive-voice-online-popover__podium';
+        const podiumOrder = [1, 0, 2];
+        const podiumStyles = [
+          { color: '#F6C66B', bg: '#B08A44', border: '#F6C66B', avatar: '#FFAE57', crown: '#FFD66F' },
+          { color: '#8EB6D8', bg: '#6D93B1', border: '#8EB6D8', avatar: '#C7E6F8', crown: '#D9F2FF' },
+          { color: '#B87852', bg: '#8A604A', border: '#B87852', avatar: '#E59B5E', crown: '#E7A676' }
+        ];
+        podiumOrder.forEach(function(dataIndex, orderIndex) {
+          const item = data[dataIndex];
+          if (!item) return;
+          const rank = dataIndex + 1;
+          const style = podiumStyles[dataIndex] || podiumStyles[0];
+          const card = document.createElement('div');
+          card.className = `interactive-voice-online-popover__podium-card is-rank-${rank}`;
+          card.style.setProperty('--podium-color', style.color);
+          card.style.setProperty('--podium-bg-color', style.bg);
+          card.style.setProperty('--podium-border-color', style.border);
+          card.style.setProperty('--podium-avatar-color', style.avatar);
+          card.style.setProperty('--podium-crown-color', style.crown);
+
+          const avatarWrap = document.createElement('div');
+          avatarWrap.className = 'interactive-voice-online-popover__podium-avatar';
+          avatarWrap.appendChild(window.createAvatar({
+            src: item.avatar,
+            text: item.name,
+            size: rank === 1 ? 60 : 48
+          }));
+          avatarWrap.appendChild(createPodiumCrown());
+          card.appendChild(avatarWrap);
+
+          card.appendChild(createTextElement('interactive-voice-online-popover__podium-name', item.name));
+          const rankWrap = document.createElement('div');
+          rankWrap.className = 'interactive-voice-online-popover__podium-rank';
+          rankWrap.appendChild(createRankBadge(item.level));
+          card.appendChild(rankWrap);
+          card.appendChild(createTextElement('interactive-voice-online-popover__podium-value', item.value));
+          podium.appendChild(card);
+        });
+        return podium;
+      }
+
+      function createOnlinePopoverRow(item) {
+        const row = document.createElement('div');
+        row.className = 'interactive-voice-online-popover__row';
+        if (typeof window.createAvatar === 'function') {
+          row.appendChild(window.createAvatar({
+            src: item.avatar,
+            text: item.name,
+            size: 36
+          }));
+        }
+
+        const copy = document.createElement('div');
+        copy.className = 'interactive-voice-online-popover__copy';
+        const wealth = document.createElement('img');
+        wealth.className = 'interactive-voice-online-popover__wealth';
+        wealth.src = `../image/wealth-level/wealth-level-${item.level}.png`;
+        wealth.alt = `财富等级${item.level}`;
+        copy.appendChild(createTextElement('interactive-voice-online-popover__name', item.name));
+        copy.appendChild(wealth);
+        row.appendChild(copy);
+
+        row.appendChild(createTextElement('interactive-voice-online-popover__value', item.value));
+        return row;
+      }
+
+      function syncAudienceHoverWidth() {
+        if (!onlinePopover) return;
+        const searchInput = onlinePopover.querySelector('.interactive-voice-online-popover__search-input');
+        if (!searchInput) return;
+        onlinePopover.style.setProperty('--interactive-voice-audience-hover-width', `${searchInput.getBoundingClientRect().width}px`);
+      }
+
+      function renderOnlinePopoverPanel(index) {
+        if (!onlinePopover) return;
+        const body = onlinePopover.querySelector('.interactive-voice-online-popover__body');
+        if (!body) return;
+        body.innerHTML = '';
+
+        const panel = onlinePopoverPanels[index] || onlinePopoverPanels[0];
+
+        if (index > 0 && typeof window.createLeaderboard === 'function') {
+          const leaderboardSlot = document.createElement('div');
+          leaderboardSlot.className = 'interactive-voice-online-popover__leaderboard-slot';
+          function renderLeaderboard(periodIndex) {
+            leaderboardSlot.innerHTML = '';
+            const periodData = panel.data.map(function(item, itemIndex) {
+              return Object.assign({}, item, {
+                value: periodIndex === 0 ? item.value : item.value,
+                level: item.level + periodIndex + itemIndex
+              });
+            });
+            leaderboardSlot.appendChild(createLeaderboardPodium(periodData));
+            const leaderboard = window.createLeaderboard({
+              primaryTabs: [panel.name],
+              primaryActive: 0,
+              showMore: false,
+              mode: 'wins',
+              rows: createOnlineLeaderboardRows(periodData),
+              maxRows: 12,
+              showSelf: true,
+              avatarSize: 36,
+              self: {
+                rank: ' ',
+                name: 'candice',
+                avatar: '../image/Avatar/头像496.png',
+                desc: panel.name === '魅力榜' ? '0 魅力值' : panel.name === '财富榜' ? '0 财富值' : '0 贡献值',
+                value: '暂未上榜'
+              },
+              height: 520,
+              className: 'interactive-voice-online-popover__leaderboard'
+            });
+            leaderboardSlot.appendChild(leaderboard);
+            syncLeaderboardWealthBadges(leaderboard, periodData);
+            requestAnimationFrame(function() {
+              const bodyRect = body.getBoundingClientRect();
+              const leaderboardRect = leaderboard.getBoundingClientRect();
+              const nextHeight = Math.max(0, bodyRect.bottom - leaderboardRect.top);
+              leaderboard.style.setProperty('--nn-leaderboard-height', `${nextHeight}px`);
+            });
+          }
+          if (typeof window.createTabs === 'function') {
+            const rankTabsWrap = document.createElement('div');
+            rankTabsWrap.className = 'interactive-voice-online-popover__rank-tabs';
+            rankTabsWrap.appendChild(window.createTabs({
+              type: 'tertiary-box',
+              defaultActive: 0,
+              tabs: [
+                { name: '日榜' },
+                { name: '周榜' },
+                { name: '月榜' }
+              ],
+              onChange: function(event) {
+                renderLeaderboard(event.index);
+              }
+            }));
+            body.appendChild(rankTabsWrap);
+          }
+          body.appendChild(leaderboardSlot);
+          renderLeaderboard(0);
+          return;
+        }
+
+        const summary = document.createElement('div');
+        summary.className = 'interactive-voice-online-popover__summary';
+        summary.appendChild(createTextElement('', panel.countText));
+        summary.appendChild(createTextElement('', panel.sortText));
+        body.appendChild(summary);
+
+        const list = document.createElement('div');
+        list.className = 'interactive-voice-online-popover__list';
+        function renderAudienceList(keyword) {
+          const normalizedKeyword = String(keyword || '').trim().toLowerCase();
+          const filteredData = normalizedKeyword
+            ? panel.data.filter(function(item) {
+              return [
+                item.name,
+                item.role,
+                item.level,
+                item.value
+              ].some(function(value) {
+                return String(value || '').toLowerCase().includes(normalizedKeyword);
+              });
+            })
+            : panel.data;
+          summary.firstChild.textContent = normalizedKeyword ? `${filteredData.length} 位观众` : panel.countText;
+          list.innerHTML = '';
+          if (!filteredData.length) {
+            list.appendChild(createTextElement('interactive-voice-online-popover__empty', '暂无匹配观众'));
+            return;
+          }
+          filteredData.forEach(function(item) {
+            list.appendChild(createOnlinePopoverRow(item));
+          });
+        }
+        if (typeof window.createInput === 'function') {
+          const searchWrap = document.createElement('div');
+          searchWrap.className = 'interactive-voice-online-popover__search';
+          const searchInput = window.createInput({
+            placeholder: '搜索用户昵称/ID',
+            size: 'default',
+            showSearch: true,
+            onInput: function(event) {
+              renderAudienceList(event.value);
+            },
+            onClear: function() {
+              renderAudienceList('');
+            }
+          });
+          searchInput.classList.add('interactive-voice-online-popover__search-input');
+          searchWrap.appendChild(searchInput);
+          body.appendChild(searchWrap);
+        }
+        body.appendChild(list);
+        renderAudienceList('');
+        requestAnimationFrame(syncAudienceHoverWidth);
+      }
+
+      function renderOnlinePopover() {
+        if (!onlinePopover) return;
+        onlinePopover.innerHTML = '';
+        onlinePopover.setAttribute('role', 'dialog');
+        onlinePopover.setAttribute('aria-label', '在线人数和排行榜');
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'interactive-voice-online-popover__close';
+        close.setAttribute('aria-label', '关闭弹层');
+        close.innerHTML = '<svg class="svgfont interactive-voice-online-popover__close-icon" aria-hidden="true"><use xlink:href="#nicon-a-CollapseTotheright-linexiangyoushouqi-xianxing"></use></svg>';
+        close.addEventListener('click', function(event) {
+          event.stopPropagation();
+          closeOnlinePopover();
+        });
+
+        const tabsWrap = document.createElement('div');
+        tabsWrap.className = 'interactive-voice-online-popover__tabs';
+        tabsWrap.appendChild(close);
+        if (typeof window.createTabs === 'function') {
+          tabsWrap.appendChild(window.createTabs({
+            type: 'primary',
+            defaultActive: 0,
+            tabs: onlinePopoverPanels.map(function(panel) {
+              return { name: panel.name };
+            }),
+            onChange: function(event) {
+              renderOnlinePopoverPanel(event.index);
+              requestAnimationFrame(syncAudienceHoverWidth);
+            }
+          }));
+        }
+        onlinePopover.appendChild(tabsWrap);
+
+        const body = document.createElement('div');
+        body.className = 'interactive-voice-online-popover__body';
+        onlinePopover.appendChild(body);
+        renderOnlinePopoverPanel(0);
+        requestAnimationFrame(syncAudienceHoverWidth);
+      }
+
+      function closeOnlinePopover() {
+        if (!onlinePopover || !onlineTrigger) return;
+        onlinePopover.classList.remove('is-open');
+        onlinePopover.setAttribute('aria-hidden', 'true');
+        onlineTrigger.classList.remove('is-open');
+        onlineTrigger.setAttribute('aria-expanded', 'false');
+      }
+
+      function openOnlinePopover() {
+        if (!onlinePopover || !onlineTrigger) return;
+        if (!onlinePopover.children.length) {
+          renderOnlinePopover();
+        }
+        onlinePopover.classList.add('is-open');
+        onlinePopover.setAttribute('aria-hidden', 'false');
+        onlineTrigger.classList.add('is-open');
+        onlineTrigger.setAttribute('aria-expanded', 'true');
+        requestAnimationFrame(syncAudienceHoverWidth);
+      }
+
+      function toggleOnlinePopover() {
+        if (onlinePopover && onlinePopover.classList.contains('is-open')) {
+          closeOnlinePopover();
+          return;
+        }
+        openOnlinePopover();
+      }
+
+      if (onlineTrigger) {
+        onlineTrigger.setAttribute('role', 'button');
+        onlineTrigger.setAttribute('tabindex', '0');
+        onlineTrigger.setAttribute('aria-haspopup', 'dialog');
+        onlineTrigger.setAttribute('aria-expanded', 'false');
+        onlineTrigger.addEventListener('click', function(event) {
+          event.stopPropagation();
+          toggleOnlinePopover();
+        });
+        onlineTrigger.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleOnlinePopover();
+          }
+        });
+      }
+
+      document.addEventListener('click', function(event) {
+        if (!onlinePopover || !onlinePopover.classList.contains('is-open')) return;
+        if (onlinePopover.contains(event.target)) return;
+        if (onlineTrigger && onlineTrigger.contains(event.target)) return;
+        closeOnlinePopover();
+      });
+      window.addEventListener('resize', syncAudienceHoverWidth);
+
+      appendChatMessage({
+        type: 'other',
+        name: '和你隔了几片海',
+        time: '8分钟前',
+        text: '万圣节活动开始',
+        avatarSrc: '../image/Avatar/头像824.png'
+      });
+
+      appendChatMessage({
+        type: 'other',
+        name: '和你隔了几片海',
+        time: '8分钟前',
+        text: '回复：冯宝宝  😊影流有人吗，不想被演了还有为什么我游戏内打字一直说频道内就我一个人，开关屏蔽也没用，有没有大神带菜鸟起飞了',
+        showReply: true,
+        avatarSrc: '../image/Avatar/头像748.png',
+        className: 'interactive-voice-chat__message--wide'
+      });
+
+      appendChatMessage({
+        type: 'other',
+        name: '苦艾1234',
+        time: '8分钟前',
+        text: '来一个会沟通的队友，先开麦确认位置。',
+        avatarSrc: '../image/Avatar/头像629.png'
+      });
+
+      const sticker = document.createElement('div');
+      sticker.className = 'interactive-voice-chat__sticker';
+      sticker.appendChild(window.createAvatar({ src: '../image/Avatar/头像629.png', text: '苦艾1234', size: 36 }));
+      const stickerImage = document.createElement('img');
+      stickerImage.className = 'interactive-voice-chat__sticker-image';
+      stickerImage.src = '../image/gift/1.png';
+      stickerImage.alt = '表情';
+      sticker.appendChild(stickerImage);
+      chatScroll.appendChild(sticker);
+
+      chatInputSlot.appendChild(window.createChatMessageInput({
+        size: 'default',
+        state: 'empty',
+        placeholder: '按Enter回车键发送消息',
+        showGift: false,
+        showUpload: true,
+        showSendButton: false,
+        interactive: true,
+        onSend: function(payload) {
+          const text = payload && payload.text ? payload.text.trim() : '';
+          if (!text) return;
+          appendChatMessage({
+            type: 'mine',
+            name: 'candice',
+            time: '刚刚',
+            text,
+            avatarSrc: '../image/Avatar/头像496.png'
+          });
+          requestAnimationFrame(function() {
+            chatScroll.scrollTop = chatScroll.scrollHeight;
+          });
+        }
+      }));
+
+      if (typeof window.createScrollbar === 'function') {
+        const contentShell = document.querySelector('.interactive-voice-content');
+        const chatLog = chatScroll.parentElement;
+        window.createScrollbar({
+          target: chatScroll,
+          container: contentShell,
+          hoverTarget: contentShell,
+          variant: 'page',
+          right: 0,
+          top: function() {
+            return chatLog.getBoundingClientRect().top - contentShell.getBoundingClientRect().top;
+          },
+          bottom: function() {
+            return contentShell.getBoundingClientRect().bottom - chatLog.getBoundingClientRect().bottom;
+          },
+          minThumbSize: 60
+        });
+      }
+    });
+  </script>
+</body>
+</html>

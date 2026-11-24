@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Avatar 头像</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">数据展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">头像</span>
+      <h1 class="section-title">Avatar 头像</h1>
+      <p class="description">Avatar 头像用于展示用户的头像、图标或状态指示器，支持多种尺寸。</p>
+
+      <div class="avatar-content">
+        <div class="avatar-section">
+          <h2 class="avatar-section-title">头像尺寸</h2>
+          <p class="avatar-section-desc">头像支持多种标准尺寸，始终保持 1:1 比例并以圆形展示。</p>
+          <p class="avatar-section-markdown"><code>size</code> 可选：<code>16</code> <code>18</code> <code>20</code> <code>24</code> <code>28</code> <code>32</code> <code>36</code> <code>38</code> <code>40</code> <code>44</code> <code>46</code> <code>48</code> <code>60</code> <code>70</code> <code>80</code> <code>120</code> <code>160</code>。</p>
+          <div class="avatar-page-demo avatar-page-with-border">
+            <div class="avatar-row" id="avatar-sizes"></div>
+          </div>
+        </div>
+
+        <div class="avatar-section">
+          <h2 class="avatar-section-title">头像样式</h2>
+          <p class="avatar-section-desc">支持图片头像和文字头像两种形式。</p>
+          <p class="avatar-section-markdown"><code>src</code>：图片地址，设置后显示图片头像。</p>
+          <p class="avatar-section-markdown"><code>text</code>：文本内容，设置后显示文字头像（取首字符）。</p>
+          <div class="avatar-page-demo avatar-page-with-border">
+            <div class="avatar-row" id="avatar-styles"></div>
+          </div>
+        </div>
+
+        <div class="avatar-section">
+          <h2 class="avatar-section-title">在线状态</h2>
+          <p class="avatar-section-desc">头像支持显示在线状态指示器（圆形或手机图标）。</p>
+          <p class="avatar-section-markdown"><code>status</code> 可选：<code>on</code>(在线) <code>inv</code>(隐身) <code>dnd</code>(勿扰) <code>gray</code>(离线，头像整体透明度为 0.3) <code>mo</code>(手机在线)。</p>
+          <div class="avatar-page-demo avatar-page-with-border">
+            <div class="avatar-row" id="avatar-status"></div>
+          </div>
+        </div>
+
+        <div class="avatar-section">
+          <h2 class="avatar-section-title">带数字徽标头像</h2>
+          <p class="avatar-section-desc">头像可与数字徽标组合使用，显示数量提醒。</p>
+          <div class="avatar-page-demo avatar-page-with-border">
+            <div class="avatar-row" id="avatar-with-badge"></div>
+          </div>
+        </div>
+
+        <div class="avatar-section">
+          <h2 class="avatar-section-title">组合头像</h2>
+          <p class="avatar-section-desc">多人头像按基础组件规范自动切片展示，支持 2-9 个头像。</p>
+          <div class="avatar-page-demo avatar-page-with-border">
+            <div class="avatar-row" id="avatar-groups"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="avatar-api-section">
+        <h2 class="avatar-api-title">API 参考</h2>
+        <table class="avatar-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>src</td>
+              <td>头像图片地址</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+            <tr>
+              <td>text</td>
+              <td>头像文字（取首字符）</td>
+              <td>string</td>
+              <td>-</td>
+              <td>''</td>
+            </tr>
+            <tr>
+              <td>size</td>
+              <td>头像尺寸，带 status 时仅支持 80 | 60 | 48 | 46 | 40 | 36 | 32 | 24</td>
+              <td>number</td>
+              <td>16 | 18 | 20 | 24 | 28 | 32 | 36 | 38 | 40 | 44 | 46 | 48 | 60 | 70 | 80 | 120 | 160</td>
+              <td>40</td>
+            </tr>
+            <tr>
+              <td>status</td>
+              <td>在线状态类型，带状态时头像使用 SVG 蒙版，仅 size 为 80/60/48/46/40/36/32/24 时可用</td>
+              <td>string</td>
+              <td>'on' | 'inv' | 'dnd' | 'gray' | 'mo'</td>
+              <td>null</td>
+            </tr>
+            <tr>
+              <td>avatars</td>
+              <td>组合头像数据，传给 createAvatarGroup，包含 src、text</td>
+              <td>object[]</td>
+              <td>2-9 项</td>
+              <td>[]</td>
+            </tr>
+            <tr>
+              <td>max</td>
+              <td>组合头像最多展示数量</td>
+              <td>number</td>
+              <td>2-9</td>
+              <td>9</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-avatar');
+
+      const avatarSizesContainer = document.getElementById('avatar-sizes');
+      const avatarStylesContainer = document.getElementById('avatar-styles');
+      const avatarStatusContainer = document.getElementById('avatar-status');
+      const avatarWithBadgeContainer = document.getElementById('avatar-with-badge');
+      const avatarGroupsContainer = document.getElementById('avatar-groups');
+
+      const sizes = [16, 24, 32, 40, 48, 60, 80, 160];
+
+      sizes.forEach(function(size) {
+        const avatar = createAvatar({ text: 'A', size: size });
+        avatarSizesContainer.appendChild(avatar);
+      });
+
+      const imgAvatar = createAvatar({ src: '../image/Avatar/default.png', text: '', size: 40 });
+      avatarStylesContainer.appendChild(imgAvatar);
+
+      const textAvatar = createAvatar({ text: 'A', size: 40 });
+      avatarStylesContainer.appendChild(textAvatar);
+
+      const statusSizes = [80, 60, 48, 46, 40, 36, 32, 24];
+      statusSizes.forEach(function(size) {
+        const avatarOnline = createAvatar({ src: '../image/Avatar/default.png', size: size, status: 'on' });
+        avatarStatusContainer.appendChild(avatarOnline);
+      });
+
+      statusSizes.forEach(function(size) {
+        const avatarMo = createAvatar({ src: '../image/Avatar/default.png', size: size, status: 'mo' });
+        avatarStatusContainer.appendChild(avatarMo);
+      });
+
+      const avatarWithBadge = createAvatarWithBadge(
+        { src: '../image/Avatar/default.png', size: 40 },
+        { text: '99+', variant: 'red', stroke: { size: 2, color: 'gray-1' } }
+      );
+      avatarWithBadgeContainer.appendChild(avatarWithBadge);
+
+      const avatarWithBadge1 = createAvatarWithBadge(
+        { src: '../image/Avatar/default.png', size: 40 },
+        { text: '9', variant: 'red', stroke: { size: 2, color: 'gray-1' } }
+      );
+      avatarWithBadgeContainer.appendChild(avatarWithBadge1);
+
+      const avatarWithBadge2 = createAvatarWithBadge(
+        { src: '../image/Avatar/default.png', size: 40 },
+        { text: '10', variant: 'red', stroke: { size: 2, color: 'gray-1' } }
+      );
+      avatarWithBadgeContainer.appendChild(avatarWithBadge2);
+
+      const avatarWithDotBadge = createAvatarWithBadge(
+        { src: '../image/Avatar/default.png', size: 40 },
+        { dot: true, variant: 'red', stroke: { size: 2, color: 'gray-1' } }
+      );
+      avatarWithBadgeContainer.appendChild(avatarWithDotBadge);
+
+      const groupAvatars = [
+        { src: '../image/Avatar/头像619.png', text: 'A' },
+        { src: '../image/Avatar/头像624.png', text: 'B' },
+        { src: '../image/Avatar/头像546.png', text: 'C' },
+        { src: '../image/Avatar/头像746.png', text: 'D' },
+        { src: '../image/Avatar/头像829.png', text: 'E' },
+        { src: '../image/Avatar/头像800.png', text: 'F' },
+        { src: '../image/Avatar/头像753.png', text: 'G' },
+        { src: '../image/Avatar/头像974.png', text: 'H' },
+        { src: '../image/Avatar/头像441.png', text: 'I' }
+      ];
+
+      [2, 3, 4, 5, 6, 7, 8, 9].forEach(function(count) {
+        avatarGroupsContainer.appendChild(createAvatarGroup({
+          avatars: groupAvatars.slice(0, count),
+          size: 40
+        }));
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Discover 发现</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261111-launch-update-icons">
+  <script src="../iconfont/iconfont.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 100%;
+      min-height: 100vh;
+      margin: var(--space0);
+      background: var(--gray-1);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      overflow: auto;
+    }
+
+    body.is-discover-expanded #nav-iframe {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .discover-shell {
+      min-width: 1280px;
+      min-height: calc(100vh - 60px);
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .discover-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-width: 1280px;
+      min-height: 900px;
+    }
+
+    .discover-framework {
+      --discover-menu-width: 70px;
+      --discover-header-height: 50px;
+      --discover-voice-height: 60px;
+      --discover-content-left: var(--discover-menu-width);
+      --discover-motion-duration: 520ms;
+      --discover-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --framework-menu-width: var(--discover-menu-width);
+      --framework-content-left: var(--discover-content-left);
+      --framework-voice-height: var(--discover-voice-height);
+      --framework-motion-duration: var(--discover-motion-duration);
+      --framework-motion-ease: var(--discover-motion-ease);
+      container-name: discover-page;
+      container-type: inline-size;
+      position: relative;
+      width: 1280px;
+      height: 900px;
+      min-width: 1280px;
+      min-height: 900px;
+      overflow: hidden;
+      background: var(--gray-1);
+      color: var(--gray-3);
+    }
+
+    .discover-framework::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 120;
+      box-shadow: inset 0 0 0 1px var(--gray-8);
+      pointer-events: none;
+    }
+
+    .discover-framework.is-menu-collapsed {
+      --discover-content-left: 0px;
+    }
+
+    .discover-framework.is-menu-collapsed.is-menu-hovered {
+      --discover-content-left: var(--discover-menu-width);
+    }
+
+    .discover-framework.is-expanded {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .discover-framework__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      width: 100%;
+      height: var(--discover-header-height);
+    }
+
+    .discover-framework__header .nn-header {
+      width: 100% !important;
+      padding-right: var(--space0);
+      border-bottom-color: var(--gray-10);
+    }
+
+    .discover-framework__header .nn-header--default {
+      padding-left: calc(var(--discover-content-left) + var(--space24));
+      transition: padding-left var(--discover-motion-duration) var(--discover-motion-ease);
+    }
+
+    .discover-framework__header .nn-header__search {
+      display: inline-flex;
+    }
+
+    .discover-framework__community {
+      display: none;
+    }
+
+    .discover-framework__menu {
+      position: absolute;
+      top: var(--discover-header-height);
+      bottom: 0;
+      left: 0;
+      z-index: 25;
+      width: var(--discover-menu-width);
+      background: var(--gray-1);
+      overflow: visible;
+      transform: translateX(0);
+      transition: transform var(--discover-motion-duration) var(--discover-motion-ease);
+      will-change: transform;
+    }
+
+    .discover-framework.is-menu-collapsed .discover-framework__menu {
+      pointer-events: none;
+      transform: translateX(calc(-1 * var(--discover-menu-width)));
+    }
+
+    .discover-framework.is-menu-collapsed.is-menu-hovered .discover-framework__menu {
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .discover-framework__menu-hover-zone {
+      position: absolute;
+      top: var(--discover-header-height);
+      bottom: 0;
+      left: 0;
+      z-index: 36;
+      display: none;
+      width: 70px;
+      background: transparent;
+    }
+
+    .discover-framework.is-menu-collapsed .discover-framework__menu-hover-zone {
+      display: block;
+    }
+
+    .discover-framework.is-menu-collapsed.is-menu-hovered .discover-framework__menu-hover-zone {
+      z-index: 24;
+      width: 70px;
+    }
+
+    .discover-framework__menu .nn-menu {
+      width: var(--discover-menu-width);
+      height: 100%;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .discover-framework__menu .nn-menu-list {
+      transform: translateY(calc(-1 * var(--discover-menu-scroll-offset, var(--framework-menu-scroll-offset, 0px))));
+      transition: transform 120ms ease;
+      will-change: transform;
+    }
+
+    .discover-framework__menu .nn-menu-list-wrapper,
+    .discover-framework__menu .nn-menu-list,
+    .discover-framework__menu .nn-menu-item {
+      overflow: visible;
+    }
+
+    .discover-framework__content {
+      position: absolute;
+      top: var(--discover-header-height);
+      right: 0;
+      bottom: 0;
+      left: var(--discover-content-left);
+      background: var(--gray-1);
+      overflow: hidden;
+      transition: left var(--discover-motion-duration) var(--discover-motion-ease);
+    }
+
+    .discover-content {
+      width: 100%;
+      height: 100%;
+      padding: var(--space0) var(--space24);
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior-x: none;
+    }
+
+    .discover-search {
+      display: contents;
+    }
+
+    .discover-search__top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space16);
+      width: calc(100% + 48px);
+      height: 60px;
+      margin-right: calc(var(--space24) * -1);
+      margin-left: calc(var(--space24) * -1);
+      padding: var(--space10) var(--space0);
+      background: var(--gray-1);
+    }
+
+    .discover-search__field {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 600px;
+      height: 40px;
+      overflow: visible;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      background: transparent;
+      isolation: isolate;
+      transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .discover-search__field:hover,
+    .discover-search__field:focus-within {
+      border-color: var(--gray-8);
+    }
+
+    .discover-search__field::before {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      z-index: 0;
+      padding: var(--space4);
+      border-radius: calc(var(--border-radius-2r) + 3px);
+      background-image:
+        radial-gradient(
+          transparent,
+          transparent,
+          #4E41DB,
+          #7C60FF,
+          transparent,
+          transparent
+        );
+      background-size: 300% 300%;
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 1;
+      animation:
+        nn-header-search-shine-border 2.8s linear infinite,
+        nn-header-search-shine-exit 5.6s ease forwards;
+      filter: drop-shadow(0 0 5px rgba(124, 96, 255, 0.32));
+      will-change: background-position, opacity;
+    }
+
+    .discover-search__field::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: inherit;
+      background: transparent;
+      pointer-events: none;
+      transition: background-color 0.2s ease;
+    }
+
+    .discover-search__field:hover::after,
+    .discover-search__field:focus-within::after {
+      background: var(--gray-10);
+    }
+
+    .discover-search__compass {
+      position: relative;
+      z-index: 1;
+      width: 24px;
+      height: 24px;
+      margin-left: var(--space4);
+      object-fit: contain;
+      animation: discover-compass-spin 5s cubic-bezier(0.34, 0, 0.2, 1) both;
+    }
+
+    @keyframes discover-compass-spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(1800deg);
+      }
+    }
+
+    .discover-search__input {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      margin: var(--space0);
+      padding: var(--space0) var(--space40) var(--space0) var(--space4);
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--gray-3);
+      font: inherit;
+      font-size: 14px;
+      line-height: 20px;
+      caret-color: var(--gray-3);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .discover-search__action {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      margin-top: calc(var(--space12) * -1);
+      border: 0;
+      padding: var(--space0);
+      background: transparent;
+      color: var(--gray-5);
+      font-size: 16px;
+      line-height: 1;
+      cursor: default;
+    }
+
+    .discover-search__action .nnicon {
+      font-size: var(--icon-size-x8);
+      line-height: 1;
+    }
+
+    .discover-search__action--clear {
+      cursor: pointer;
+    }
+
+    .discover-search__action--clear:hover {
+      color: var(--gray-3);
+    }
+
+    .discover-search__input::placeholder {
+      color: transparent;
+      opacity: 1;
+    }
+
+    .discover-search__placeholder {
+      position: absolute;
+      left: 32px;
+      right: 12px;
+      top: 50%;
+      z-index: 1;
+      height: 20px;
+      overflow: hidden;
+      color: var(--gray-6);
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: var(--font-weight-normal);
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
+
+    .discover-search__field--typing .discover-search__placeholder,
+    .discover-search__field:focus-within .discover-search__placeholder {
+      opacity: 0;
+    }
+
+    .discover-search__history {
+      display: flex;
+      align-items: center;
+      gap: var(--space0);
+      width: min(100%, 1600px);
+      height: 34px;
+      margin-right: auto;
+      margin-left: auto;
+      margin-top: var(--space16);
+    }
+
+    .discover-content.is-searching .discover-search__history {
+      display: none;
+    }
+
+    .discover-content.is-searching {
+      overflow: hidden;
+    }
+
+    .discover-search__history-title {
+      margin-right: var(--space10);
+      color: var(--gray-5);
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: var(--font-weight-normal);
+      white-space: nowrap;
+    }
+
+    .discover-search__history-list {
+      display: flex;
+      align-items: center;
+      gap: var(--space10);
+      min-width: 0;
+    }
+
+    #discover-clear-button {
+      margin-left: var(--space24);
+    }
+
+    .discover-create-button {
+      width: 190px;
+    }
+
+    .discover-play-banner {
+      width: min(100%, 1600px);
+      margin: var(--space24) auto var(--space0);
+    }
+
+    .discover-play-banner img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .discover-section {
+      width: min(100%, 1600px);
+      margin-top: var(--space24);
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .discover-section__title {
+      margin: var(--space0) var(--space0) var(--space16);
+      color: var(--gray-3);
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .discover-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(516px, 1fr));
+      gap: var(--space24);
+      align-items: start;
+      padding-bottom: var(--space40);
+    }
+
+    .discover-framework.is-card-large .discover-card-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .discover-card-grid .nn-community-card {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .discover-card-grid .nn-community-card__cover {
+      width: clamp(240px, 45%, 260px);
+    }
+
+    .discover-default-content.is-hidden {
+      display: none;
+    }
+
+    .discover-search-results {
+      display: none;
+      width: min(100%, 822px);
+      height: calc(100% - 76px);
+      min-height: 0;
+      margin: var(--space16) auto var(--space0);
+      overflow: visible;
+    }
+
+    .discover-search-results.is-visible {
+      display: block;
+    }
+
+    .discover-search-results .nn-global-search__results {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: var(--space40);
+      width: 822px;
+      max-width: 100%;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .discover-search-results .nn-global-search__result-column {
+      flex: 0 0 auto;
+      height: 100%;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .discover-search-results .nn-global-search__result-column-shell {
+      height: 100%;
+      min-height: 0;
+    }
+
+    .discover-search-results .nn-global-search__result-column-shell--community {
+      width: 488px;
+    }
+
+    .discover-search-results .nn-global-search__result-column-shell--user {
+      width: 298px;
+    }
+
+    .discover-search-results .nn-global-search__result-column--community {
+      width: 488px;
+    }
+
+    .discover-search-results .nn-global-search__result-column--user {
+      width: 298px;
+    }
+
+    .discover-search-results .nn-global-search__result-column .nn-community-card {
+      width: 488px;
+      min-width: 0;
+      max-width: 488px;
+      height: 146px;
+    }
+
+    .discover-search-results .nn-global-search__result-column .nn-community-card__cover {
+      width: 260px;
+      height: 146px;
+      flex: 0 0 260px;
+    }
+
+    .discover-search-results .nn-global-search-user {
+      width: 298px;
+    }
+
+    .discover-content {
+      padding: var(--space10) var(--space24) var(--space40);
+    }
+
+    .discover-content__inner {
+      display: flex;
+      width: 100%;
+      max-width: 1600px;
+      min-width: 0;
+      margin: var(--space0) auto;
+      flex-direction: column;
+      gap: var(--space24);
+    }
+
+    .discover-inline-results {
+      display: none;
+      width: 100%;
+      max-width: 1600px;
+      min-width: 0;
+      margin: var(--space0) auto;
+    }
+
+    .discover-inline-results.is-visible {
+      display: block;
+    }
+
+    .discover-inline-results .nn-global-search__results,
+    .discover-inline-results .nn-global-search__result-column-shell,
+    .discover-inline-results .nn-global-search__result-column {
+      height: auto;
+      min-height: 0;
+    }
+
+    .discover-inline-results .nn-global-search__results,
+    .discover-inline-results .nn-global-search__result-column {
+      overflow: visible;
+    }
+
+    .discover-content__inner .discover-play-banner {
+      width: 100%;
+      aspect-ratio: 1182 / 194;
+      margin: var(--space0);
+      overflow: hidden;
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-9);
+    }
+
+    .discover-content__inner .discover-play-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .discover-filter-tabs {
+      align-self: flex-start;
+    }
+
+    .discover-game-grid {
+      display: grid;
+      width: 100%;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: start;
+      gap: var(--space32) calc(var(--space24) + var(--space2));
+    }
+
+    .discover-game-grid .nn-game-release-card {
+      width: 100%;
+      min-width: 0;
+    }
+
+    @container discover-page (min-width: 1920px) {
+      .discover-content {
+        padding-right: var(--space24);
+        padding-left: var(--space24);
+      }
+
+      .discover-game-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    .discover-framework__voice {
+      position: absolute;
+      left: 0;
+      bottom: var(--space0);
+      z-index: 40;
+      display: flex;
+      align-items: flex-end;
+      overflow: visible;
+    }
+
+    .discover-framework .community-framework__menu-arrow {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      z-index: 23;
+      width: 28px;
+      height: 76px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(0, -50%);
+    }
+
+    .discover-framework.is-menu-collapsed .community-framework__menu-arrow {
+      opacity: 1;
+    }
+
+    .discover-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow,
+    .discover-framework.is-menu-restoring .community-framework__menu-arrow {
+      opacity: 1;
+    }
+
+    .discover-framework .community-framework__menu-arrow-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: auto;
+      height: 76px;
+      object-fit: contain;
+      transform-origin: left center;
+      opacity: 0;
+      transform: translateX(-30px);
+      will-change: transform, opacity;
+    }
+
+    .discover-framework .community-framework__menu-arrow-img--light-1 {
+      width: 24px;
+    }
+
+    .discover-framework .community-framework__menu-arrow-img--light-2 {
+      width: 22px;
+    }
+
+    .discover-framework .community-framework__menu-arrow-img--dark {
+      display: none;
+    }
+
+    body.dark-mode .discover-framework .community-framework__menu-arrow-img--light {
+      display: none;
+    }
+
+    body.dark-mode .discover-framework .community-framework__menu-arrow-img--dark {
+      display: block;
+    }
+
+    .discover-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1 {
+      animation: framework-menu-arrow-light-1-first 3000ms linear both;
+    }
+
+    .discover-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2 {
+      animation: framework-menu-arrow-light-2-first 3000ms linear both;
+    }
+
+    .discover-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1-repeat {
+      animation: framework-menu-arrow-light-1-repeat 3000ms linear both;
+    }
+
+    .discover-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2-repeat {
+      animation: framework-menu-arrow-light-2-repeat 3000ms linear both;
+    }
+
+    .discover-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow-img,
+    .discover-framework.is-menu-restoring .community-framework__menu-arrow-img {
+      animation: framework-menu-arrow-light-exit 280ms cubic-bezier(0.4, 0, 1, 1) both;
+    }
+
+    @keyframes framework-menu-arrow-light-1-first {
+      0%,
+      9% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      12% {
+        opacity: 0.45;
+        transform: translateX(-16px);
+      }
+      16% {
+        opacity: 0.9;
+        transform: translateX(-4px);
+      }
+      18%,
+      29% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.72;
+        transform: translateX(0);
+      }
+      34% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      35%,
+      100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-first {
+      0%,
+      15% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      18% {
+        opacity: 0.42;
+        transform: translateX(-16px);
+      }
+      23% {
+        opacity: 0.92;
+        transform: translateX(-4px);
+      }
+      25%,
+      27% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      29% {
+        opacity: 0.7;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      32.5%,
+      100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-1-repeat {
+      0%,
+      31.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      35.5% {
+        opacity: 0.38;
+        transform: translateX(-17px);
+      }
+      39.5% {
+        opacity: 0.9;
+        transform: translateX(-5px);
+      }
+      42.5%,
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-repeat {
+      0%,
+      37.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      41.5% {
+        opacity: 0.34;
+        transform: translateX(-17px);
+      }
+      46.5% {
+        opacity: 0.88;
+        transform: translateX(-5px);
+      }
+      49.5%,
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-exit {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+  </style>
+  <script>
+    (function() {
+      document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&library=page" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261029-nn-page-theme-first-paint" frameborder="0"></iframe>
+
+  <main class="discover-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">发现</span>
+      <h1 class="section-title">Discover 发现</h1>
+      <div class="discover-stage" data-code-preview="true">
+        <div id="discover-framework" class="community-framework discover-framework" aria-label="Discover">
+          <div id="discover-header" class="community-framework__header discover-framework__header"></div>
+          <div id="discover-menu" class="community-framework__menu discover-framework__menu"></div>
+          <div id="discover-menu-hover-zone" class="discover-framework__menu-hover-zone" aria-hidden="true"></div>
+          <div id="discover-community" class="community-framework__community discover-framework__community" aria-hidden="true"></div>
+          <div class="community-framework__content discover-framework__content">
+            <div class="discover-content">
+              <div id="discover-default-content" class="discover-content__inner discover-default-content" data-nn-header-align>
+                <div class="discover-play-banner" aria-hidden="true">
+                  <img src="../image/Community/play-banner.png" alt="">
+                </div>
+                <div id="discover-filter-tabs" class="discover-filter-tabs" aria-label="游戏分类"></div>
+                <section id="discover-game-grid" class="discover-game-grid" aria-label="发现游戏"></section>
+              </div>
+              <section id="discover-inline-results" class="discover-inline-results" data-nn-header-align aria-label="搜索结果" aria-live="polite"></section>
+            </div>
+          </div>
+          <div class="community-framework__menu-arrow" aria-hidden="true">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-dark-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-dark-2.svg" alt="">
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/radio.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/input.js?v=20261112-input-shine-single-layer"></script>
+  <script src="../basic%20components/slider.js?v=20260529-wheel"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/menu.js?v=20261117-menu-avatar-size-selected-stroke"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/tabs.js?v=20261112-global-search-figma-17189"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../NN%20business%20components/toast-display.js?v=20260611-toast-display-scrollbar-component"></script>
+  <script src="../public/vendor/lottie.min.js?v=20260616"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-banner-responsive-nav"></script>
+  <script src="../NN%20business%20components/voice-panel.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/global-search.js?v=20261118-global-search-height50-content18"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-discover');
+
+      {
+        const framework = document.getElementById('discover-framework');
+        const headerSlot = document.getElementById('discover-header');
+        const menuSlot = document.getElementById('discover-menu');
+        const discoverContentPanel = framework.querySelector('.discover-framework__content');
+        const discoverContent = framework.querySelector('.discover-content');
+        const filterTabsSlot = document.getElementById('discover-filter-tabs');
+        const gameGrid = document.getElementById('discover-game-grid');
+        const defaultContent = document.getElementById('discover-default-content');
+        const inlineResults = document.getElementById('discover-inline-results');
+
+        const discoverContentScrollbar = typeof window.createScrollbar === 'function'
+          ? window.createScrollbar({
+            target: discoverContent,
+            container: discoverContentPanel,
+            hoverTarget: discoverContentPanel,
+            variant: 'page',
+            right: 4,
+            top: 0,
+            bottom: 0
+          })
+          : null;
+
+        function syncDarkMode(isDark) {
+          localStorage.setItem('dark-mode', String(isDark));
+          document.documentElement.classList.toggle('dark-mode', isDark);
+          document.body.classList.toggle('dark-mode', isDark);
+          notifyIframeDarkMode(isDark);
+        }
+
+        function toggleDarkMode() {
+          syncDarkMode(!document.body.classList.contains('dark-mode'));
+        }
+
+        function toggleExpanded() {
+          const isExpanded = framework.classList.toggle('is-expanded');
+          document.body.classList.toggle('is-discover-expanded', isExpanded);
+          requestAnimationFrame(function() {
+            if (discoverContentScrollbar) discoverContentScrollbar.update();
+          });
+        }
+
+        const header = createHeader({
+          width: '100%',
+          showBack: true,
+          searchPlaceholder: '搜索游戏、社区、用户名称/ID',
+          enableGlobalSearchModal: false
+        });
+        headerSlot.appendChild(header);
+
+        const headerSearchInput = header.querySelector('.nn-header__search-input');
+
+        function renderInlineSearchResults(value) {
+          const keyword = String(value || '').trim();
+          const isSearching = Boolean(keyword);
+          defaultContent.classList.toggle('is-hidden', isSearching);
+          inlineResults.classList.toggle('is-visible', isSearching);
+          inlineResults.innerHTML = '';
+          if (isSearching && typeof createGlobalSearchResultsView === 'function') {
+            inlineResults.appendChild(createGlobalSearchResultsView({ keyword: keyword }));
+          }
+          requestAnimationFrame(function() {
+            if (discoverContentScrollbar) discoverContentScrollbar.update();
+          });
+        }
+
+        if (headerSearchInput) {
+          headerSearchInput.addEventListener('input', function() {
+            renderInlineSearchResults(headerSearchInput.value);
+          });
+        }
+
+        const windowIcons = header.querySelectorAll('.nn-header__window-icon');
+        if (windowIcons[1]) {
+          windowIcons[1].setAttribute('role', 'button');
+          windowIcons[1].setAttribute('tabindex', '0');
+          windowIcons[1].setAttribute('aria-label', '适配浏览器最大尺寸');
+          windowIcons[1].addEventListener('click', toggleExpanded);
+          windowIcons[1].addEventListener('keydown', function(event) {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            toggleExpanded();
+          });
+        }
+
+        const themeButton = header.querySelector('.nn-header__icon-btn--more');
+        if (themeButton) themeButton.addEventListener('click', toggleDarkMode);
+
+        const menu = createInteractiveMenu({
+          selectedActionIndex: 0
+        });
+        menuSlot.appendChild(menu);
+
+        const gameSources = [
+          { cover: 'game-monster-hunter.png', title: '怪物猎人：荒野-凌越', description: 'Monster Hunter: Wilds - Beyond', category: '动作', rating: '98%' },
+          { cover: 'game-tides.png', title: '湮灭之潮', description: 'Tides of Annihilation', category: '角色扮演', rating: '98%' },
+          { cover: 'game-phantom-blade.png', title: '影之刃：零', description: 'Phantom Blade Zero', category: '动作', rating: '98%' },
+          { cover: 'game-resident-evil.png', title: '生化危机：维罗妮卡重制版', description: 'Resident Evil Code: Veronica Remake', category: '解谜', rating: '98%' },
+          { cover: 'game-bloodborne.png', title: '血源：诅咒', description: 'Bloodborne', category: '新上架', rating: '92%' },
+          { cover: 'game-final-fantasy.png', title: '最终幻想：共鸣', description: 'Final Fantasy: Resonance', category: '角色扮演', rating: '98%' },
+          { cover: 'game-castlevania.png', title: '恶魔城：贝尔蒙特的诅咒', description: "Castlevania: Belmont's Curse", category: '休闲', rating: '98%' },
+          { cover: 'game-onimusha.png', title: '鬼武者：剑之道', description: 'Onimusha: Way of the Sword', category: '策略', rating: '98%' }
+        ];
+        const games = gameSources.concat(gameSources).map(function(game, index) {
+          return Object.assign({}, game, { index: index });
+        });
+
+        function renderGames(category) {
+          const visibleGames = category === '全部游戏'
+            ? games
+            : games.filter(function(game) { return game.category === category; });
+          gameGrid.innerHTML = '';
+          visibleGames.forEach(function(game) {
+            gameGrid.appendChild(createGameReleaseCard({
+              coverSrc: `../image/Game Store/${game.cover}`,
+              title: game.title,
+              description: game.description,
+              rating: game.rating,
+              platforms: ['steam'],
+              tags: ['共斗'],
+              age: '16+',
+              fluid: true
+            }));
+          });
+          requestAnimationFrame(function() {
+            if (discoverContentScrollbar) discoverContentScrollbar.update();
+          });
+        }
+
+        filterTabsSlot.appendChild(createTabs({
+          type: 'secondary',
+          defaultActive: 0,
+          tabs: [
+            { name: '全部游戏', iconLeft: 'nnicon nicon-a-AllGames-Linequanbuyouxi-xianxing' },
+            { name: '新上架', iconLeft: 'nnicon nicon-a-Star-Linexingxing-xianxing' },
+            { name: '策略' },
+            { name: '动作' },
+            { name: '休闲' },
+            { name: '模拟经营' },
+            { name: '解谜' }
+          ],
+          onChange: function(payload) {
+            renderGames(payload.tab.name);
+          }
+        }));
+
+        if (window.ResizeObserver) {
+          const layoutObserver = new ResizeObserver(function() {
+            if (discoverContentScrollbar) discoverContentScrollbar.update();
+          });
+          layoutObserver.observe(framework);
+          layoutObserver.observe(gameGrid);
+        }
+
+        renderGames('全部游戏');
+        syncDarkMode(localStorage.getItem('dark-mode') === 'true');
+      }
+
+      return;
+
+      const framework = document.getElementById('discover-framework');
+      const headerSlot = document.getElementById('discover-header');
+      const menuSlot = document.getElementById('discover-menu');
+      const menuHoverZone = document.getElementById('discover-menu-hover-zone');
+      const voiceSlot = document.getElementById('discover-voice');
+      const discoverContentPanel = framework.querySelector('.discover-framework__content');
+      const discoverContent = framework.querySelector('.discover-content');
+      const historyList = document.getElementById('discover-history-list');
+      const cardGrid = document.getElementById('discover-card-grid');
+      const discoverDefaultContent = document.getElementById('discover-default-content');
+      const discoverSearchResults = document.getElementById('discover-search-results');
+      const discoverSearchField = document.querySelector('.discover-search__field');
+      const discoverSearchInput = document.querySelector('.discover-search__input');
+      const discoverSearchAction = document.querySelector('.discover-search__action');
+      let discoverResultScrollbars = [];
+      const discoverContentScrollbar = typeof window.createScrollbar === 'function'
+        ? window.createScrollbar({
+          target: discoverContent,
+          container: discoverContentPanel,
+          hoverTarget: discoverContentPanel,
+          variant: 'page',
+          right: 4,
+          top: 0,
+          bottom: 0
+        })
+        : null;
+
+      function destroyDiscoverResultScrollbars() {
+        discoverResultScrollbars.forEach(function(scrollbar) {
+          if (scrollbar && typeof scrollbar.destroy === 'function') scrollbar.destroy();
+        });
+        discoverResultScrollbars = [];
+      }
+
+      function bindDiscoverResultScrollbars() {
+        destroyDiscoverResultScrollbars();
+        if (typeof window.createScrollbar !== 'function' || !discoverSearchResults) return;
+        discoverSearchResults.querySelectorAll('.nn-global-search__result-column-shell').forEach(function(shell) {
+          const column = shell.querySelector('.nn-global-search__result-column');
+          if (!column) return;
+          discoverResultScrollbars.push(window.createScrollbar({
+            target: column,
+            container: shell,
+            hoverTarget: column,
+            variant: 'page',
+            right: -12,
+            top: 50,
+            bottom: 0,
+            minThumbSize: 60
+          }));
+        });
+        requestAnimationFrame(function() {
+          discoverResultScrollbars.forEach(function(scrollbar) {
+            if (scrollbar && typeof scrollbar.update === 'function') scrollbar.update();
+          });
+        });
+      }
+
+      function syncDiscoverSearchTypingState() {
+        if (!discoverSearchField || !discoverSearchInput) return;
+        const hasValue = Boolean(discoverSearchInput.value);
+        discoverSearchField.classList.toggle('discover-search__field--typing', hasValue);
+        if (!discoverSearchAction) return;
+        discoverSearchAction.className = [
+          'discover-search__action',
+          hasValue ? 'discover-search__action--clear' : ''
+        ].filter(Boolean).join(' ');
+        discoverSearchAction.setAttribute('aria-label', hasValue ? '清空搜索内容' : '搜索');
+        discoverSearchAction.tabIndex = hasValue ? 0 : -1;
+        discoverSearchAction.innerHTML = hasValue
+          ? '<i class="nnicon nicon-a-close-fillguanbi-mianxing"></i>'
+          : '<i class="nnicon nicon-a-Search-linesousuo-xianxing"></i>';
+      }
+
+      function renderDiscoverSearchResults(value) {
+        const keyword = String(value || '').trim();
+        if (!discoverDefaultContent || !discoverSearchResults) return;
+        if (!keyword) {
+          discoverContent.classList.remove('is-searching');
+          discoverDefaultContent.classList.remove('is-hidden');
+          discoverSearchResults.classList.remove('is-visible');
+          discoverSearchResults.innerHTML = '';
+          destroyDiscoverResultScrollbars();
+          if (discoverContentScrollbar) requestAnimationFrame(discoverContentScrollbar.update);
+          return;
+        }
+        if (typeof createGlobalSearchResultsView !== 'function') return;
+        discoverContent.classList.add('is-searching');
+        discoverDefaultContent.classList.add('is-hidden');
+        discoverSearchResults.classList.add('is-visible');
+        discoverSearchResults.innerHTML = '';
+        discoverSearchResults.appendChild(createGlobalSearchResultsView({ keyword }));
+        bindDiscoverResultScrollbars();
+        requestAnimationFrame(function() {
+          if (discoverContentScrollbar) discoverContentScrollbar.update();
+        });
+      }
+
+      if (discoverSearchInput) {
+        discoverSearchInput.addEventListener('input', function() {
+          syncDiscoverSearchTypingState();
+          renderDiscoverSearchResults(discoverSearchInput.value);
+        });
+        discoverSearchInput.addEventListener('blur', syncDiscoverSearchTypingState);
+        if (discoverSearchAction) {
+          function clearDiscoverSearch(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (!discoverSearchInput.value) return;
+            discoverSearchInput.value = '';
+            syncDiscoverSearchTypingState();
+            renderDiscoverSearchResults('');
+            discoverSearchInput.focus();
+          }
+
+          discoverSearchAction.addEventListener('pointerdown', clearDiscoverSearch);
+          discoverSearchAction.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+          });
+          discoverSearchAction.addEventListener('keydown', function(event) {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            clearDiscoverSearch(event);
+          });
+        }
+        syncDiscoverSearchTypingState();
+      }
+
+      function syncDarkMode(isDark) {
+        localStorage.setItem('dark-mode', String(isDark));
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
+        notifyIframeDarkMode(isDark);
+      }
+
+      function toggleDarkMode() {
+        syncDarkMode(!document.body.classList.contains('dark-mode'));
+      }
+
+      function toggleExpanded() {
+        const isExpanded = framework.classList.toggle('is-expanded');
+        document.body.classList.toggle('is-discover-expanded', isExpanded);
+      }
+
+      const header = createHeader({
+        width: '100%',
+        showBack: true
+      });
+      headerSlot.appendChild(header);
+
+      const windowIcons = header.querySelectorAll('.nn-header__window-icon');
+      if (windowIcons[1]) {
+        windowIcons[1].setAttribute('role', 'button');
+        windowIcons[1].setAttribute('tabindex', '0');
+        windowIcons[1].setAttribute('aria-label', '适配浏览器最大尺寸');
+        windowIcons[1].addEventListener('click', toggleExpanded);
+        windowIcons[1].addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleExpanded();
+          }
+        });
+      }
+
+      const themeButton = header.querySelector('.nn-header__icon-btn--more');
+      if (themeButton) {
+        themeButton.addEventListener('click', toggleDarkMode);
+      }
+
+      menuSlot.appendChild(createInteractiveMenu());
+      const menuList = menuSlot.querySelector('.nn-menu-list');
+      const menuListWrapper = menuSlot.querySelector('.nn-menu-list-wrapper');
+      let discoverMenuScrollOffset = 0;
+      let discoverMenuMaxScroll = 0;
+
+      function syncDiscoverVoiceHeight() {
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        framework.style.setProperty('--discover-voice-height', `${voiceHeight}px`);
+        syncDiscoverMenuScroll();
+      }
+
+      function syncDiscoverMenuScroll() {
+        if (!menuList || !menuListWrapper) return;
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        const wrapperHeight = menuListWrapper.clientHeight;
+        const contentHeight = menuList.scrollHeight;
+        const contentBottom = menuList.offsetTop + contentHeight;
+        const visibleHeightBeforeVoice = Math.max(0, wrapperHeight - voiceHeight);
+        discoverMenuMaxScroll = Math.max(0, contentBottom - visibleHeightBeforeVoice);
+        discoverMenuScrollOffset = Math.min(discoverMenuScrollOffset, discoverMenuMaxScroll);
+        framework.style.setProperty('--discover-menu-scroll-offset', `${discoverMenuScrollOffset}px`);
+        framework.style.setProperty('--framework-menu-scroll-offset', `${discoverMenuScrollOffset}px`);
+      }
+
+      function scrollDiscoverMenu(deltaY) {
+        syncDiscoverMenuScroll();
+        if (discoverMenuMaxScroll <= 0) return false;
+        const nextOffset = Math.max(0, Math.min(discoverMenuMaxScroll, discoverMenuScrollOffset + deltaY));
+        if (nextOffset === discoverMenuScrollOffset) return false;
+        discoverMenuScrollOffset = nextOffset;
+        framework.style.setProperty('--discover-menu-scroll-offset', `${discoverMenuScrollOffset}px`);
+        framework.style.setProperty('--framework-menu-scroll-offset', `${discoverMenuScrollOffset}px`);
+        return true;
+      }
+
+      if (menuListWrapper) {
+        menuListWrapper.addEventListener('wheel', function(event) {
+          if (scrollDiscoverMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+        }, { passive: false });
+      }
+
+      [
+        'PUBG',
+        'APEX英雄',
+        'Steam社区',
+        '幻兽帕鲁',
+        'GTA5',
+        '战地风云6',
+        '英雄联盟',
+        'MAGIC',
+        'ATONE',
+        'EGHOST'
+      ].forEach(function(text) {
+        historyList.appendChild(createLabel({
+          text,
+          type: 'history',
+          showDelete: true
+        }));
+      });
+
+      const createButtonSlot = document.getElementById('discover-create-button');
+      createButtonSlot.appendChild(nnButton({
+        variant: 'system',
+        level: 'secondary',
+        size: 'large',
+        text: '创建社区',
+        icon: '<i class="nnicon nicon-a-addwireframe-linetianjiadaixiankuang-xianxing"></i>',
+        iconPosition: 'left',
+        iconSize: 'var(--icon-size-x9)',
+        className: 'discover-create-button'
+      }));
+
+      const clearButtonSlot = document.getElementById('discover-clear-button');
+      clearButtonSlot.appendChild(nnButton({
+        variant: 'system',
+        level: 'tertiary',
+        size: 'small',
+        text: '清空记录',
+        icon: '<i class="nnicon nicon-a-Clearqingli"></i>',
+        iconPosition: 'left',
+        iconSize: 'var(--icon-size-x7)'
+      }));
+
+      const communityNames = [
+        'PUBG 星际乱斗',
+        'Steam 游戏社区',
+        '幻兽帕鲁交流站',
+        'APEX 英雄大厅',
+        'GTA5 玩家中心',
+        '战地风云前线',
+        '英雄联盟峡谷',
+        'MAGIC CLUB',
+        'ATONE 联盟',
+        'EGHOST 社区',
+        '暗区突围基地',
+        '永劫无间客栈',
+        '使命召唤战术组',
+        '瓦罗兰特训练营',
+        '我的世界工坊',
+        '怪物猎人集会所',
+        'DOTA2 公会大厅',
+        'CS2 火力频道',
+        '堡垒之夜派对',
+        '街头篮球俱乐部'
+      ];
+      const descriptions = [
+        ['Official community for tactical squads', 'Find teammates and preview events'],
+        ['Game community introduction content', 'Current event preview introduction'],
+        ['Explore new game modes with players', 'Hot rooms and missions are live'],
+        ['Ranked team voice and event hub', 'Season challenge starts now'],
+        ['Open world crew and race community', 'Daily activity preview available'],
+        ['Battlefield lobby and squad channel', 'New front-line recruit notice'],
+        ['Summoner party and training room', 'Live match discussion is opening'],
+        ['Creator community and event space', 'Community spotlight this week'],
+        ['Team voice hall and strategy board', 'Member event preview introduction'],
+        ['Official game community entrance', 'Current event preview introduction'],
+        ['Tactical squad matching and game guide', 'Voice room is ready for new players'],
+        ['Martial arts arena and team lobby', 'Weekly event preview introduction'],
+        ['Shooter party and tournament board', 'Recruitment room is opening now'],
+        ['Agent practice room and match channel', 'New season community event preview'],
+        ['Creative server and building showcase', 'Community workshop is now active'],
+        ['Hunter gathering hub and quest board', 'Boss strategy discussion is live'],
+        ['Guild lobby and team competition room', 'Ranked party preview introduction'],
+        ['Fireteam training and highlight room', 'Map strategy session starts now'],
+        ['Party island and creative playground', 'Limited event preview introduction'],
+        ['Club matchmaking and court challenge', 'Community ranking event is live']
+      ];
+
+      function seededIndex(index, salt) {
+        return ((index * 7) + salt) % 20 + 1;
+      }
+
+      function pickOfficialBadgeIndexes(total) {
+        const count = 1 + Math.floor(Math.random() * 3);
+        const indexes = Array.from({ length: total }, function(_, index) {
+          return index;
+        });
+        for (let index = indexes.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1));
+          [indexes[index], indexes[swapIndex]] = [indexes[swapIndex], indexes[index]];
+        }
+        return new Set(indexes.slice(0, count));
+      }
+
+      const officialBadgeIndexes = pickOfficialBadgeIndexes(communityNames.length);
+      const officialBadgeSrc = '../image/Community Level/Official Certification.svg';
+
+      communityNames.forEach(function(title, index) {
+        const assetIndex = seededIndex(index, 1);
+        cardGrid.appendChild(createCommunityCard({
+          title,
+          coverSrc: `../image/Game logo/game${assetIndex}-cover.webp`,
+          logoSrc: `../image/Game logo/game${assetIndex}.webp`,
+          officialSrc: officialBadgeSrc,
+          showOfficial: officialBadgeIndexes.has(index),
+          descriptionLines: descriptions[index],
+          onlineText: `在线 ${(18 + index * 7).toLocaleString()},${(320 + index * 13).toLocaleString()}`,
+          communityLevel: false,
+          id: false
+        }));
+      });
+
+      function syncDiscoverCardLayout() {
+        const frameworkWidth = framework ? framework.getBoundingClientRect().width : 0;
+        framework.classList.toggle('is-card-large', frameworkWidth >= 1500);
+      }
+
+      syncDiscoverCardLayout();
+
+      const voicePanel = createVoicePanel({
+        variant: 'card',
+        launchState: 'idle',
+        avatars: [
+          '../image/Avatar/头像480.png',
+          '../image/Avatar/头像441.png',
+          '../image/Avatar/头像496.png',
+          '../image/Avatar/头像655.png',
+          '../image/Avatar/头像686.png'
+        ],
+        speakerAvatar: '../image/Avatar/头像480.png'
+      });
+      voiceSlot.appendChild(voicePanel);
+
+      const voiceBack = voicePanel.querySelector('.nn-voice-panel__back');
+      let restoreMenuTimer = null;
+      let restoreEndTimer = null;
+      let menuHoverTimer = null;
+      let isMenuPointerInside = false;
+
+      function clearMenuRestoreTimers() {
+        if (restoreMenuTimer) {
+          window.clearTimeout(restoreMenuTimer);
+          restoreMenuTimer = null;
+        }
+        if (restoreEndTimer) {
+          window.clearTimeout(restoreEndTimer);
+          restoreEndTimer = null;
+        }
+      }
+
+      function clearMenuHoverTimer() {
+        if (menuHoverTimer) {
+          window.clearTimeout(menuHoverTimer);
+          menuHoverTimer = null;
+        }
+      }
+
+      function showCollapsedMenuPreview() {
+        if (!framework.classList.contains('is-menu-collapsed')) return;
+        clearMenuHoverTimer();
+        framework.classList.remove('is-menu-hovered');
+        void framework.offsetWidth;
+        framework.classList.add('is-menu-hovered');
+      }
+
+      function scheduleCollapsedMenuHide() {
+        clearMenuHoverTimer();
+        menuHoverTimer = window.setTimeout(function() {
+          if (!isMenuPointerInside) {
+            framework.classList.remove('is-menu-hovered');
+          }
+          menuHoverTimer = null;
+        }, 80);
+      }
+
+      if (menuHoverZone) {
+        menuHoverZone.addEventListener('mouseenter', function() {
+          showCollapsedMenuPreview();
+        });
+
+        menuHoverZone.addEventListener('mouseleave', function() {
+          scheduleCollapsedMenuHide();
+        });
+      }
+
+      document.addEventListener('mousemove', function(event) {
+        if (!framework.classList.contains('is-menu-collapsed') || !framework.classList.contains('is-menu-hovered')) return;
+        const frameworkRect = framework.getBoundingClientRect();
+        const isInsideVerticalRange = event.clientY >= frameworkRect.top + 50 && event.clientY <= frameworkRect.bottom;
+        const isInsideLeaveZone = event.clientX >= frameworkRect.left && event.clientX <= frameworkRect.left + 70;
+        if (!isInsideVerticalRange || !isInsideLeaveZone) {
+          isMenuPointerInside = false;
+          framework.classList.remove('is-menu-hovered');
+        }
+      });
+
+      menuSlot.addEventListener('mouseenter', function() {
+        isMenuPointerInside = true;
+        showCollapsedMenuPreview();
+      });
+
+      menuSlot.addEventListener('mouseleave', function() {
+        isMenuPointerInside = false;
+        scheduleCollapsedMenuHide();
+      });
+
+      if (voiceBack) {
+        voiceBack.addEventListener('click', function() {
+          if (framework.classList.contains('is-menu-collapsed')) {
+            clearMenuRestoreTimers();
+            clearMenuHoverTimer();
+            framework.classList.remove('is-menu-hovered');
+            framework.classList.add('is-menu-restoring');
+
+            restoreMenuTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-collapsed');
+              restoreMenuTimer = null;
+            }, 80);
+
+            restoreEndTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-restoring');
+              restoreEndTimer = null;
+            }, 360);
+            return;
+          }
+
+          clearMenuRestoreTimers();
+          clearMenuHoverTimer();
+          framework.classList.remove('is-menu-restoring');
+          framework.classList.remove('is-menu-hovered');
+          framework.classList.add('is-menu-collapsed');
+        });
+      }
+
+      if (window.ResizeObserver) {
+        const voiceResizeObserver = new ResizeObserver(syncDiscoverVoiceHeight);
+        voiceResizeObserver.observe(voiceSlot);
+        voiceResizeObserver.observe(voicePanel);
+        if (menuList) voiceResizeObserver.observe(menuList);
+        if (menuListWrapper) voiceResizeObserver.observe(menuListWrapper);
+
+        const frameworkResizeObserver = new ResizeObserver(syncDiscoverCardLayout);
+        frameworkResizeObserver.observe(framework);
+      }
+
+      syncDiscoverVoiceHeight();
+      window.addEventListener('resize', syncDiscoverCardLayout);
+
+      voiceSlot.addEventListener('wheel', function(event) {
+        if (event.target.closest('.nn-slider, input, textarea, select, [contenteditable="true"], .nn-voice-mode__settings-popover')) return;
+        const menuRect = menuSlot.getBoundingClientRect();
+
+        if (event.clientX >= menuRect.left && event.clientX <= menuRect.right) {
+          if (scrollDiscoverMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+        }
+      }, { passive: false });
+    });
+  </script>
+</body>
+</html>

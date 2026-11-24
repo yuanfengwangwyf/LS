@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 业务组件库 - Chat 聊天</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260612-chat-message">
+  <style>
+    .chat-page-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .chat-page-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .chat-page-section-title,
+    .chat-page-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .chat-page-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .chat-page-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space24);
+      width: 100%;
+      padding: var(--space48);
+      overflow: visible;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .chat-page-switch-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space16);
+      flex-wrap: wrap;
+    }
+
+    .chat-page-switch-control {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space8);
+      color: var(--gray-5);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .chat-page-stage {
+      display: flex;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .chat-page-stage--mine {
+      justify-content: flex-end;
+    }
+
+    .chat-page-voice-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space16);
+      width: 100%;
+      min-width: 0;
+    }
+
+    .chat-page-send-stage {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: var(--space24);
+      width: 100%;
+      min-width: 0;
+    }
+
+    .chat-page-message-bar-stage {
+      display: flex;
+      align-items: flex-start;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .chat-page-api-section {
+      margin-top: var(--space80);
+    }
+
+    .chat-page-api-title {
+      margin-bottom: var(--space24);
+      line-height: 26px;
+    }
+
+    .chat-page-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .chat-page-api-table th,
+    .chat-page-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .chat-page-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .chat-page-api-table td {
+      color: var(--gray-5);
+    }
+
+    .chat-page-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=business" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/b-nav.html?v=20260612-chat" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">页面组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">聊天</span>
+      <h1 class="section-title">Chat 聊天</h1>
+      <p class="description">用于聊天流中的消息气泡展示，包含他人消息和我的消息两种方向，支持回复引用模块和 hover 快捷操作。</p>
+
+      <div class="chat-page-content">
+        <div class="chat-page-section">
+          <h2 class="chat-page-section-title">他人消息</h2>
+          <p class="chat-page-section-desc">左侧头像、昵称与时间，气泡右下角 hover 展示回复和更多操作。</p>
+          <div class="chat-page-demo" data-code-preview="true">
+            <div id="chat-other-controls" class="chat-page-switch-controls"></div>
+            <div id="chat-other-stage" class="chat-page-stage"></div>
+          </div>
+        </div>
+
+        <div class="chat-page-section">
+          <h2 class="chat-page-section-title">我的消息</h2>
+          <p class="chat-page-section-desc">右侧头像、昵称与时间，气泡左下角 hover 展示回复和更多操作，右下角展示已读状态。</p>
+          <div class="chat-page-demo" data-code-preview="true">
+            <div id="chat-mine-controls" class="chat-page-switch-controls"></div>
+            <div id="chat-mine-stage" class="chat-page-stage chat-page-stage--mine"></div>
+          </div>
+        </div>
+
+        <div class="chat-page-section">
+          <h2 class="chat-page-section-title">语音房消息</h2>
+          <p class="chat-page-section-desc">用于语音房聊天流中的用户发言、图片、回复、发送昵称卡片、系统消息、连麦状态、礼物卡片、礼物提醒和撤回提示；hover 态在组件交互中体现。</p>
+          <div class="chat-page-demo" data-code-preview="true">
+            <div id="chat-voice-stage" class="chat-page-voice-stage"></div>
+            <div id="chat-send-controls" class="chat-page-switch-controls"></div>
+            <div id="chat-send-stage" class="chat-page-send-stage"></div>
+          </div>
+        </div>
+
+        <div class="chat-page-section">
+          <h2 class="chat-page-section-title">语音房间消息栏</h2>
+          <p class="chat-page-section-desc">用于语音房侧边消息栏，组合 banner、搜索、在线成员、消息流和底部发送输入栏；所在框架宽度为 1280-1599px 时消息栏宽 232px，1600-2559px 时宽 280px，2560px 及以上时宽 320px。</p>
+          <div class="chat-page-demo" data-code-preview="true">
+            <div id="chat-voice-room-message-bar-stage" class="chat-page-message-bar-stage"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-page-api-section">
+        <h2 class="chat-page-api-title">API 参考</h2>
+        <table class="chat-page-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>type</td><td>消息方向</td><td>string</td><td>other | mine</td><td>other</td></tr>
+            <tr><td>name</td><td>用户昵称</td><td>string</td><td>-</td><td>和你隔了几片海</td></tr>
+            <tr><td>time</td><td>发送时间</td><td>string</td><td>-</td><td>根据方向内置</td></tr>
+            <tr><td>text</td><td>消息文本</td><td>string</td><td>-</td><td>Text description...</td></tr>
+            <tr><td>showReply</td><td>是否展示回复引用模块</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>replyUser</td><td>回复对象昵称</td><td>string</td><td>-</td><td>冯宝宝</td></tr>
+            <tr><td>replyText</td><td>回复引用内容</td><td>string</td><td>-</td><td>内置示例文案</td></tr>
+            <tr><td>avatarSrc</td><td>头像资源</td><td>string</td><td>-</td><td>内置头像</td></tr>
+            <tr><td>showRead</td><td>我的消息是否展示已读 icon</td><td>boolean</td><td>true | false</td><td>type 为 mine 时 true</td></tr>
+            <tr><td>onMenuAction</td><td>点击气泡菜单项后的回调，返回 reply/copy/recall/delete/clear</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>createVoiceRoomMessage(options)</td><td>创建语音房消息，支持 kind、name、text、badgeSrc、avatarSrc、giftSrc、title、actionText、sender、target、giftName；badgeSrc 为徽标配置，默认不展示</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>kind</td><td>语音房消息类型</td><td>string</td><td>entry | mic-avatar | gift-received | gift-sent | gift-notice | recall</td><td>entry</td></tr>
+            <tr><td>createChatSendMessage(options)</td><td>创建语音房发消息样式，支持 kind、name、text、firstLine、secondLine、showReply、showImage、showCard、levelSrc、adminRole、adminText、imageSrc、replyUser、replyText、replyQuoteSrc、forwardTitle、forwardName、gameName、gameIconSrc；Reply、Image、Card 为可并存配置；text 会自动换行，仅保留发送者主动输入的换行符；levelSrc 为徽标配置，默认不展示，管理权限徽标使用 Equity 社区身份组件</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>kind</td><td>发消息样式类型</td><td>string</td><td>mobile | text-image | reply | sender-name</td><td>mobile</td></tr>
+            <tr><td>showReply</td><td>语音房发消息是否展示回复模块，可与 Image、Card 并存</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>showImage</td><td>语音房发消息是否展示图片模块，可与 Reply、Card 并存</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>showCard</td><td>语音房发消息是否展示卡片模块，可与 Reply、Image 并存</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>createVoiceRoomMessageBar(options)</td><td>创建语音房间消息栏，组合 banner、搜索、在线成员、消息流和底部输入栏</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>width</td><td>根据所在框架宽度自动适配：1280-1599px 为 232px，1600-2559px 为 280px，2560px 及以上为 320px</td><td>responsive</td><td>-</td><td>232px</td></tr>
+            <tr><td>bannerSrc</td><td>消息栏顶部 banner 图片</td><td>string</td><td>-</td><td>../image/Chat/voice-room-message-bar-banner.png</td></tr>
+            <tr><td>showBannerClose</td><td>是否展示 banner 右上角关闭按钮</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>onBannerClose</td><td>点击关闭 banner 后的回调</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>onlineCount</td><td>在线成员数量</td><td>number | string</td><td>-</td><td>126</td></tr>
+            <tr><td>members</td><td>顶部在线成员列表及成员搜索数据源，支持 rank、name、avatarSrc、tag、tagVariant、online；rank 为头像序号配置，默认不展示；默认展示前三位，悬浮成员区域时展开完整列表，高度为在线成员标题以下至输入框以上可用区域的一半</td><td>array</td><td>-</td><td>内置示例</td></tr>
+            <tr><td>avatars</td><td>在线成员头像条数据，以 18px 头像组件展示；根据可用空间计算可完整展示的数量</td><td>array</td><td>-</td><td>内置示例</td></tr>
+            <tr><td>selfMember</td><td>展开成员区域后固定展示在底部的当前用户，支持 name、avatarSrc</td><td>object</td><td>-</td><td>{ name: '风见志郎' }</td></tr>
+            <tr><td>messages</td><td>消息流数据，type 为 voice 时复用 createVoiceRoomMessage，其余复用 createChatSendMessage</td><td>array</td><td>-</td><td>内置示例</td></tr>
+            <tr><td>entryUsers</td><td>消息流内的用户进入提示数据，支持 name、text、badgeSrc；多位用户按顺序上下滚动展示</td><td>array</td><td>-</td><td>内置示例</td></tr>
+            <tr><td>inputOptions</td><td>传给 createChatMessageInput 的底部输入栏配置；输入文本或图片后按 Enter 会追加至消息流，Shift + Enter 换行</td><td>object</td><td>-</td><td>{ size: 'small' }</td></tr>
+            <tr><td>onMessageSend</td><td>发送成功后回调，返回 text、images、state、event、element</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>showBanner / showSearch / showMembers / showInput</td><td>控制消息栏区域是否展示</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/input.js?v=20260811-chat-voice-room-message-bar"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/switch.js?v=20260612-global-export"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/code-preview.js?v=20260609-explicit-code-source"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260812-search-trigger-fix"></script>
+  <script src="../basic%20components/empty.js?v=20260812-member-search-empty"></script>
+  <script src="../NN%20business%20components/message-sent.js?v=20260811-chat-voice-room-message-bar"></script>
+  <script src="../NN%20business%20components/chat.js?v=20260911-voice-message-banner-box-gap"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('b-nav-chat');
+
+      function createReplySwitch(controlId, stageId, baseOptions) {
+        const controls = document.getElementById(controlId);
+        const stage = document.getElementById(stageId);
+        const state = { reply: false };
+
+        const control = document.createElement('label');
+        control.className = 'chat-page-switch-control';
+        control.appendChild(createSwitch({
+          size: 'small',
+          checked: state.reply,
+          onChange: function(checked) {
+            state.reply = checked;
+            render();
+          }
+        }));
+        const text = document.createElement('span');
+        text.textContent = 'Reply';
+        control.appendChild(text);
+        controls.appendChild(control);
+
+        function render() {
+          renderChatMessage(stage, Object.assign({}, baseOptions, {
+            showReply: state.reply
+          }));
+        }
+
+        render();
+      }
+
+      createReplySwitch('chat-other-controls', 'chat-other-stage', {
+        type: 'other',
+        avatarSrc: '../image/Avatar/头像480.png'
+      });
+
+      createReplySwitch('chat-mine-controls', 'chat-mine-stage', {
+        type: 'mine',
+        avatarSrc: '../image/Avatar/头像496.png'
+      });
+
+      const voiceStage = document.getElementById('chat-voice-stage');
+      [
+        { kind: 'entry', name: '咩噗茶', text: '欢迎来到房间' },
+        { kind: 'mic-avatar', name: '咩噗茶', text: '已连麦', avatarSrc: '../image/Avatar/头像619.png' },
+        { kind: 'gift-received', title: '收到神秘盲盒礼*1314', actionText: '查看我的钱包', giftSrc: '../image/gift/2.png' },
+        { kind: 'gift-sent', title: '送出礼物名字 * 1314', giftSrc: '../image/gift/3.png' },
+        { kind: 'gift-notice', sender: '小晴天', target: '@小小游戏王', giftName: '蓝色宝石*1', giftSrc: '../image/gift/1.png' },
+        { kind: 'recall', text: '管理员撤回了一条消息' }
+      ].forEach(function(item) {
+        voiceStage.appendChild(createVoiceRoomMessage(item));
+      });
+
+      const sendStage = document.getElementById('chat-send-stage');
+      const sendControls = document.getElementById('chat-send-controls');
+      const sendState = {
+        reply: false,
+        image: false,
+        card: false
+      };
+      const sendOptions = {
+        kind: 'mobile',
+        name: '咩***',
+        firstLine: '希望新的一年会有始料不及的运希望',
+        secondLine: '的一年会有始料不及的运气，会有突如其来的欢喜',
+        imageSrc: '../image/Game logo/game1-cover.webp',
+        forwardTitle: '我的游戏ID',
+        forwardName: '这里是游戏ID',
+        gameName: '炉石传说',
+        gameIconSrc: '../image/Game logo/game1.webp'
+      };
+
+      function renderSendMessages() {
+        renderChatSendMessage(sendStage, Object.assign({}, sendOptions, {
+          showReply: sendState.reply,
+          showImage: sendState.image,
+          showCard: sendState.card
+        }));
+      }
+
+      [
+        { key: 'reply', label: 'Reply' },
+        { key: 'image', label: 'Image' },
+        { key: 'card', label: 'Card' }
+      ].forEach(function(item) {
+        const control = document.createElement('label');
+        control.className = 'chat-page-switch-control';
+        const switchEl = createSwitch({
+          size: 'small',
+          checked: false,
+          onChange: function(checked) {
+            sendState[item.key] = checked;
+            renderSendMessages();
+          }
+        });
+        control.appendChild(switchEl);
+        const text = document.createElement('span');
+        text.textContent = item.label;
+        control.appendChild(text);
+        sendControls.appendChild(control);
+      });
+
+      renderSendMessages();
+
+      const voiceRoomMessageBarStage = document.getElementById('chat-voice-room-message-bar-stage');
+      voiceRoomMessageBarStage.appendChild(createVoiceRoomMessageBar());
+    });
+  </script>
+</body>
+</html>

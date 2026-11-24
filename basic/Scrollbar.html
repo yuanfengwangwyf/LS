@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Scrollbar 滑动条</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    .scrollbar-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .scrollbar-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .scrollbar-section-title,
+    .scrollbar-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .scrollbar-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .scrollbar-page-demo {
+      display: flex;
+      gap: var(--space32);
+      width: 100%;
+      padding: var(--space48);
+      overflow: visible;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .scrollbar-demo-frame {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      background: var(--gray-1);
+      box-sizing: border-box;
+    }
+
+    .scrollbar-demo-frame--page {
+      width: 420px;
+      height: 360px;
+    }
+
+    .scrollbar-demo-frame--thin {
+      width: 276px;
+      height: 360px;
+    }
+
+    .scrollbar-demo-frame--always {
+      width: 276px;
+      height: 360px;
+    }
+
+    .scrollbar-demo-frame--horizontal {
+      width: 360px;
+      height: 140px;
+    }
+
+    .scrollbar-demo-scroller {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    .scrollbar-demo-scroller--page {
+      padding: var(--space24) var(--space32) var(--space24) var(--space24);
+    }
+
+    .scrollbar-demo-scroller--thin {
+      padding: var(--space8) var(--space16) var(--space8) var(--space8);
+    }
+
+    .scrollbar-demo-scroller--horizontal {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space10);
+      height: 100%;
+      padding: var(--space24) var(--space24) var(--space40);
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .scrollbar-demo-card {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: var(--space0) var(--space12);
+      border-radius: var(--border-radius-2r);
+      color: var(--gray-5);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+      box-sizing: border-box;
+    }
+
+    .scrollbar-demo-card:nth-child(odd) {
+      background: var(--gray-10);
+    }
+
+    .scrollbar-demo-card + .scrollbar-demo-card {
+      margin-top: var(--space8);
+    }
+
+    .scrollbar-demo-scroller--horizontal .scrollbar-demo-card {
+      min-width: 120px;
+      flex: 0 0 auto;
+    }
+
+    .scrollbar-demo-scroller--horizontal .scrollbar-demo-card + .scrollbar-demo-card {
+      margin-top: var(--space0);
+    }
+
+    .scrollbar-api-section {
+      margin-top: var(--space80);
+    }
+
+    .scrollbar-api-title {
+      margin-bottom: var(--space24);
+      line-height: 26px;
+    }
+
+    .scrollbar-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .scrollbar-api-table th,
+    .scrollbar-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .scrollbar-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .scrollbar-api-table td {
+      color: var(--gray-5);
+    }
+
+    .scrollbar-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260611-scrollbar" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">数据展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">滑动条</span>
+      <h1 class="section-title">Scrollbar 滑动条</h1>
+      <p class="description">Scrollbar 用于绑定已有滚动容器，统一展示页面级滚动条和模块内细滚动条，支持 hover/滚动显示、常显、拖动滑块和点击轨道跳转。</p>
+
+      <div class="scrollbar-content">
+        <div class="scrollbar-section">
+          <h2 class="scrollbar-section-title">默认样式</h2>
+          <p class="scrollbar-section-desc">默认样式在 hover 或滚动时展示，用于页面内容区和导航组、列表等紧凑容器。</p>
+          <div class="scrollbar-page-demo">
+            <div class="scrollbar-demo-frame scrollbar-demo-frame--page">
+              <div id="scrollbar-page-demo" class="scrollbar-demo-scroller scrollbar-demo-scroller--page"></div>
+            </div>
+            <div class="scrollbar-demo-frame scrollbar-demo-frame--thin">
+              <div id="scrollbar-thin-demo" class="scrollbar-demo-scroller scrollbar-demo-scroller--thin"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scrollbar-section">
+          <h2 class="scrollbar-section-title">常显样式</h2>
+          <p class="scrollbar-section-desc">常显样式通过 API 开启，滑块颜色使用默认 hover 状态，适合需要持续提示滚动位置的区域。</p>
+          <div class="scrollbar-page-demo">
+            <div class="scrollbar-demo-frame scrollbar-demo-frame--page">
+              <div id="scrollbar-always-page-demo" class="scrollbar-demo-scroller scrollbar-demo-scroller--page"></div>
+            </div>
+            <div class="scrollbar-demo-frame scrollbar-demo-frame--always">
+              <div id="scrollbar-always-demo" class="scrollbar-demo-scroller scrollbar-demo-scroller--thin"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scrollbar-section">
+          <h2 class="scrollbar-section-title">横向滚动</h2>
+          <p class="scrollbar-section-desc">横向滚动条只提供常显样式，且只有一种粗细；用于消息发送添加图片等横向内容溢出的场景。</p>
+          <div class="scrollbar-page-demo">
+            <div class="scrollbar-demo-frame scrollbar-demo-frame--horizontal">
+              <div id="scrollbar-horizontal-demo" class="scrollbar-demo-scroller scrollbar-demo-scroller--horizontal"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scrollbar-api-section">
+        <h2 class="scrollbar-api-title">API 参考</h2>
+        <table class="scrollbar-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>target</td><td>实际滚动的容器元素</td><td>HTMLElement</td><td>-</td><td>-</td></tr>
+            <tr><td>container</td><td>滑动条挂载容器，通常是 target 的外层定位容器</td><td>HTMLElement</td><td>-</td><td>target.parentElement</td></tr>
+            <tr><td>hoverTarget</td><td>触发 hover 展示的区域</td><td>HTMLElement</td><td>-</td><td>container</td></tr>
+            <tr><td>direction</td><td>滑动条方向；横向只提供常显样式，且只有一种粗细</td><td>string</td><td>vertical | horizontal</td><td>vertical</td></tr>
+            <tr><td>variant</td><td>滑动条样式</td><td>string</td><td>page | thin</td><td>page</td></tr>
+            <tr><td>top / right / bottom / left</td><td>轨道相对挂载容器的边距，支持函数动态返回</td><td>number | string | function</td><td>-</td><td>0 / 4 / 0 / auto</td></tr>
+            <tr><td>minThumbSize</td><td>滑块最小尺寸；纵向为高度，横向为宽度</td><td>number</td><td>-</td><td>60(page) / 24(thin)</td></tr>
+            <tr><td>thumbSize</td><td>固定滑块尺寸；配置后不再按内容比例计算</td><td>number</td><td>-</td><td>null</td></tr>
+            <tr><td>alwaysVisible</td><td>是否常显滑动条；常显时滑块颜色使用默认 hover 状态</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-scrollbar');
+
+      function fillDemo(target, prefix, count) {
+        for (let index = 1; index <= count; index += 1) {
+          const item = document.createElement('div');
+          item.className = 'scrollbar-demo-card';
+          item.textContent = `${prefix} ${index}`;
+          target.appendChild(item);
+        }
+      }
+
+      const pageDemo = document.getElementById('scrollbar-page-demo');
+      const thinDemo = document.getElementById('scrollbar-thin-demo');
+      const alwaysPageDemo = document.getElementById('scrollbar-always-page-demo');
+      const alwaysDemo = document.getElementById('scrollbar-always-demo');
+      const horizontalDemo = document.getElementById('scrollbar-horizontal-demo');
+      fillDemo(pageDemo, '页面内容', 18);
+      fillDemo(thinDemo, '社区导航项', 18);
+      fillDemo(alwaysPageDemo, '常显页面内容', 18);
+      fillDemo(alwaysDemo, '常显滚动项', 18);
+      fillDemo(horizontalDemo, '横向内容', 8);
+
+      createScrollbar({
+        target: pageDemo,
+        container: pageDemo.parentElement,
+        hoverTarget: pageDemo.parentElement,
+        variant: 'page',
+        right: 4
+      });
+
+      createScrollbar({
+        target: thinDemo,
+        container: thinDemo.parentElement,
+        hoverTarget: thinDemo.parentElement,
+        variant: 'thin',
+        right: 4
+      });
+
+      createScrollbar({
+        target: alwaysPageDemo,
+        container: alwaysPageDemo.parentElement,
+        hoverTarget: alwaysPageDemo.parentElement,
+        variant: 'page',
+        right: 4,
+        alwaysVisible: true
+      });
+
+      createScrollbar({
+        target: alwaysDemo,
+        container: alwaysDemo.parentElement,
+        hoverTarget: alwaysDemo.parentElement,
+        variant: 'thin',
+        right: 4,
+        alwaysVisible: true
+      });
+
+      createScrollbar({
+        target: horizontalDemo,
+        container: horizontalDemo.parentElement,
+        hoverTarget: horizontalDemo.parentElement,
+        direction: 'horizontal',
+        left: 24,
+        right: 24,
+        bottom: 10,
+        minThumbSize: 60
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 业务组件库 - Global Search 全局搜索</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260613-global-search">
+  <script src="../iconfont/iconfont.js"></script>
+  <style>
+    .global-search-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .global-search-container {
+      width: calc(100vw - 292px);
+      max-width: none;
+      overflow-x: auto;
+    }
+
+    .global-search-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .global-search-section-title,
+    .global-search-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .global-search-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .global-search-page-demo {
+      width: 1280px;
+      height: 900px;
+      padding: var(--space0);
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      box-sizing: border-box;
+    }
+
+    .global-search-demo-stage {
+      width: 1280px;
+      height: 900px;
+      overflow: hidden;
+    }
+
+    .global-search-api-section {
+      margin-top: var(--space80);
+    }
+
+    .global-search-api-title {
+      margin-bottom: var(--space24);
+      line-height: 26px;
+    }
+
+    .global-search-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .global-search-api-table th,
+    .global-search-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .global-search-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .global-search-api-table td {
+      color: var(--gray-5);
+    }
+
+    .global-search-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=business" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/b-nav.html?v=20260613-global-search" frameborder="0"></iframe>
+
+  <div class="container global-search-container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">业务组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">Global Search 全局搜索</span>
+      <h1 class="section-title">Global Search 全局搜索</h1>
+      <p class="description">用于全局搜索游戏、社区和用户。搜索页展示历史记录、活动 Banner、游戏筛选与发行卡片；输入关键词后切换为游戏/社区和用户双栏结果。</p>
+
+      <div class="global-search-content">
+        <div class="global-search-section">
+          <h2 class="global-search-section-title">搜索页</h2>
+          <div class="global-search-page-demo">
+            <div id="global-search-default-demo" class="global-search-demo-stage"></div>
+          </div>
+        </div>
+        <div class="global-search-section">
+          <h2 class="global-search-section-title">搜索结果页</h2>
+          <div class="global-search-page-demo">
+            <div id="global-search-results-demo" class="global-search-demo-stage"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="global-search-api-section">
+        <h2 class="global-search-api-title">API 参考</h2>
+        <table class="global-search-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>value</td><td>搜索框默认值；为空展示默认推荐内容，有值展示搜索结果内容</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>placeholder</td><td>搜索框占位文本</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>history</td><td>历史记录标签文本</td><td>string[]</td><td>-</td><td>英雄联盟 / PUBG / 无畏契约...</td></tr>
+            <tr><td>games</td><td>搜索页游戏发行卡片数据</td><td>object[]</td><td>-</td><td>内置 8 条示例数据</td></tr>
+            <tr><td>results</td><td>结果页游戏与社区混合数据；通过 type 区分 game / community</td><td>object[]</td><td>-</td><td>内置 9 条示例数据</td></tr>
+            <tr><td>resultCount</td><td>结果标题中展示的匹配数量</td><td>number</td><td>-</td><td>50</td></tr>
+            <tr><td>users</td><td>用户搜索结果数据，头像及在线状态走 Avatar 组件</td><td>object[]</td><td>{ name, avatar, gender, nn }</td><td>内置 8 条示例数据</td></tr>
+            <tr><td>onClose</td><td>点击右上角关闭按钮回调</td><td>function</td><td>-</td><td>null</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/input.js?v=20261112-input-shine-single-layer"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/tabs.js?v=20261112-global-search-figma-17189"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/global-search.js?v=20261118-global-search-height50-content18"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('b-nav-global-search');
+      document.getElementById('global-search-default-demo').appendChild(createGlobalSearch());
+      document.getElementById('global-search-results-demo').appendChild(createGlobalSearch({ value: '战队' }));
+    });
+  </script>
+</body>
+</html>

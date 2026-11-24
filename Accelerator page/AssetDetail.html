@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面 - Total Playtime 总游戏时长</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-unit-shift">
+  <link rel="stylesheet" href="../Accelerator%20business%20components/asset-detail-achievements.css?v=20261116-unlocked-gray3">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261030-asset-detail">
+</head>
+<body class="accelerator-asset-detail-page">
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261030-asset-detail&amp;library=accelerator-page" title="加速器页面顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-p-nav.html?v=20261030-asset-detail" title="加速器页面导航" frameborder="0"></iframe>
+
+  <main class="accelerator-asset-detail-page-shell">
+    <section class="section">
+      <span class="breadcrumb-part">加速器页面</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">资产详情</span>
+      <h1 class="section-title">资产详情</h1>
+      <p class="description">展示 Steam 账号资产、当前排名和游戏明细。</p>
+
+      <div class="accelerator-asset-detail-stage" id="accelerator-asset-detail-stage" data-code-preview="true">
+        <div class="accelerator-asset-detail-frame" aria-label="加速器资产详情页面">
+          <header class="accelerator-asset-detail-frame__header" id="accelerator-asset-detail-header"></header>
+          <div class="accelerator-asset-detail-frame__body">
+            <aside class="accelerator-asset-detail-frame__sidebar" id="accelerator-asset-detail-sidebar" aria-label="加速器侧边导航"></aside>
+            <div class="accelerator-asset-detail-frame__content" role="main">
+              <div class="accelerator-asset-detail-content">
+                <img class="accelerator-asset-detail-background" src="../image/Steam%20achievements/Data%20background.png" alt="" aria-hidden="true">
+                <div class="accelerator-asset-detail-heading">
+                  <h2 class="accelerator-asset-detail-title">总游戏时长</h2>
+                  <div class="accelerator-asset-detail-search" id="accelerator-asset-detail-search"></div>
+                </div>
+                <div class="accelerator-asset-detail-summary">
+                  <div class="accelerator-asset-detail-stat accelerator-asset-detail-stat--primary">
+                    <div class="accelerator-asset-detail-stat__value"><span class="accelerator-asset-detail-stat__number">606.3</span><em>h</em></div>
+                    <div class="accelerator-asset-detail-stat__meta">
+                      <span>总时长</span>
+                      <span class="accelerator-asset-detail-rank" id="accelerator-asset-detail-rank-link" role="link" tabindex="0" aria-label="查看总游戏时长排行榜">
+                        <span>当前排名：</span><strong>856</strong><i class="nnicon nicon-a-Arrowright-linejiantouyou-xianxing" aria-hidden="true"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="accelerator-asset-detail-stat">
+                    <div class="accelerator-asset-detail-stat__value"><span class="accelerator-asset-detail-stat__number">78.5</span><em>h</em></div>
+                    <div class="accelerator-asset-detail-stat__meta"><span>过去一周总时长</span></div>
+                  </div>
+                </div>
+                <div class="accelerator-asset-detail-list" id="accelerator-asset-detail-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261123-history-back"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261114-accelerator-state-sync"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20261103-accelerator-header-duration"></script>
+  <script src="../basic%20components/input.js?v=20261114-accelerator-search-sync"></script>
+  <script src="../basic%20components/message.js?v=20261114-scoped-message"></script>
+  <script src="../basic%20components/code-preview.js?v=20261030-asset-detail"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/label.js?v=20261111-certification-icon-20px"></script>
+  <script src="../basic%20components/tabs.js?v=20261029-accelerator-home"></script>
+  <script src="../basic%20components/scrollbar.js?v=20261102-steam-friends-modal-2"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-search-resource-library"></script>
+  <script src="../basic%20components/empty.js?v=20260610-empty-type-common-default"></script>
+  <script src="../Accelerator%20business%20components/game-search.js?v=20261120-search-modal-header-shine"></script>
+  <script src="../Accelerator%20business%20components/header.js?v=20261123-global-interactions"></script>
+  <script src="../Accelerator%20business%20components/side-navigation.js?v=20261123-global-game-navigation"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+</body>
+</html>

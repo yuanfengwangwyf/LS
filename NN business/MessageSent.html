@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 业务组件库 - Message sent 消息发送</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260609-chat">
+  <style>
+    .chat-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+      width: 100%;
+    }
+
+    .chat-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      width: 100%;
+    }
+
+    .chat-section-title,
+    .chat-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .chat-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .chat-page-demo {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space32);
+      width: 100%;
+      padding: var(--space48);
+      overflow: visible;
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .chat-page-demo.chat-page-with-border {
+      border: 1px solid var(--gray-8);
+    }
+
+    .chat-demo-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .chat-demo-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .chat-demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space32);
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .chat-demo-column {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space32);
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .chat-permission-groups {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .chat-permission-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space24);
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .chat-permission-title {
+      color: var(--gray-3);
+      font-size: 20px;
+      font-weight: var(--font-weight-medium);
+      line-height: 28px;
+    }
+
+    .chat-variant-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .chat-variant-stage {
+      display: flex;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .chat-switch-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space16);
+      flex-wrap: wrap;
+    }
+
+    .chat-switch-control {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space8);
+      color: var(--gray-5);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .chat-demo-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space12);
+      align-items: flex-start;
+    }
+
+    .chat-demo-label {
+      color: var(--gray-5);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .chat-api-section {
+      margin-top: var(--space80);
+    }
+
+    .chat-api-title {
+      margin-bottom: var(--space24);
+      line-height: 26px;
+    }
+
+    .chat-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .chat-api-table th,
+    .chat-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .chat-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .chat-api-table td {
+      color: var(--gray-5);
+    }
+
+    .chat-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=business" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/b-nav.html?v=20260612-chat" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">页面组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">消息发送</span>
+      <h1 class="section-title">Message sent 消息发送</h1>
+      <p class="description">用于聊天底部消息发送输入区，支持默认、输入、回复、小尺寸、加入社区、禁言和未登录等状态，可配置图片、文字、快捷操作和按钮。</p>
+
+      <div class="chat-content">
+        <div id="chat-message-input-demo" class="chat-demo-stack"></div>
+      </div>
+
+      <div class="chat-api-section">
+        <h2 class="chat-api-title">API 参考</h2>
+        <table class="chat-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>size</td><td>输入栏尺寸</td><td>string</td><td>default | small</td><td>default</td></tr>
+            <tr><td>state</td><td>输入栏状态，小尺寸支持 record 状态嵌入游戏 ID 战绩信息</td><td>string</td><td>empty | input | hover | reply | record | join | muted | login</td><td>empty</td></tr>
+            <tr><td>placeholder</td><td>未输入时的提示文案</td><td>string</td><td>-</td><td>按Enter回车键发送消息</td></tr>
+            <tr><td>textLines</td><td>输入内容文本，支持换行展示</td><td>string[]</td><td>-</td><td>内置示例文案</td></tr>
+            <tr><td>imageSrc</td><td>图片预览资源</td><td>string</td><td>-</td><td>../image/Game logo/game1-cover.webp</td></tr>
+            <tr><td>pictureType</td><td>图片展示类型，可自动按图片比例识别</td><td>string</td><td>auto | square | landscape | portrait | long | gif</td><td>auto</td></tr>
+            <tr><td>imageList</td><td>图片预览资源列表</td><td>string[]</td><td>-</td><td>[]</td></tr>
+            <tr><td>showImage</td><td>是否展示图片预览</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>showSendButton</td><td>是否展示发布按钮</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>showGift</td><td>是否展示礼物 icon</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>showUpload</td><td>是否展示上传图片 icon</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>showRecordGameId</td><td>小尺寸状态下是否在顶部嵌入游戏 ID 战绩信息组件</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>interactive</td><td>是否开启点击输入、图片添加/删除和发送交互</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>replyUser</td><td>回复对象昵称</td><td>string</td><td>-</td><td>普莱士袋熊</td></tr>
+            <tr><td>replyText</td><td>回复引用内容</td><td>string</td><td>-</td><td>诺克萨斯灵活翡翠局...</td></tr>
+            <tr><td>onUpload</td><td>添加图片后的回调</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>onRemoveImage</td><td>兼容旧图片删除回调；当前图片跟随输入内容整体清空</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>onChange</td><td>输入内容、图片和状态变化后的回调</td><td>function</td><td>-</td><td>-</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260609-explicit-code-source"></script>
+  <script src="../basic%20components/switch.js?v=20260612-global-export"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/checkbox.js?v=20260612-record-game-id"></script>
+  <script src="../basic%20components/tooltips.js?v=20260612-record-game-id-label-tooltip"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../NN%20business%20components/record.js?v=20261119-din-balanced"></script>
+  <script src="../NN%20business%20components/message-sent.js?v=20260613-message-sent-record-fill"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('b-nav-message-sent');
+
+      const demo = document.getElementById('chat-message-input-demo');
+
+      function addDemo(label, options, config) {
+        config = config || {};
+        const item = document.createElement('div');
+        item.className = 'chat-demo-item';
+        if (!config.hideLabel) {
+          const title = document.createElement('div');
+          title.className = 'chat-demo-label';
+          title.textContent = label;
+          item.appendChild(title);
+        }
+        item.appendChild(createChatMessageInput(options));
+        return item;
+      }
+
+      function addGroup(title, demos) {
+        const section = document.createElement('div');
+        section.className = 'chat-section';
+
+        const groupTitle = document.createElement('h2');
+        groupTitle.className = 'chat-section-title';
+        groupTitle.textContent = title;
+
+        const desc = document.createElement('p');
+        desc.className = 'chat-section-desc';
+        desc.textContent = getGroupDescription(title);
+
+        const demoBox = document.createElement('div');
+        demoBox.className = 'chat-page-demo chat-page-with-border';
+        demoBox.setAttribute('data-code-preview', 'true');
+
+        if (title === '基础输入状态') {
+          demoBox.appendChild(createInputVariantDemo({
+            stageId: 'chat-message-input-basic',
+            baseOptions: {},
+            controls: [
+              { key: 'reply', label: 'Reply' }
+            ]
+          }));
+        } else if (title === '小尺寸状态') {
+          demoBox.appendChild(createInputVariantDemo({
+            stageId: 'chat-message-input-small',
+            baseOptions: { size: 'small' },
+            controls: [
+              { key: 'reply', label: 'Reply' },
+              { key: 'record', label: '战绩' }
+            ]
+          }));
+        } else if (title === '权限限制状态') {
+          const groups = document.createElement('div');
+          groups.className = 'chat-permission-groups';
+          demos.forEach(function(group) {
+            const groupWrap = document.createElement('div');
+            groupWrap.className = 'chat-permission-group';
+            const permissionTitle = document.createElement('div');
+            permissionTitle.className = 'chat-permission-title';
+            permissionTitle.textContent = group.title;
+            const pair = document.createElement('div');
+            pair.className = 'chat-demo-column';
+            group.items.forEach(function(config) {
+              pair.appendChild(addDemo(config.label, config.options, { hideLabel: true }));
+            });
+            groupWrap.appendChild(permissionTitle);
+            groupWrap.appendChild(pair);
+            groups.appendChild(groupWrap);
+          });
+          demoBox.appendChild(groups);
+        } else {
+          const row = document.createElement('div');
+          row.className = 'chat-demo-row';
+          demos.forEach(function(config) {
+            row.appendChild(addDemo(config.label, config.options));
+          });
+          demoBox.appendChild(row);
+        }
+        demoBox.dataset.codeJs = buildGroupJsCode(title, demos);
+        if (title === '基础输入状态' || title === '小尺寸状态') {
+          demoBox.dataset.codeHtml = `<div class="chat-page-demo chat-page-with-border">\n  <div class="chat-variant-demo">\n    <div id="${getGroupDemoId(title)}-controls" class="chat-switch-controls"></div>\n    <div id="${getGroupDemoId(title)}" class="chat-variant-stage"></div>\n  </div>\n</div>`;
+          demoBox.dataset.codeCss = `.chat-variant-demo {\n  display: flex;\n  flex-direction: column;\n  gap: var(--space16);\n  align-items: flex-start;\n  width: 100%;\n}\n\n.chat-switch-controls {\n  display: flex;\n  align-items: center;\n  gap: var(--space16);\n  flex-wrap: wrap;\n}\n\n.chat-switch-control {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--space8);\n}\n\n.chat-variant-stage {\n  display: flex;\n  align-items: flex-start;\n  width: 100%;\n}`;
+        } else {
+          const demoLayoutClass = title === '权限限制状态' ? 'chat-permission-groups' : 'chat-demo-row';
+          demoBox.dataset.codeHtml = `<div class="chat-page-demo chat-page-with-border">\n  <div id="${getGroupDemoId(title)}" class="${demoLayoutClass}"></div>\n</div>`;
+          demoBox.dataset.codeCss = title === '权限限制状态'
+            ? `.chat-page-demo {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--space32);\n  width: 100%;\n  padding: var(--space48);\n  box-sizing: border-box;\n}\n\n.chat-permission-groups {\n  display: flex;\n  flex-direction: column;\n  gap: var(--space48);\n  align-items: flex-start;\n  width: 100%;\n}\n\n.chat-permission-group {\n  display: flex;\n  flex-direction: column;\n  gap: var(--space24);\n  align-items: flex-start;\n  width: 100%;\n}\n\n.chat-demo-column {\n  display: flex;\n  flex-direction: column;\n  gap: var(--space32);\n  align-items: flex-start;\n  width: 100%;\n}`
+            : `.chat-page-demo {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--space32);\n  width: 100%;\n  padding: var(--space48);\n  box-sizing: border-box;\n}\n\n.chat-demo-row {\n  display: flex;\n  flex-wrap: wrap;\n  gap: var(--space32);\n  align-items: flex-start;\n}`;
+        }
+        section.appendChild(groupTitle);
+        section.appendChild(desc);
+        section.appendChild(demoBox);
+        demo.appendChild(section);
+      }
+
+      function getGroupDemoId(title) {
+        const ids = {
+          '基础输入状态': 'chat-message-input-basic',
+          '小尺寸状态': 'chat-message-input-small',
+          '权限限制状态': 'chat-message-input-permission'
+        };
+        return ids[title] || 'chat-message-input-demo';
+      }
+
+      function formatValue(value, indent) {
+        const space = ' '.repeat(indent);
+        const nextSpace = ' '.repeat(indent + 2);
+        if (Array.isArray(value)) {
+          return `[${value.map(function(item) { return JSON.stringify(item); }).join(', ')}]`;
+        }
+        if (value && typeof value === 'object') {
+          const entries = Object.keys(value).map(function(key) {
+            return `${nextSpace}${key}: ${formatValue(value[key], indent + 2)}`;
+          });
+          return `{\n${entries.join(',\n')}\n${space}}`;
+        }
+        return JSON.stringify(value);
+      }
+
+      function buildGroupJsCode(title, demos) {
+        const target = getGroupDemoId(title);
+        if (title === '基础输入状态' || title === '小尺寸状态') {
+          const baseOptionText = title === '小尺寸状态' ? ', size: "small"' : '';
+          const switchLines = title === '小尺寸状态'
+            ? [
+              `const state = { replyChecked: false, recordChecked: false };`,
+              ``,
+              `function render() {`,
+              `  renderChatMessageInput(stage, {`,
+              `    state: state.replyChecked ? 'reply' : 'empty'${baseOptionText},`,
+              `    showRecordGameId: state.recordChecked`,
+              `  });`,
+              `}`
+            ]
+            : [
+              `const state = { replyChecked: false };`,
+              ``,
+              `function render() {`,
+              `  renderChatMessageInput(stage, { state: state.replyChecked ? 'reply' : 'empty' });`,
+              `}`
+            ];
+          return [
+            `const stage = document.getElementById('${target}');`,
+            ...switchLines,
+            ``,
+            `createSwitch({`,
+            `  size: 'small',`,
+            `  checked: state.replyChecked,`,
+            `  onChange: function(checked) {`,
+            `    state.replyChecked = checked;`,
+            `    render();`,
+            `  }`,
+            `});`,
+            title === '小尺寸状态' ? `` : null,
+            title === '小尺寸状态' ? `createSwitch({` : null,
+            title === '小尺寸状态' ? `  size: 'small',` : null,
+            title === '小尺寸状态' ? `  checked: state.recordChecked,` : null,
+            title === '小尺寸状态' ? `  onChange: function(checked) {` : null,
+            title === '小尺寸状态' ? `    state.recordChecked = checked;` : null,
+            title === '小尺寸状态' ? `    render();` : null,
+            title === '小尺寸状态' ? `  }` : null,
+            title === '小尺寸状态' ? `});` : null,
+            ``,
+            `render();`
+          ].filter(Boolean).join('\n');
+        }
+        if (title === '权限限制状态') {
+          const lines = [
+            `const groups = document.getElementById('${target}');`,
+            ''
+          ];
+          demos.forEach(function(group) {
+            lines.push(`// ${group.title}`);
+            group.items.forEach(function(config) {
+              lines.push(`groups.appendChild(createChatMessageInput(${formatValue(config.options, 0)}));`);
+            });
+            lines.push('');
+          });
+          return lines.join('\n').trim();
+        }
+        const lines = [
+          `const row = document.getElementById('${target}');`,
+          ''
+        ];
+        demos.forEach(function(config) {
+          lines.push(`row.appendChild(createChatMessageInput(${formatValue(config.options, 0)}));`);
+          lines.push('');
+        });
+        return lines.join('\n').trim();
+      }
+
+      function createInputVariantDemo(config) {
+        config = config || {};
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-variant-demo';
+
+        const controlsSlot = document.createElement('div');
+        controlsSlot.className = 'chat-switch-controls';
+        const stage = document.createElement('div');
+        stage.id = config.stageId || 'chat-message-input-basic';
+        stage.className = 'chat-variant-stage';
+        const baseOptions = config.baseOptions || {};
+        const controlState = {
+          reply: false,
+          record: false
+        };
+
+        function renderVariant() {
+          renderChatMessageInput(stage, Object.assign({}, baseOptions, {
+            state: controlState.reply ? 'reply' : 'empty',
+            showRecordGameId: controlState.record
+          }));
+        }
+
+        const controls = config.controls || [
+          { key: 'reply', label: 'Reply' }
+        ];
+        controls.forEach(function(control) {
+          const controlWrap = document.createElement('label');
+          controlWrap.className = 'chat-switch-control';
+          controlWrap.appendChild(createSwitch({
+            size: 'small',
+            checked: Boolean(controlState[control.key]),
+            onChange: function(checked) {
+              controlState[control.key] = checked;
+              renderVariant();
+            }
+          }));
+          const label = document.createElement('span');
+          label.textContent = control.label;
+          controlWrap.appendChild(label);
+          controlsSlot.appendChild(controlWrap);
+        });
+
+        renderVariant();
+        wrap.appendChild(controlsSlot);
+        wrap.appendChild(stage);
+        return wrap;
+      }
+
+      function getGroupDescription(title) {
+        const descriptions = {
+          '基础输入状态': '展示消息发送组件的默认框。输入内容、添加图片和回复内容属于默认框的交互状态，不作为独立样式展示。',
+          '小尺寸状态': '展示消息发送组件的小尺寸用法，样式、逻辑和交互与默认尺寸一致，仅两侧 icon 尺寸不同。',
+          '权限限制状态': '展示消息发送组件在加入社区、禁言、未登录等限制场景下的占位提示与操作按钮。'
+        };
+        return descriptions[title] || '';
+      }
+
+      addGroup('基础输入状态', [
+        {
+          label: '默认状态',
+          options: {
+            state: 'empty'
+          }
+        }
+      ]);
+
+      addGroup('小尺寸状态', [
+        {
+          label: '小尺寸未输入',
+          options: { size: 'small', state: 'empty' }
+        },
+        {
+          label: '小尺寸 Hover',
+          options: {
+            size: 'small',
+            state: 'hover',
+            imageSrc: '../image/Game%20logo/game2-cover.webp'
+          }
+        },
+        {
+          label: '小尺寸回复',
+          options: { size: 'small', state: 'reply' }
+        }
+      ]);
+
+      addGroup('权限限制状态', [
+        {
+          title: '预览模式',
+          items: [
+            {
+              label: '加入社区',
+              options: { state: 'join' }
+            },
+            {
+              label: '小尺寸预览模式',
+              options: { size: 'small', state: 'join' }
+            }
+          ]
+        },
+        {
+          title: '禁言',
+          items: [
+            {
+              label: '禁言',
+              options: { state: 'muted' }
+            },
+            {
+              label: '小尺寸禁言',
+              options: { size: 'small', state: 'muted' }
+            }
+          ]
+        },
+        {
+          title: '未登录',
+          items: [
+            {
+              label: '未登录',
+              options: { state: 'login' }
+            },
+            {
+              label: '小尺寸未登录',
+              options: { size: 'small', state: 'login' }
+            }
+          ]
+        }
+      ]);
+    });
+  </script>
+</body>
+</html>

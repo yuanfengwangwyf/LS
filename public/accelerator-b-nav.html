@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器业务组件导航</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    body {
+      margin: var(--space0);
+      padding: var(--space0);
+      background: var(--gray-2);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <div class="nav-title">加速器业务组件库</div>
+      <div class="nav-section">
+        <div class="nav-section-title">导航</div>
+        <ul class="nav-list">
+          <li><a href="../Accelerator%20business/Header.html" id="accelerator-b-nav-header" target="_parent"><span class="nav-link-label">Header 头部</span></a></li>
+          <li><a href="../Accelerator%20business/SideNavigation.html" id="accelerator-b-nav-side-navigation" target="_parent"><span class="nav-link-label">Side Navigation 侧边导航</span></a></li>
+          <li><a href="../Accelerator%20business/ImageCarousel.html" id="accelerator-b-nav-image-carousel" target="_parent"><span class="nav-link-label">Image Carousel 图片轮播</span></a></li>
+          <li><a href="../Accelerator%20business/Card.html" id="accelerator-b-nav-card" target="_parent"><span class="nav-link-label">Card 卡片</span></a></li>
+          <li><a href="../Accelerator%20business/Ranking.html" id="accelerator-b-nav-ranking" target="_parent"><span class="nav-link-label">Ranking 排行榜</span></a></li>
+          <li><a href="../Accelerator%20business/Heatmap.html" id="accelerator-b-nav-heatmap" target="_parent"><span class="nav-link-label">Heatmap 热力图</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    function applyInit(data) {
+      document.body.classList.toggle('dark-mode', Boolean(data.darkMode));
+
+      if (data.activeNavId) {
+        document.querySelectorAll('.nav-list a.active').forEach(function(link) {
+          link.classList.remove('active');
+        });
+
+        var activeLink = document.getElementById(data.activeNavId);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    }
+
+    function updateNavFadeState() {
+      var nav = document.querySelector('.nav');
+      var content = document.querySelector('.nav-content');
+      if (!nav || !content) return;
+
+      var maxScrollTop = Math.max(0, content.scrollHeight - content.clientHeight);
+      nav.classList.toggle('is-scroll-top', content.scrollTop > 0);
+      nav.classList.toggle('is-scroll-bottom', content.scrollTop < maxScrollTop - 1);
+    }
+
+    function restoreScrollPosition() {
+      var content = document.querySelector('.nav-content');
+      if (!content) return;
+      var savedPosition = sessionStorage.getItem('accelerator-b-nav-scrollTop');
+      if (savedPosition !== null) content.scrollTop = parseInt(savedPosition, 10);
+      updateNavFadeState();
+    }
+
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'init') {
+        applyInit(event.data);
+        restoreScrollPosition();
+      } else if (event.data && event.data.type === 'dark-mode') {
+        document.body.classList.toggle('dark-mode', Boolean(event.data.value));
+      }
+    });
+
+    (function() {
+      document.body.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+      restoreScrollPosition();
+      var content = document.querySelector('.nav-content');
+      if (content) content.addEventListener('scroll', updateNavFadeState, { passive: true });
+      window.addEventListener('resize', updateNavFadeState);
+    })();
+
+    window.addEventListener('beforeunload', function() {
+      var content = document.querySelector('.nav-content');
+      if (content) sessionStorage.setItem('accelerator-b-nav-scrollTop', content.scrollTop);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+body.accelerator-tools-page .accelerator-tool-category-content {
+  padding-top: var(--space16);
+}
+
+.accelerator-tool-category-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space16);
+  margin-bottom: var(--space16);
+}
+
+.accelerator-tool-category-heading h2 {
+  color: var(--gray-3);
+  font-size: var(--font-size-header-2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-header-2);
+}
+
+.accelerator-tool-category-empty {
+  grid-column: 1 / -1;
+}

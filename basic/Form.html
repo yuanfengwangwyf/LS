@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Form 表单</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260512">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+  <style>
+    .form-page-demo {
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">数据输入</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">表单</span>
+      <h1 class="section-title">Form 表单</h1>
+      <p class="description">Form 用于组织表单标题、必填标识与右侧控件区域；右侧支持灵活传入任意组件，也内置 Input、Dropdown Menu、Radio、Checkbox 的默认调用方式。</p>
+
+      <div class="form-content">
+        <div class="form-section">
+          <h2 class="form-section-title">表单布局</h2>
+          <p class="form-section-desc">展示完整 Form 在 left align、right align、vertical 三种布局下的组合方式，右侧控件继续复用已有组件。</p>
+          <div class="form-page-demo form-page-with-border">
+            <div class="form-demo-column" id="form-layout"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">输入框</h2>
+          <p class="form-section-desc">Input 作为 Form 的默认调用类型，通过 Tabs 切换 left align、right align 和 vertical。</p>
+          <div class="form-page-demo form-page-with-border">
+            <div class="form-demo-column" id="form-input"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">下拉菜单</h2>
+          <p class="form-section-desc">Dropdown Menu 作为 Form 的默认调用类型，右侧控件复用已有下拉菜单组件。</p>
+          <div class="form-page-demo form-page-with-border">
+            <div class="form-demo-column" id="form-dropdown"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">多行输入</h2>
+          <p class="form-section-desc">Textarea 复用 Input 组件的 textarea 类型，并由 Form 控制标题对齐，Tabs 中切换不同布局。</p>
+          <div class="form-page-demo form-page-with-border">
+            <div class="form-demo-column" id="form-textarea"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">选择控件</h2>
+          <p class="form-section-desc">Radio 与 Checkbox 作为 Form 的默认调用类型，Tabs 中切换 horizontal、vertical、left align、right align 等展示。</p>
+          <div class="form-page-demo form-page-with-border">
+            <div class="form-demo-column" id="form-choice"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-api-section">
+        <h2 class="form-api-title">API 参考</h2>
+        <table class="form-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>label</td><td>表单项标题</td><td>string</td><td>-</td><td>'Username'</td></tr>
+            <tr><td>required</td><td>是否展示必填星号</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>layout</td><td>标签与控件排列方式</td><td>string</td><td>'align-left' | 'align-right' | 'vertical'</td><td>'align-left'</td></tr>
+            <tr><td>labelAlign</td><td>纵向布局下标题行对齐方式</td><td>string</td><td>'left' | 'right'</td><td>'left'</td></tr>
+            <tr><td>valign</td><td>横向布局时标签垂直对齐方式</td><td>string</td><td>'center' | 'top'</td><td>'center'</td></tr>
+            <tr><td>labelWidth</td><td>横向布局标签宽度</td><td>number</td><td>-</td><td>100 / 80</td></tr>
+            <tr><td>controlWidth</td><td>控件区域宽度</td><td>number</td><td>-</td><td>240</td></tr>
+            <tr><td>controlType</td><td>右侧默认调用的控件类型</td><td>string</td><td>'input' | 'textarea' | 'dropdown' | 'radio' | 'checkbox' | 'custom'</td><td>'custom'</td></tr>
+            <tr><td>controlProps</td><td>传递给默认控件的配置项</td><td>object</td><td>-</td><td>{}</td></tr>
+            <tr><td>control</td><td>自定义右侧组件插槽，优先级高于 controlType</td><td>Node | string</td><td>-</td><td>null</td></tr>
+            <tr><td>help</td><td>辅助说明文本</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/input.js?v=20260521"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../basic%20components/radio.js?v=20260521"></script>
+  <script src="../basic%20components/checkbox.js?v=20260521"></script>
+  <script src="../basic%20components/tabs.js?v=20260521"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/switch.js?v=20260521"></script>
+  <script src="../basic%20components/slider.js?v=20260529-wheel"></script>
+  <script src="../basic%20components/form.js?v=20260521d"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-form');
+      injectInputStyles();
+      injectDropdownMenuStyles();
+      injectRadioStyles();
+      injectCheckboxStyles();
+      injectTabsStyles();
+      injectButtonStyles();
+      injectSwitchStyles();
+      injectSliderStyles();
+      injectFormStyles();
+
+      const formDemoControlWidth = {
+        input: 240,
+        dropdown: 184,
+        textarea: 400,
+        radioHorizontal: 516,
+        radioVertical: 172,
+        checkboxHorizontal: 656,
+        checkboxVertical: 200
+      };
+
+      function createTabbedFormDemo(container, variants) {
+        const demo = document.createElement('div');
+        demo.className = 'form-tabbed-demo';
+
+        const tabsWrap = document.createElement('div');
+        tabsWrap.className = 'form-tabbed-demo-tabs';
+
+        const panel = document.createElement('div');
+        panel.className = 'form-tabbed-demo-panel';
+
+        function renderVariant(index) {
+          panel.innerHTML = '';
+          panel.appendChild(variants[index].render());
+        }
+
+        const tabs = createTabs({
+          type: 'tertiary-box',
+          tabs: variants.map(function(variant) {
+            return { name: variant.name };
+          }),
+          defaultActive: 0,
+          onChange: function(event) {
+            renderVariant(event.index);
+          }
+        });
+
+        tabsWrap.appendChild(tabs);
+        demo.appendChild(tabsWrap);
+        demo.appendChild(panel);
+        container.appendChild(demo);
+        renderVariant(0);
+      }
+
+      function createFormLayoutInputItem(options) {
+        return createFormItem({
+          label: options.label,
+          required: options.required,
+          layout: options.layout,
+          labelAlign: options.labelAlign,
+          labelWidth: options.labelWidth,
+          controlWidth: options.controlWidth,
+          controlType: 'input',
+          controlProps: {
+            size: 'large',
+            placeholder: options.placeholder
+          }
+        });
+      }
+
+      function createFormLayoutControlItem(options) {
+        return createFormItem({
+          label: options.label,
+          required: false,
+          layout: options.layout,
+          labelAlign: options.labelAlign,
+          labelWidth: options.labelWidth,
+          controlWidth: options.controlWidth,
+          control: options.control
+        });
+      }
+
+      function createFormLayoutSwitch() {
+        return createSwitch({
+          checked: true,
+          size: 'large'
+        });
+      }
+
+      function createFormLayoutRadio() {
+        return createFormChoiceGroup({
+          type: 'radio',
+          direction: 'horizontal',
+          items: ['Radio', 'Radio', 'Radio'],
+          selectedIndex: 0
+        });
+      }
+
+      function createFormLayoutSlider() {
+        return createSlider({
+          value: 56,
+          size: 'small',
+          tooltip: 'tooltip',
+          length: 360,
+          className: 'form-layout-slider'
+        });
+      }
+
+      function createFormLayoutActions() {
+        const actions = document.createDocumentFragment();
+
+        const checkboxRow = document.createElement('div');
+        checkboxRow.className = 'form-layout-action-row';
+        checkboxRow.appendChild(createCheckbox({
+          text: 'I have read the manual',
+          checked: false,
+          interactive: true
+        }));
+
+        const buttonRow = document.createElement('div');
+        buttonRow.className = 'form-layout-action-row';
+        buttonRow.appendChild(createButton({
+          text: 'Submit',
+          variant: 'primary',
+          level: 'primary',
+          size: 'large'
+        }));
+
+        actions.appendChild(checkboxRow);
+        actions.appendChild(buttonRow);
+        return actions;
+      }
+
+      function createLayoutForm(layout) {
+        const form = document.createElement('div');
+        form.className = [
+          'form-layout-form',
+          layout === 'left' ? 'form-layout-form--left' : '',
+          layout === 'right' ? 'form-layout-form--right' : '',
+          layout === 'vertical' ? 'form-layout-form--vertical' : '',
+        ].filter(Boolean).join(' ');
+
+        if (layout === 'vertical') {
+          form.appendChild(createFormLayoutInputItem({
+            label: 'Username',
+            required: true,
+            layout: 'vertical',
+            labelAlign: 'left',
+            controlWidth: 540,
+            placeholder: 'please enter your name'
+          }));
+          form.appendChild(createFormLayoutInputItem({
+            label: 'Post',
+            required: false,
+            layout: 'vertical',
+            labelAlign: 'left',
+            controlWidth: 540,
+            placeholder: 'please enter your post'
+          }));
+          form.appendChild(createFormLayoutControlItem({
+            label: 'Switch',
+            layout: 'vertical',
+            labelAlign: 'left',
+            controlWidth: 540,
+            control: createFormLayoutSwitch()
+          }));
+          form.appendChild(createFormLayoutControlItem({
+            label: 'Radio',
+            layout: 'vertical',
+            labelAlign: 'left',
+            controlWidth: 540,
+            control: createFormLayoutRadio()
+          }));
+          form.appendChild(createFormLayoutControlItem({
+            label: 'Slider',
+            layout: 'vertical',
+            labelAlign: 'left',
+            controlWidth: 540,
+            control: createFormLayoutSlider()
+          }));
+          form.appendChild(createFormLayoutActions());
+          return form;
+        }
+
+        if (layout === 'left') {
+          form.appendChild(createFormLayoutInputItem({
+            label: 'Username',
+            required: true,
+            layout: 'align-left',
+            labelWidth: 180,
+            controlWidth: 540,
+            placeholder: 'please enter your name'
+          }));
+          form.appendChild(createFormLayoutInputItem({
+            label: 'Post',
+            required: false,
+            layout: 'align-left',
+            labelWidth: 180,
+            controlWidth: 540,
+            placeholder: 'please enter your post'
+          }));
+          form.appendChild(createFormLayoutControlItem({
+            label: 'Switch',
+            layout: 'align-left',
+            labelWidth: 180,
+            controlWidth: 540,
+            control: createFormLayoutSwitch()
+          }));
+          form.appendChild(createFormLayoutControlItem({
+            label: 'Radio',
+            layout: 'align-left',
+            labelWidth: 180,
+            controlWidth: 540,
+            control: createFormLayoutRadio()
+          }));
+          form.appendChild(createFormLayoutControlItem({
+            label: 'Slider',
+            layout: 'align-left',
+            labelWidth: 180,
+            controlWidth: 540,
+            control: createFormLayoutSlider()
+          }));
+          form.appendChild(createFormLayoutActions());
+          return form;
+        }
+
+        form.appendChild(createFormLayoutInputItem({
+          label: 'Username',
+          required: true,
+          layout: 'align-right',
+          labelWidth: 180,
+          controlWidth: 540,
+          placeholder: 'please enter your name'
+        }));
+        form.appendChild(createFormLayoutInputItem({
+          label: 'Post',
+          required: false,
+          layout: 'align-right',
+          labelWidth: 180,
+          controlWidth: 540,
+          placeholder: 'please enter your post'
+        }));
+        form.appendChild(createFormLayoutControlItem({
+          label: 'Switch',
+          layout: 'align-right',
+          labelWidth: 180,
+          controlWidth: 540,
+          control: createFormLayoutSwitch()
+        }));
+        form.appendChild(createFormLayoutControlItem({
+          label: 'Radio',
+          layout: 'align-right',
+          labelWidth: 180,
+          controlWidth: 540,
+          control: createFormLayoutRadio()
+        }));
+        form.appendChild(createFormLayoutControlItem({
+          label: 'Slider',
+          layout: 'align-right',
+          labelWidth: 180,
+          controlWidth: 540,
+          control: createFormLayoutSlider()
+        }));
+        form.appendChild(createFormLayoutActions());
+        return form;
+      }
+
+      function createFormLayoutDemo(container) {
+        const demo = document.createElement('div');
+        demo.className = 'form-layout-demo';
+
+        const switchRow = document.createElement('div');
+        switchRow.className = 'form-layout-switch';
+
+        const switchLabel = document.createElement('span');
+        switchLabel.className = 'form-layout-switch-label';
+        switchLabel.textContent = 'Layout';
+
+        const panel = document.createElement('div');
+        panel.className = 'form-layout-panel';
+
+        function renderLayout(layout) {
+          panel.innerHTML = '';
+          panel.appendChild(createLayoutForm(layout));
+        }
+
+        const tabs = createTabs({
+          type: 'tertiary-box',
+          tabs: [
+            { name: 'left align', value: 'left' },
+            { name: 'right align', value: 'right' },
+            { name: 'vertical', value: 'vertical' }
+          ],
+          defaultActive: 0,
+          onChange: function(event) {
+            renderLayout(event.tab.value);
+          }
+        });
+
+        switchRow.appendChild(switchLabel);
+        switchRow.appendChild(tabs);
+        demo.appendChild(switchRow);
+        demo.appendChild(panel);
+        container.appendChild(demo);
+        renderLayout('left');
+      }
+
+      createFormLayoutDemo(document.getElementById('form-layout'));
+
+      const formInput = document.getElementById('form-input');
+      createTabbedFormDemo(formInput, [
+        {
+          name: 'left align',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-left',
+              labelWidth: 100,
+              controlWidth: formDemoControlWidth.input,
+              controlType: 'input'
+            });
+          }
+        },
+        {
+          name: 'right align',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-right',
+              labelWidth: 80,
+              controlWidth: formDemoControlWidth.input,
+              controlType: 'input'
+            });
+          }
+        },
+        {
+          name: 'vertical',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'vertical',
+              controlWidth: formDemoControlWidth.input,
+              controlType: 'input'
+            });
+          }
+        }
+      ]);
+
+      const formDropdown = document.getElementById('form-dropdown');
+      createTabbedFormDemo(formDropdown, [
+        {
+          name: 'left align',
+          render: function() {
+            return createFormItem({
+              label: 'Username:',
+              layout: 'align-left',
+              labelWidth: 82,
+              controlWidth: formDemoControlWidth.dropdown,
+              controlType: 'dropdown'
+            });
+          }
+        },
+        {
+          name: 'right align',
+          render: function() {
+            return createFormItem({
+              label: 'Username:',
+              layout: 'align-right',
+              labelWidth: 80,
+              controlWidth: formDemoControlWidth.dropdown,
+              controlType: 'dropdown'
+            });
+          }
+        },
+        {
+          name: 'vertical',
+          render: function() {
+            return createFormItem({
+              label: 'Username:',
+              layout: 'vertical',
+              controlWidth: formDemoControlWidth.dropdown,
+              controlType: 'dropdown'
+            });
+          }
+        }
+      ]);
+
+      const formTextarea = document.getElementById('form-textarea');
+      createTabbedFormDemo(formTextarea, [
+        {
+          name: 'left align',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-left',
+              valign: 'top',
+              labelWidth: 100,
+              controlWidth: formDemoControlWidth.textarea,
+              controlType: 'textarea'
+            });
+          }
+        },
+        {
+          name: 'right align',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-right',
+              valign: 'top',
+              labelWidth: 80,
+              controlWidth: formDemoControlWidth.textarea,
+              controlType: 'textarea'
+            });
+          }
+        },
+        {
+          name: 'vertical',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'vertical',
+              controlWidth: formDemoControlWidth.textarea,
+              controlType: 'textarea'
+            });
+          }
+        }
+      ]);
+
+      const formChoice = document.getElementById('form-choice');
+      createTabbedFormDemo(formChoice, [
+        {
+          name: 'left horizontal',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-left',
+              labelWidth: 100,
+              controlWidth: formDemoControlWidth.radioHorizontal,
+              controlType: 'radio',
+              controlProps: { direction: 'horizontal' }
+            });
+          }
+        },
+        {
+          name: 'left vertical',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-left',
+              valign: 'top',
+              labelWidth: 100,
+              controlWidth: formDemoControlWidth.radioVertical,
+              controlType: 'radio',
+              controlProps: { direction: 'vertical' }
+            });
+          }
+        },
+        {
+          name: 'right horizontal',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-right',
+              labelWidth: 80,
+              controlWidth: formDemoControlWidth.radioHorizontal,
+              controlType: 'radio',
+              controlProps: { direction: 'horizontal' }
+            });
+          }
+        },
+        {
+          name: 'right vertical',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-right',
+              valign: 'top',
+              labelWidth: 80,
+              controlWidth: formDemoControlWidth.radioVertical,
+              controlType: 'radio',
+              controlProps: { direction: 'vertical' }
+            });
+          }
+        },
+        {
+          name: 'top horizontal',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'vertical',
+              labelAlign: 'left',
+              controlWidth: formDemoControlWidth.radioHorizontal,
+              controlType: 'radio',
+              controlProps: { direction: 'horizontal' }
+            });
+          }
+        },
+        {
+          name: 'top vertical',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'vertical',
+              labelAlign: 'left',
+              controlWidth: formDemoControlWidth.radioVertical,
+              controlType: 'radio',
+              controlProps: { direction: 'vertical' }
+            });
+          }
+        }
+      ]);
+
+      createTabbedFormDemo(formChoice, [
+        {
+          name: 'left horizontal',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-left',
+              labelWidth: 100,
+              controlWidth: formDemoControlWidth.checkboxHorizontal,
+              controlType: 'checkbox',
+              controlProps: { direction: 'horizontal' }
+            });
+          }
+        },
+        {
+          name: 'left vertical',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-left',
+              valign: 'top',
+              labelWidth: 100,
+              controlWidth: formDemoControlWidth.checkboxVertical,
+              controlType: 'checkbox',
+              controlProps: { direction: 'vertical' }
+            });
+          }
+        },
+        {
+          name: 'right horizontal',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-right',
+              labelWidth: 80,
+              controlWidth: formDemoControlWidth.checkboxHorizontal,
+              controlType: 'checkbox',
+              controlProps: { direction: 'horizontal' }
+            });
+          }
+        },
+        {
+          name: 'right vertical',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'align-right',
+              valign: 'top',
+              labelWidth: 80,
+              controlWidth: formDemoControlWidth.checkboxVertical,
+              controlType: 'checkbox',
+              controlProps: { direction: 'vertical' }
+            });
+          }
+        },
+        {
+          name: 'top horizontal',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'vertical',
+              labelAlign: 'left',
+              controlWidth: formDemoControlWidth.checkboxHorizontal,
+              controlType: 'checkbox',
+              controlProps: { direction: 'horizontal' }
+            });
+          }
+        },
+        {
+          name: 'top vertical',
+          render: function() {
+            return createFormItem({
+              label: 'Username',
+              layout: 'vertical',
+              labelAlign: 'left',
+              controlWidth: formDemoControlWidth.checkboxVertical,
+              controlType: 'checkbox',
+              controlProps: { direction: 'vertical' }
+            });
+          }
+        }
+      ]);
+    });
+  </script>
+</body>
+</html>

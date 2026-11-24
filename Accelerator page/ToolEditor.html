@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面 - 新建工具</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <script>document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');</script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-page-preview-control">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261119-accelerator-tools">
+  <link rel="stylesheet" href="Tools.css?v=20261121-section-title-18">
+  <link rel="stylesheet" href="ToolEditor.css?v=20261123-actions-40px">
+</head>
+<body class="accelerator-tools-page accelerator-tool-editor-page">
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261030-game-detail&amp;library=accelerator-page" title="加速器页面顶部导航" frameborder="0" style="width:100%;height:60px;border:0;display:block;position:fixed;top:0;left:0;z-index:1000"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-p-nav.html?v=20261030-game-detail" title="加速器页面导航" frameborder="0"></iframe>
+  <main class="accelerator-tools-page-shell accelerator-home-shell">
+    <section class="section">
+      <span class="breadcrumb-part">加速器页面</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">开发者中心</span>
+      <h1 class="section-title" id="tool-editor-preview-title">新建工具</h1>
+      <p class="description" id="tool-editor-preview-description">填写工具信息，提交审核或先保存为草稿。</p>
+      <div class="accelerator-tools-stage accelerator-home-stage" data-code-preview="true">
+        <div class="accelerator-tools-frame accelerator-home-frame">
+          <header class="accelerator-tools-frame__header" id="accelerator-tool-editor-header"></header>
+          <div class="accelerator-tools-frame__body accelerator-home-frame__body">
+            <aside class="accelerator-tools-frame__sidebar" id="accelerator-tool-editor-sidebar" aria-label="加速器侧边导航"></aside>
+            <section class="accelerator-tools-content accelerator-home-frame__content accelerator-tool-editor-content" id="developer-tool-editor-content" aria-label="新建工具">
+              <header class="developer-tool-editor-heading">
+                <h2 id="tool-editor-heading-title">新建工具</h2>
+                <p id="tool-editor-heading-description">完善以下信息后提交审核，也可以先保存为草稿。</p>
+              </header>
+
+              <section class="developer-tool-editor-section" aria-labelledby="developer-tool-basic-title">
+                <header class="developer-tool-editor-section__heading">
+                  <h3 id="developer-tool-basic-title">基本信息</h3>
+                </header>
+                <div id="developer-tool-basic-form"></div>
+              </section>
+
+              <section class="developer-tool-editor-section" aria-labelledby="developer-tool-systems-title">
+                <header class="developer-tool-editor-section__heading">
+                  <h3 id="developer-tool-systems-title">适用系统</h3>
+                </header>
+                <div class="developer-tool-system-options" id="developer-tool-systems" role="group" aria-label="适用系统"></div>
+              </section>
+
+              <section class="developer-tool-editor-section" aria-labelledby="developer-tool-package-title">
+                <header class="developer-tool-editor-section__heading">
+                  <div class="developer-tool-editor-section__title">
+                    <h3 id="developer-tool-package-title">工具文件包</h3>
+                    <p class="developer-tool-editor-section__subtitle">支持 .zip / .exe / .msi / .7z / .rar，单个文件不超过 100MB</p>
+                  </div>
+                </header>
+                <div id="developer-tool-package"></div>
+              </section>
+
+              <section class="developer-tool-editor-section" aria-labelledby="developer-tool-covers-title">
+                <header class="developer-tool-editor-section__heading">
+                  <div class="developer-tool-editor-section__title">
+                    <h3 id="developer-tool-covers-title">工具封面截图</h3>
+                    <p class="developer-tool-editor-section__subtitle">最多上传 5 张</p>
+                  </div>
+                </header>
+                <div class="developer-tool-cover-gallery" id="developer-tool-covers"></div>
+              </section>
+
+              <div class="developer-tool-editor-actions" id="developer-tool-actions"></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="../main.js?v=20261123-history-back"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20261123-global-header"></script>
+  <script src="../basic%20components/input.js?v=20261114-accelerator-search-sync"></script>
+  <script src="../basic%20components/label.js?v=20261111-certification-icon-20px"></script>
+  <script src="../basic%20components/tabs.js?v=20261029-accelerator-home"></script>
+  <script src="../basic%20components/empty.js?v=20260610-empty-type-common-default"></script>
+  <script src="../basic%20components/checkbox.js?v=20261118-game-detail"></script>
+  <script src="../basic%20components/form.js?v=20261120-developer-center"></script>
+  <script src="../basic%20components/upload.js?v=20261118-upload-preview"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/toast.js?v=20261112-toast-scrollbar"></script>
+  <script src="../basic%20components/scrollbar.js?v=20261120-tools-ranking"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261123-global-search"></script>
+  <script src="../Accelerator%20business%20components/game-search.js?v=20261120-search-modal-header-shine"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../Accelerator%20business%20components/header.js?v=20261123-global-interactions"></script>
+  <script src="../Accelerator%20business%20components/side-navigation.js?v=20261123-global-game-navigation"></script>
+  <script src="ToolEditor.js?v=20261124-tool-icon-mapping"></script>
+</body>
+</html>

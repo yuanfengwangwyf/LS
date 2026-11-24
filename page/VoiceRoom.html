@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Voice Room 语音房</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261111-launch-update-icons">
+  <script src="../iconfont/iconfont.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 100%;
+      min-height: 100vh;
+      margin: var(--space0);
+      overflow: auto;
+      background: var(--gray-1);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+    }
+
+    body.is-framework-expanded #nav-iframe {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .voice-room-page-shell {
+      min-width: 1280px;
+      min-height: calc(100vh - 60px);
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .voice-room-page-stage {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      min-width: 1280px;
+      min-height: 900px;
+    }
+
+    .community-framework {
+      --framework-menu-width: 70px;
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+      --framework-content-left: 366px;
+      --framework-voice-height: 60px;
+      --framework-motion-duration: 520ms;
+      --framework-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      width: 1280px;
+      height: 900px;
+      min-width: 1280px;
+      min-height: 900px;
+      container-name: voice-room-message-bar-frame;
+      container-type: inline-size;
+      overflow: hidden;
+      background: var(--gray-1);
+      color: var(--gray-3);
+    }
+
+    .community-framework::after {
+      content: "";
+      position: absolute;
+      inset: var(--space0);
+      z-index: 122;
+      box-shadow: inset 0 0 0 1px var(--gray-8);
+      pointer-events: none;
+    }
+
+    .community-framework.is-expanded {
+      position: fixed;
+      inset: var(--space0);
+      z-index: 2000;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .community-framework.is-menu-collapsed {
+      --framework-community-left: 12px;
+      --framework-community-width: 354px;
+    }
+
+    .community-framework.is-menu-collapsed.is-menu-hovered {
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+    }
+
+    .community-framework__header {
+      position: absolute;
+      top: var(--space0);
+      left: var(--space0);
+      z-index: 30;
+      width: 100%;
+      height: 50px;
+    }
+
+    .community-framework__header .nn-header {
+      width: 100% !important;
+      padding-right: var(--space0);
+      border-bottom-color: var(--gray-10);
+    }
+
+    .community-framework__menu {
+      position: absolute;
+      top: 50px;
+      bottom: var(--space0);
+      left: var(--space0);
+      z-index: 25;
+      width: var(--framework-menu-width);
+      overflow: visible;
+      background: var(--gray-1);
+      transform: translateX(0);
+      transition: transform var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: transform;
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu {
+      pointer-events: none;
+      transform: translateX(calc(-1 * var(--framework-menu-width)));
+    }
+
+    .community-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu {
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .community-framework__menu-hover-zone {
+      position: absolute;
+      top: 50px;
+      bottom: var(--space0);
+      left: var(--space0);
+      z-index: 36;
+      display: none;
+      width: 70px;
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu-hover-zone {
+      display: block;
+    }
+
+    .community-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-hover-zone {
+      z-index: 24;
+      width: 70px;
+    }
+
+    .community-framework__menu .nn-menu {
+      width: var(--framework-menu-width);
+      height: 100%;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .community-framework__menu .nn-menu-list {
+      transform: translateY(calc(-1 * var(--framework-menu-scroll-offset, 0px)));
+      transition: transform 120ms ease;
+      will-change: transform;
+    }
+
+    .community-framework__menu .nn-menu-list-wrapper,
+    .community-framework__menu .nn-menu-list,
+    .community-framework__menu .nn-menu-item {
+      overflow: visible;
+    }
+
+    .community-framework__menu .nn-tooltip {
+      z-index: 80;
+      pointer-events: none;
+    }
+
+    .community-framework__community {
+      position: absolute;
+      top: 50px;
+      bottom: var(--space0);
+      left: var(--framework-community-left);
+      z-index: 8;
+      width: var(--framework-community-width);
+      overflow: hidden;
+      background: var(--gray-1);
+      transition:
+        left var(--framework-motion-duration) var(--framework-motion-ease),
+        width var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: left, width;
+    }
+
+    .community-framework__community .nn-community-combo {
+      width: 100%;
+      min-width: 100%;
+      height: 100%;
+      max-height: none;
+    }
+
+    .community-framework__community .nn-community-combo__scroller {
+      height: 100%;
+      min-width: 0;
+      max-height: none;
+      padding-bottom: var(--framework-voice-height);
+    }
+
+    .community-framework__content {
+      position: absolute;
+      top: 50px;
+      right: var(--space0);
+      bottom: var(--space0);
+      left: var(--framework-content-left);
+      padding: var(--space0) var(--space8) var(--space0) var(--space0);
+      overflow: hidden;
+      background: var(--gray-1);
+      box-sizing: border-box;
+      transition: left var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .community-framework.is-gift-open .community-framework__content,
+    .community-framework.is-gift-closing .community-framework__content {
+      overflow: visible;
+    }
+
+    .voice-room-page-content {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: minmax(0, 1fr);
+      gap: var(--space8);
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+    }
+
+    .voice-room-page-main {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      min-width: 0;
+      min-height: 0;
+      padding: var(--space0) var(--space16) var(--space0) var(--space8);
+      overflow: hidden;
+    }
+
+    .voice-room-page-room-header {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .voice-room-page-card-stage {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      padding-top: var(--space8);
+      padding-bottom: var(--space8);
+      overflow: hidden;
+    }
+
+    .voice-room-page-live-stage {
+      display: none;
+      width: 100%;
+      min-width: 0;
+      flex: 0 0 auto;
+    }
+
+    .voice-room-page-live-stage .nn-voice-room-live-broadcast {
+      width: 100%;
+    }
+
+    .voice-room-page-mic-cards-viewport {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-width: 0;
+      min-height: 0;
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+
+    .voice-room-page-card-stage.is-live-expanded {
+      gap: var(--space20);
+      justify-content: safe center;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .voice-room-page-card-stage.is-live-expanded::-webkit-scrollbar {
+      display: none;
+    }
+
+    .voice-room-page-card-stage.is-live-expanded .voice-room-page-live-stage {
+      display: flex;
+    }
+
+    .voice-room-page-card-stage.is-live-expanded .voice-room-page-mic-cards-viewport {
+      align-items: flex-start;
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+
+    .voice-room-page-card-stage.is-live-expanded .voice-room-page-card-grid {
+      align-content: start;
+    }
+
+    .voice-room-page-card-stage.is-card-overflowing {
+      justify-content: flex-start;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .voice-room-page-card-stage.is-card-overflowing::-webkit-scrollbar {
+      display: none;
+    }
+
+    .voice-room-page-card-stage.is-card-overflowing .voice-room-page-mic-cards-viewport {
+      align-items: flex-start;
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+
+    .voice-room-page-card-stage.is-card-overflowing .voice-room-page-card-grid {
+      align-content: start;
+    }
+
+    .voice-room-page-card-stage.is-live-only .voice-room-page-mic-cards-viewport {
+      display: none;
+    }
+
+    .voice-room-page-floating-live {
+      --voice-room-floating-live-width: 232px;
+      position: absolute;
+      top: var(--space0);
+      right: var(--space0);
+      z-index: 6000;
+      display: none;
+      width: var(--voice-room-floating-live-width);
+      touch-action: none;
+    }
+
+    .voice-room-page-floating-live.is-visible {
+      display: block;
+    }
+
+    .voice-room-page-floating-live.is-dragging {
+      cursor: grabbing;
+    }
+
+    .voice-room-page-floating-live .nn-voice-room-floating-live-broadcast {
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .voice-room-page-floating-live.is-dragging .nn-voice-room-floating-live-broadcast {
+      cursor: grabbing;
+    }
+
+    @container voice-room-message-bar-frame (min-width: 1600px) {
+      .voice-room-page-floating-live {
+        --voice-room-floating-live-width: 280px;
+      }
+    }
+
+    @container voice-room-message-bar-frame (min-width: 2560px) {
+      .voice-room-page-floating-live {
+        --voice-room-floating-live-width: 320px;
+      }
+    }
+
+    .voice-room-page-card-grid {
+      --voice-room-card-columns: 2;
+      --voice-room-card-grid-max-width: 100%;
+      display: grid;
+      grid-template-columns: repeat(var(--voice-room-card-columns), minmax(0, 1fr));
+      align-content: center;
+      justify-items: stretch;
+      gap: var(--space20);
+      justify-content: center;
+      width: min(100%, var(--voice-room-card-grid-max-width));
+      max-width: var(--voice-room-card-grid-max-width);
+    }
+
+    .voice-room-page-card-grid .nn-voice-room-card {
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+    }
+
+    .voice-room-page-card-grid__placeholder {
+      min-width: 0;
+      visibility: hidden;
+    }
+
+    .voice-room-page-action-group {
+      position: absolute;
+      right: var(--space16);
+      bottom: var(--space40);
+      z-index: 3;
+      display: none;
+      transition: bottom var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .voice-room-page-main.is-interactive .voice-room-page-action-group {
+      display: block;
+    }
+
+    .voice-room-page-main.is-gift-open .voice-room-page-action-group {
+      bottom: calc(136px + var(--space40) + var(--space8));
+    }
+
+    .voice-room-page-main.is-gift-open,
+    .voice-room-page-main.is-gift-closing {
+      overflow: visible;
+    }
+
+    .voice-room-page-gift-layer {
+      position: absolute;
+      right: var(--space16);
+      bottom: var(--space0);
+      left: var(--space8);
+      z-index: 121;
+      height: 136px;
+      pointer-events: none;
+    }
+
+    .voice-room-page-gift-layer.is-open {
+      pointer-events: auto;
+    }
+
+    .voice-room-page-capacity-controls {
+      display: flex;
+      margin-bottom: var(--space24);
+    }
+
+    .voice-room-settings-modal-layer {
+      position: fixed;
+      inset: var(--space0);
+      z-index: 5000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space24);
+      background: var(--Black-A80);
+    }
+
+    .voice-room-settings-modal-layer.is-open {
+      display: flex;
+    }
+
+    .voice-room-settings-dialog.nn-toast {
+      width: 976px;
+      height: min(720px, calc(100vh - var(--space48)));
+      max-width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .voice-room-settings-dialog .nn-toast__body {
+      flex: 1 1 auto;
+      gap: var(--space24);
+      min-height: 0;
+      padding: var(--space24);
+    }
+
+    .voice-room-settings-dialog .nn-toast__title {
+      font-weight: var(--font-weight-bold);
+    }
+
+    .voice-room-settings-dialog .nn-toast__content {
+      flex: 1 1 auto;
+      min-height: 0;
+      color: var(--gray-4);
+    }
+
+    .voice-room-settings-dialog .nn-toast__footer {
+      padding-top: var(--space0);
+    }
+
+    .voice-room-settings-dialog .nn-toast__footer-slot {
+      justify-content: center;
+      max-width: 400px;
+    }
+
+    .voice-room-settings-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      width: 100%;
+      height: 100%;
+    }
+
+    .voice-room-settings-template {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space24);
+      width: 100%;
+    }
+
+    .voice-room-settings-template__title,
+    .voice-room-settings-section__title,
+    .voice-room-settings-general__title,
+    .voice-room-settings-toggle__title {
+      margin: var(--space0);
+      color: var(--gray-4);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-bold);
+      line-height: var(--line-height-body);
+    }
+
+    .voice-room-settings-template__options {
+      display: flex;
+      align-items: center;
+      gap: var(--space40);
+    }
+
+    .voice-room-settings-content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 518px) minmax(0, 300px);
+      justify-content: center;
+      gap: var(--space48);
+      width: 100%;
+      height: 518px;
+      flex: 0 0 518px;
+    }
+
+    .voice-room-settings-style-canvas {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-template-rows: repeat(3, 130px);
+      place-content: center;
+      gap: var(--space24);
+      width: 518px;
+      height: 480px;
+      max-width: 100%;
+      border: 1px solid var(--gray-8);
+    }
+
+    .voice-room-settings-style-card {
+      display: flex;
+      flex-direction: column;
+      width: 100px;
+      height: 130px;
+      padding: var(--space0);
+      overflow: hidden;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      background: var(--gray-1);
+      cursor: pointer;
+      font-family: var(--font-family-main);
+    }
+
+    .voice-room-settings-style-card:hover,
+    .voice-room-settings-style-card.is-selected {
+      border-color: var(--gray-7);
+      background: var(--gray-10);
+    }
+
+    .voice-room-settings-style-card:focus-visible {
+      outline: 1px solid var(--gray-7);
+      outline-offset: -1px;
+    }
+
+    .voice-room-settings-style-card__image {
+      display: block;
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .voice-room-settings-style-card__label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-body);
+      white-space: nowrap;
+    }
+
+    .voice-room-settings-room-limit.nn-dropdown {
+      width: 100%;
+    }
+
+    .voice-room-settings-section,
+    .voice-room-settings-general {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      min-width: 0;
+    }
+
+    .voice-room-settings-seat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space16);
+      width: 100%;
+    }
+
+    .voice-room-settings-seat {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--space8);
+      height: 142px;
+      padding: var(--space16);
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      background: var(--gray-1);
+      color: var(--gray-6);
+      cursor: pointer;
+      font-family: var(--font-family-main);
+    }
+
+    .voice-room-settings-seat:hover,
+    .voice-room-settings-seat.is-selected {
+      background: var(--gray-10);
+    }
+
+    .voice-room-settings-seat:focus-visible {
+      outline: 1px solid var(--gray-7);
+      outline-offset: -1px;
+    }
+
+    .voice-room-settings-seat__label {
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-normal);
+      line-height: var(--line-height-body);
+    }
+
+    .voice-room-settings-seat__icons {
+      display: flex;
+      flex: 1 0 0;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      align-content: center;
+      gap: var(--space8);
+      width: var(--voice-room-settings-seat-icon-list-width, 100%);
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .voice-room-settings-seat__icons--nine {
+      display: grid;
+      grid-template-columns: repeat(4, var(--voice-room-settings-seat-icon-size));
+      grid-template-rows: repeat(3, var(--voice-room-settings-seat-icon-size));
+      align-content: center;
+      justify-content: center;
+    }
+
+    .voice-room-settings-seat__icons--three-column {
+      display: grid;
+      grid-template-columns: repeat(3, var(--voice-room-settings-seat-icon-size));
+      align-content: center;
+      justify-content: center;
+    }
+
+    .voice-room-settings-seat__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 var(--voice-room-settings-seat-icon-size, var(--icon-size-x20));
+      width: var(--voice-room-settings-seat-icon-size, var(--icon-size-x20));
+      height: var(--voice-room-settings-seat-icon-size, var(--icon-size-x20));
+      color: var(--gray-7);
+      font-size: var(--voice-room-settings-seat-icon-size, var(--icon-size-x20));
+      line-height: var(--voice-room-settings-seat-icon-size, var(--icon-size-x20));
+    }
+
+    .voice-room-settings-seat__icon--placeholder {
+      visibility: hidden;
+    }
+
+    .voice-room-settings-seat.is-selected .voice-room-settings-seat__icon {
+      color: var(--gray-3);
+    }
+
+    .voice-room-settings-seat__icon--link,
+    .voice-room-settings-seat.is-selected .voice-room-settings-seat__icon--link {
+      color: var(--Esports-Blue);
+    }
+
+    .voice-room-settings-seat__check {
+      position: absolute;
+      top: 7px;
+      right: var(--space8);
+      display: none;
+      width: var(--icon-size-x12);
+      height: var(--icon-size-x12);
+      color: var(--gray-4);
+      font-size: var(--icon-size-x12);
+      line-height: var(--icon-size-x12);
+    }
+
+    .voice-room-settings-seat.is-selected .voice-room-settings-seat__check {
+      display: inline-flex;
+    }
+
+    .voice-room-settings-general__name {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space8);
+      width: 100%;
+    }
+
+    .voice-room-settings-general__label {
+      color: var(--gray-4);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-normal);
+      line-height: var(--line-height-body);
+    }
+
+    .voice-room-settings-general__name .nn-input-wrapper,
+    .voice-room-settings-general__name .nn-input {
+      width: 100%;
+    }
+
+    .voice-room-settings-toggle-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space20);
+      width: 100%;
+      margin-top: var(--space12);
+    }
+
+    .voice-room-settings-toggle {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: var(--space16);
+    }
+
+    .voice-room-settings-toggle__copy {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space4);
+      min-width: 0;
+    }
+
+    .voice-room-settings-toggle__title {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .voice-room-settings-toggle__description {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-normal);
+      line-height: var(--line-height-body);
+    }
+
+    @media (max-width: 1000px) {
+      .voice-room-settings-content-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .voice-room-settings-general {
+        width: 100%;
+      }
+    }
+
+    .voice-room-page-chat {
+      width: fit-content;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .voice-room-page-chat .nn-chat-voice-room-message-bar {
+      height: 100%;
+    }
+
+    .community-framework__voice {
+      position: absolute;
+      bottom: var(--space0);
+      left: var(--space0);
+      z-index: 40;
+      display: flex;
+      align-items: flex-end;
+      overflow: visible;
+    }
+
+    .community-framework__voice .nn-voice-panel__top {
+      max-height: 80px;
+      opacity: 1;
+      overflow: visible;
+      transform: translateY(0);
+      transition:
+        max-height var(--framework-motion-duration) var(--framework-motion-ease),
+        opacity 180ms ease,
+        transform var(--framework-motion-duration) var(--framework-motion-ease),
+        margin var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .community-framework.is-voice-room-hidden .community-framework__voice .nn-voice-panel__top {
+      max-height: 0;
+      margin: calc(var(--space8) * -1) var(--space0) var(--space0);
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(var(--space8));
+    }
+
+    .community-framework__menu-arrow {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      z-index: 23;
+      width: 28px;
+      height: 76px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(0, -50%);
+    }
+
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow,
+    .community-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow,
+    .community-framework.is-menu-restoring .community-framework__menu-arrow {
+      opacity: 1;
+    }
+
+    .community-framework__menu-arrow-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: auto;
+      height: 76px;
+      object-fit: contain;
+      transform-origin: left center;
+      opacity: 0;
+      transform: translateX(-30px);
+      will-change: transform, opacity;
+    }
+
+    .community-framework__menu-arrow-img--light-1 { width: 24px; }
+    .community-framework__menu-arrow-img--light-2 { width: 22px; }
+    .community-framework__menu-arrow-img--dark { display: none; }
+    body.dark-mode .community-framework__menu-arrow-img--light { display: none; }
+    body.dark-mode .community-framework__menu-arrow-img--dark { display: block; }
+
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1 { animation: framework-menu-arrow-light-1-first 3000ms linear both; }
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2 { animation: framework-menu-arrow-light-2-first 3000ms linear both; }
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1-repeat { animation: framework-menu-arrow-light-1-repeat 3000ms linear both; }
+    .community-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2-repeat { animation: framework-menu-arrow-light-2-repeat 3000ms linear both; }
+    .community-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow-img,
+    .community-framework.is-menu-restoring .community-framework__menu-arrow-img { animation: framework-menu-arrow-light-exit 280ms cubic-bezier(0.4, 0, 1, 1) both; }
+
+    @keyframes framework-menu-arrow-light-1-first {
+      0%, 9% { opacity: 0; transform: translateX(-30px); }
+      12% { opacity: 0.45; transform: translateX(-16px); }
+      16% { opacity: 0.9; transform: translateX(-4px); }
+      18%, 29% { opacity: 1; transform: translateX(0); }
+      31.5% { opacity: 0.72; transform: translateX(0); }
+      34% { opacity: 0.18; transform: translateX(0); }
+      35%, 100% { opacity: 0; transform: translateX(0); }
+    }
+
+    @keyframes framework-menu-arrow-light-2-first {
+      0%, 15% { opacity: 0; transform: translateX(-30px); }
+      18% { opacity: 0.42; transform: translateX(-16px); }
+      23% { opacity: 0.92; transform: translateX(-4px); }
+      25%, 27% { opacity: 1; transform: translateX(0); }
+      29% { opacity: 0.7; transform: translateX(0); }
+      31.5% { opacity: 0.18; transform: translateX(0); }
+      32.5%, 100% { opacity: 0; transform: translateX(0); }
+    }
+
+    @keyframes framework-menu-arrow-light-1-repeat {
+      0%, 31.5% { opacity: 0; transform: translateX(-30px); }
+      35.5% { opacity: 0.38; transform: translateX(-17px); }
+      39.5% { opacity: 0.9; transform: translateX(-5px); }
+      42.5%, 68%, 100% { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes framework-menu-arrow-light-2-repeat {
+      0%, 37.5% { opacity: 0; transform: translateX(-30px); }
+      41.5% { opacity: 0.34; transform: translateX(-17px); }
+      46.5% { opacity: 0.88; transform: translateX(-5px); }
+      49.5%, 75%, 100% { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes framework-menu-arrow-light-exit {
+      0% { opacity: 1; transform: translateX(0); }
+      100% { opacity: 0; transform: translateX(-30px); }
+    }
+
+    @media (max-width: 1180px) {
+      .voice-room-page-content { grid-template-columns: minmax(0, 1fr) auto; }
+    }
+  </style>
+  <script>
+    (function() {
+      document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&library=page" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261029-nn-page-theme-first-paint" frameborder="0"></iframe>
+  <div id="voice-room-settings-modal-layer" class="voice-room-settings-modal-layer" aria-hidden="true"></div>
+
+  <main class="voice-room-page-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">陪玩中心</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">语音房</span>
+      <h1 class="section-title">Voice Room 语音房</h1>
+      <div id="voice-room-page-capacity-controls" class="voice-room-page-capacity-controls" role="group" aria-label="麦位人数"></div>
+      <div class="voice-room-page-stage" data-code-preview="true">
+        <div id="voice-room-page-framework" class="community-framework" aria-label="Voice Room">
+          <div id="voice-room-page-header" class="community-framework__header"></div>
+          <div id="voice-room-page-menu" class="community-framework__menu"></div>
+          <div id="voice-room-page-menu-hover-zone" class="community-framework__menu-hover-zone" aria-hidden="true"></div>
+          <div id="voice-room-page-community" class="community-framework__community"></div>
+          <div class="community-framework__content">
+            <div class="voice-room-page-content">
+              <section class="voice-room-page-main" data-nn-header-align aria-label="语音房麦位">
+                <div id="voice-room-page-room-header" class="voice-room-page-room-header"></div>
+                <div class="voice-room-page-card-stage">
+                  <div id="voice-room-page-live-stage" class="voice-room-page-live-stage" aria-live="polite"></div>
+                  <div id="voice-room-page-mic-cards-viewport" class="voice-room-page-mic-cards-viewport">
+                    <div id="voice-room-page-cards" class="voice-room-page-card-grid"></div>
+                  </div>
+                </div>
+                <div id="voice-room-page-action-group" class="voice-room-page-action-group"></div>
+                <div id="voice-room-page-gift-layer" class="voice-room-page-gift-layer" aria-hidden="true"></div>
+              </section>
+              <aside id="voice-room-page-chat" class="voice-room-page-chat" aria-label="语音房消息栏"></aside>
+              <div id="voice-room-page-floating-live" class="voice-room-page-floating-live" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="community-framework__menu-arrow" aria-hidden="true">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-dark-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-dark-2.svg" alt="">
+          </div>
+          <div id="voice-room-page-voice" class="community-framework__voice"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/message.js?v=20260907-voice-room-guest-mic"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/radio.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/input.js?v=20260811-chat-voice-room-message-bar"></script>
+  <script src="../basic%20components/slider.js?v=20260529-wheel"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/menu.js?v=20261117-menu-avatar-size-selected-stroke"></script>
+  <script src="../basic%20components/switch.js?v=20260612-global-export"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-indicator-resize"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260812-search-trigger-fix"></script>
+  <script src="../basic%20components/empty.js?v=20260812-member-search-empty"></script>
+  <script src="../NN%20business%20components/pugc.js?v=20260615-pugc-list-label-export"></script>
+  <script src="../NN%20business%20components/community-navigation.js?v=20261116-cover-id-bg80"></script>
+  <script src="../NN%20business%20components/toast-display.js?v=20260611-toast-display-scrollbar-component"></script>
+  <script src="../public/vendor/lottie.min.js?v=20260616"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-banner-responsive-nav"></script>
+  <script src="../NN%20business%20components/voice-panel.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/voice-room.js?v=20260909-floating-live-player-icon"></script>
+  <script src="../basic%20components/checkbox.js?v=20260907-gift-checkbox-component"></script>
+  <script src="../NN%20business%20components/gift.js?v=20260911-gift-slide-fade-restored"></script>
+  <script src="../NN%20business%20components/message-sent.js?v=20260811-chat-voice-room-message-bar"></script>
+  <script src="../NN%20business%20components/chat.js?v=20260911-voice-message-banner-box-gap"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-voice-room');
+
+      const framework = document.getElementById('voice-room-page-framework');
+      const headerSlot = document.getElementById('voice-room-page-header');
+      const menuSlot = document.getElementById('voice-room-page-menu');
+      const menuHoverZone = document.getElementById('voice-room-page-menu-hover-zone');
+      const communitySlot = document.getElementById('voice-room-page-community');
+      const cardSlot = document.getElementById('voice-room-page-cards');
+      const roomHeaderSlot = document.getElementById('voice-room-page-room-header');
+      const capacityControlsSlot = document.getElementById('voice-room-page-capacity-controls');
+      const chatSlot = document.getElementById('voice-room-page-chat');
+      const voiceSlot = document.getElementById('voice-room-page-voice');
+      const voiceRoomSettingsModalLayer = document.getElementById('voice-room-settings-modal-layer');
+
+      function syncDarkMode(isDark) {
+        localStorage.setItem('dark-mode', String(isDark));
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
+        notifyIframeDarkMode(isDark);
+      }
+
+      function toggleDarkMode() {
+        syncDarkMode(!document.body.classList.contains('dark-mode'));
+      }
+
+      function toggleExpanded() {
+        const expanded = framework.classList.toggle('is-expanded');
+        document.body.classList.toggle('is-framework-expanded', expanded);
+        scheduleMicCardLayout();
+        scheduleFloatingLiveVisibility();
+      }
+
+      const header = createHeader({
+        width: '100%',
+        showBack: true
+      });
+      headerSlot.appendChild(header);
+
+      const windowIcons = header.querySelectorAll('.nn-header__window-icon');
+      if (windowIcons[1]) {
+        windowIcons[1].setAttribute('role', 'button');
+        windowIcons[1].setAttribute('tabindex', '0');
+        windowIcons[1].setAttribute('aria-label', '适配浏览器最大尺寸');
+        windowIcons[1].addEventListener('click', toggleExpanded);
+        windowIcons[1].addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleExpanded();
+          }
+        });
+      }
+
+      const themeButton = header.querySelector('.nn-header__icon-btn--more');
+      if (themeButton) themeButton.addEventListener('click', toggleDarkMode);
+
+      menuSlot.appendChild(createInteractiveMenu());
+
+      communitySlot.appendChild(createCommunityNavigationCombo({ communityType: 'game' }));
+
+      const roomHeader = createHeader({
+        variant: 'room-header-voice',
+        width: '100%',
+        roomCount: '52',
+        roomTitle: '语音房名称多少度',
+        infoTooltip: '编辑招募信息',
+        roomStats: { current: '8', total: '10' },
+        actions: [
+          { text: '邀请/分享', variant: 'system', level: 'primary', size: 'small' }
+        ],
+        passwordSwitch: {
+          passwordState: 'filled',
+          passwordCode: '8538',
+          hiddenCode: 'hidden password'
+        },
+        rightButtons: [
+          {
+            text: '语音房设置',
+            variant: 'system',
+            level: 'tertiary',
+            size: 'small',
+            icon: '<i class="nnicon nicon-a-settings-lineshezhi-xianxing"></i>',
+            iconPosition: 'left'
+          }
+        ],
+        iconActions: [
+          { iconClass: 'nicon-a-moregengduo', label: '更多' }
+        ]
+      });
+      roomHeaderSlot.appendChild(roomHeader);
+
+      const capacityOptions = [
+        { count: 1, columns: 1, maxWidth: 400, cardWidth: 400 },
+        { count: 2, columns: 2, maxWidth: 642, cardWidth: 311 },
+        { count: 3, columns: 2, maxWidth: 642, cardWidth: 311 },
+        { count: 4, columns: 2, maxWidth: 642, cardWidth: 311 },
+        { count: 5, columns: 3, maxWidth: 642, cardWidth: 200 },
+        { count: 6, columns: 3, maxWidth: 642, cardWidth: 200 },
+        { count: 7, columns: 3, maxWidth: 642, cardWidth: 200 },
+        { count: 8, columns: 3, maxWidth: 642, cardWidth: 200 },
+        { count: 9, columns: 3, maxWidth: 642, cardWidth: 200 },
+        { count: 12, columns: 4, maxWidth: 642, cardWidth: 145 },
+        { count: 24, columns: 4, maxWidth: 642, cardWidth: 145 }
+      ];
+      const capacityUsers = [
+        { name: '风见志郎', avatar: '../image/Avatar/头像1098.png' },
+        { name: '暖暖阳光min23', avatar: '../image/Avatar/头像619.png' },
+        { name: '茹菓', avatar: '../image/Avatar/头像480.png' },
+        { name: 'LEON', avatar: '../image/Avatar/头像441.png' },
+        { name: 'kudaki', avatar: '../image/Avatar/头像496.png' },
+        { name: 'lazycat', avatar: '../image/Avatar/头像655.png' },
+        { name: '蜘蛛知了', avatar: '../image/Avatar/头像686.png' },
+        { name: '岩鸣杨子', avatar: '../image/Avatar/头像546.png' },
+        { name: '星河漫游者', avatar: '../image/Avatar/头像746.png' },
+        { name: '南风', avatar: '../image/Avatar/头像829.png' },
+        { name: '长岛冰茶', avatar: '../image/Avatar/头像800.png' },
+        { name: '夜航', avatar: '../image/Avatar/头像551.png' }
+      ];
+      const liveStage = document.getElementById('voice-room-page-live-stage');
+      const cardViewport = document.getElementById('voice-room-page-mic-cards-viewport');
+      const cardStage = cardSlot.closest('.voice-room-page-card-stage');
+      const cardMain = cardViewport;
+      const voiceRoomMain = cardSlot.closest('.voice-room-page-main');
+      const voiceRoomContent = cardSlot.closest('.voice-room-page-content');
+      const actionGroupSlot = document.getElementById('voice-room-page-action-group');
+      const giftLayer = document.getElementById('voice-room-page-gift-layer');
+      const floatingLiveSlot = document.getElementById('voice-room-page-floating-live');
+      let activeCapacityOption = null;
+      let activeRoomTemplate = 'game';
+      let activeRenderedMicCount = 0;
+      let activePreferredColumns = 1;
+      let activeUsesFixedSeatLayout = false;
+      let giftActionButton = null;
+      let floatingLivePaused = false;
+      let floatingLiveDragState = null;
+      let floatingLiveSyncFrame = null;
+      const screenShareUserIndex = 0;
+      let screenShareState = {
+        stream: null,
+        isActive: false,
+        isCollapsed: false
+      };
+      const interactiveSeatLayouts = {
+        fixed: {
+          1: { slotCount: 1 },
+          2: { slotCount: 2 },
+          3: { slotCount: 4 },
+          4: { slotCount: 4 },
+          5: { slotCount: 6 },
+          6: { slotCount: 6 },
+          7: { slotCount: 8 },
+          8: { slotCount: 8 },
+          9: { slotCount: 9 }
+        },
+        member: {
+          1: { slotCount: 2, connectSlot: 1 },
+          2: { slotCount: 4, connectSlot: 1 },
+          3: { slotCount: 4, connectSlot: 1 },
+          4: { slotCount: 6, connectSlot: 1 },
+          5: { slotCount: 6, connectSlot: 1 },
+          6: { slotCount: 8, connectSlot: 1 },
+          7: { slotCount: 8, connectSlot: 1 },
+          8: { slotCount: 9, connectSlot: 1 },
+          9: { slotCount: 12, connectSlot: 2, hiddenSlots: [0, 3] }
+        }
+      };
+
+      function createInteractiveVoiceMicCard(option, index) {
+        const isScreenSharing = screenShareState.isActive && index === screenShareUserIndex;
+        return createVoiceRoomMicCard({
+          state: isScreenSharing ? 'speaking' : 'empty',
+          index: String(index + 1),
+          width: option.cardWidth,
+          permission: false,
+          showIndex: !isScreenSharing,
+          screenSharing: isScreenSharing,
+          screenShareCollapsed: isScreenSharing && screenShareState.isCollapsed,
+          screenShareMediaStream: isScreenSharing && screenShareState.isCollapsed ? screenShareState.stream : null,
+          user: isScreenSharing ? Object.assign({ levelImage: '', badges: [] }, capacityUsers[screenShareUserIndex]) : undefined,
+          onClick: isScreenSharing && screenShareState.isCollapsed ? restoreScreenShare : null
+        });
+      }
+
+      function syncScreenShareStageState() {
+        if (!cardStage) return false;
+        const isExpanded = screenShareState.isActive && !screenShareState.isCollapsed;
+        cardStage.classList.toggle('is-live-expanded', isExpanded);
+        cardStage.classList.toggle('is-live-only', isExpanded && activeCapacityOption && activeCapacityOption.count === 1);
+        return isExpanded;
+      }
+
+      function resetFloatingLivePosition() {
+        if (!floatingLiveSlot) return;
+        floatingLiveSlot.style.left = '';
+        floatingLiveSlot.style.top = '';
+        floatingLiveSlot.style.right = '';
+        floatingLiveSlot.style.bottom = '';
+      }
+
+      function clearFloatingLive(resetPosition) {
+        if (!floatingLiveSlot) return;
+        floatingLiveSlot.replaceChildren();
+        floatingLiveSlot.classList.remove('is-visible', 'is-dragging');
+        floatingLiveSlot.setAttribute('aria-hidden', 'true');
+        if (resetPosition) resetFloatingLivePosition();
+      }
+
+      function clampFloatingLivePosition(left, top) {
+        if (!floatingLiveSlot || !voiceRoomContent) return { left, top };
+        const maxLeft = Math.max(0, voiceRoomContent.clientWidth - floatingLiveSlot.offsetWidth);
+        const maxTop = Math.max(0, voiceRoomContent.clientHeight - floatingLiveSlot.offsetHeight);
+        return {
+          left: Math.max(0, Math.min(maxLeft, left)),
+          top: Math.max(0, Math.min(maxTop, top))
+        };
+      }
+
+      function syncFloatingLivePosition() {
+        if (!floatingLiveSlot || !voiceRoomContent || !floatingLiveSlot.classList.contains('is-visible')) return;
+        if (!floatingLiveSlot.style.left && !floatingLiveSlot.style.top) return;
+        const mainRect = voiceRoomContent.getBoundingClientRect();
+        const floatingRect = floatingLiveSlot.getBoundingClientRect();
+        const next = clampFloatingLivePosition(
+          floatingRect.left - mainRect.left,
+          floatingRect.top - mainRect.top
+        );
+        floatingLiveSlot.style.left = `${next.left}px`;
+        floatingLiveSlot.style.top = `${next.top}px`;
+        floatingLiveSlot.style.right = 'auto';
+        floatingLiveSlot.style.bottom = 'auto';
+      }
+
+      function renderFloatingLive() {
+        if (!floatingLiveSlot || typeof window.createVoiceRoomFloatingLiveBroadcast !== 'function') return;
+        floatingLiveSlot.replaceChildren(window.createVoiceRoomFloatingLiveBroadcast({
+          width: '100%',
+          mediaStream: screenShareState.stream,
+          user: Object.assign({ levelImage: '' }, capacityUsers[screenShareUserIndex]),
+          paused: floatingLivePaused,
+          onTogglePlayback: function(nextPaused) {
+            floatingLivePaused = nextPaused;
+            const mainLiveMedia = liveStage && liveStage.querySelector('.nn-voice-room-live-broadcast__media--video');
+            if (!(mainLiveMedia instanceof HTMLVideoElement)) return;
+            if (nextPaused) {
+              mainLiveMedia.pause();
+              return;
+            }
+            const playback = mainLiveMedia.play();
+            if (playback && typeof playback.catch === 'function') playback.catch(function() {});
+          }
+        }));
+      }
+
+      function isMainLiveOutsideViewport() {
+        if (!liveStage || !cardStage) return false;
+        const mainLive = liveStage.querySelector('.nn-voice-room-live-broadcast');
+        if (!mainLive) return false;
+        const stageRect = cardStage.getBoundingClientRect();
+        const liveRect = mainLive.getBoundingClientRect();
+        return liveRect.bottom <= stageRect.top || liveRect.top >= stageRect.bottom;
+      }
+
+      function syncFloatingLiveVisibility() {
+        if (!floatingLiveSlot) return;
+        const shouldShow = screenShareState.isActive
+          && !screenShareState.isCollapsed
+          && isMainLiveOutsideViewport();
+        if (!shouldShow) {
+          floatingLiveSlot.classList.remove('is-visible');
+          floatingLiveSlot.setAttribute('aria-hidden', 'true');
+          return;
+        }
+        if (!floatingLiveSlot.firstElementChild) renderFloatingLive();
+        floatingLiveSlot.classList.add('is-visible');
+        floatingLiveSlot.setAttribute('aria-hidden', 'false');
+        syncFloatingLivePosition();
+      }
+
+      function scheduleFloatingLiveVisibility() {
+        if (floatingLiveSyncFrame !== null) cancelAnimationFrame(floatingLiveSyncFrame);
+        floatingLiveSyncFrame = requestAnimationFrame(function() {
+          floatingLiveSyncFrame = null;
+          syncFloatingLiveVisibility();
+        });
+      }
+
+      function renderScreenShare() {
+        if (!liveStage || !cardStage) return;
+        const isExpanded = syncScreenShareStageState();
+        liveStage.replaceChildren();
+        if (!isExpanded || typeof window.createVoiceRoomLiveBroadcast !== 'function') {
+          clearFloatingLive(false);
+          return;
+        }
+
+        liveStage.appendChild(window.createVoiceRoomLiveBroadcast({
+          width: '100%',
+          mediaStream: screenShareState.stream,
+          user: Object.assign({ levelImage: '' }, capacityUsers[screenShareUserIndex]),
+          paused: floatingLivePaused,
+          onReplace: requestScreenShare,
+          onFullscreen: function(event) {
+            const broadcast = event.currentTarget.closest('.nn-voice-room-live-broadcast');
+            if (broadcast && typeof broadcast.requestFullscreen === 'function') {
+              broadcast.requestFullscreen().catch(function() {});
+            }
+          },
+          onEnd: endScreenShare,
+          onDoubleClick: minimizeScreenShare
+        }));
+        scheduleFloatingLiveVisibility();
+      }
+
+      function rerenderScreenShareLayout() {
+        renderScreenShare();
+        if (activeCapacityOption) renderMicCards(activeCapacityOption);
+        scheduleMicCardLayout();
+      }
+
+      function minimizeScreenShare() {
+        if (!screenShareState.isActive || screenShareState.isCollapsed) return;
+        screenShareState.isCollapsed = true;
+        rerenderScreenShareLayout();
+      }
+
+      function restoreScreenShare() {
+        if (!screenShareState.isActive || !screenShareState.isCollapsed) return;
+        screenShareState.isCollapsed = false;
+        rerenderScreenShareLayout();
+      }
+
+      function endScreenShare() {
+        const stream = screenShareState.stream;
+        screenShareState = { stream: null, isActive: false, isCollapsed: false };
+        floatingLivePaused = false;
+        clearFloatingLive(true);
+        if (stream) {
+          stream.getTracks().forEach(function(track) {
+            if (track.readyState !== 'ended') track.stop();
+          });
+        }
+        rerenderScreenShareLayout();
+      }
+
+      function startScreenShare(stream) {
+        const previousStream = screenShareState.stream;
+        screenShareState = { stream, isActive: true, isCollapsed: false };
+        floatingLivePaused = false;
+        clearFloatingLive(true);
+        if (previousStream && previousStream !== stream) {
+          previousStream.getTracks().forEach(function(track) {
+            if (track.readyState !== 'ended') track.stop();
+          });
+        }
+        rerenderScreenShareLayout();
+        const videoTrack = stream.getVideoTracks()[0];
+        if (videoTrack) {
+          videoTrack.addEventListener('ended', function() {
+            if (screenShareState.stream === stream) endScreenShare();
+          }, { once: true });
+        }
+      }
+
+      async function requestScreenShare() {
+        if (!navigator.mediaDevices || typeof navigator.mediaDevices.getDisplayMedia !== 'function') return;
+
+        try {
+          const stream = await navigator.mediaDevices.getDisplayMedia({
+            video: true,
+            audio: true
+          });
+          startScreenShare(stream);
+        } catch (error) {
+          // The browser closes the native picker without a stream when sharing is cancelled.
+        }
+      }
+
+      function requestGuestMic() {
+        if (typeof window.showMessage !== 'function') return;
+        window.showMessage({
+          state: 'success',
+          text: '已发起连麦申请',
+          duration: 1600
+        });
+      }
+
+      function closeGiftDrawer() {
+        if (!giftLayer) return;
+        giftLayer.classList.remove('is-open');
+        giftLayer.classList.remove('is-closing');
+        giftLayer.setAttribute('aria-hidden', 'true');
+        framework.classList.remove('is-gift-open');
+        framework.classList.remove('is-gift-closing');
+        if (voiceRoomMain) voiceRoomMain.classList.remove('is-gift-open');
+        if (voiceRoomMain) voiceRoomMain.classList.remove('is-gift-closing');
+        if (giftActionButton) giftActionButton.setAttribute('aria-pressed', 'false');
+      }
+
+      function getGiftMotionDuration() {
+        const duration = Number.parseFloat(
+          window.getComputedStyle(framework).getPropertyValue('--framework-motion-duration')
+        );
+        return Number.isFinite(duration) ? duration : 0;
+      }
+
+      function beginGiftDrawerClose() {
+        if (!giftLayer || giftLayer.classList.contains('is-closing')) return;
+        giftLayer.classList.remove('is-open');
+        giftLayer.classList.add('is-closing');
+        framework.classList.remove('is-gift-open');
+        framework.classList.add('is-gift-closing');
+        if (voiceRoomMain) {
+          voiceRoomMain.classList.remove('is-gift-open');
+          voiceRoomMain.classList.add('is-gift-closing');
+        }
+        if (giftActionButton) giftActionButton.setAttribute('aria-pressed', 'false');
+      }
+
+      function renderGiftDrawer() {
+        if (!giftLayer || typeof window.createGiftBar !== 'function') return;
+        giftLayer.replaceChildren();
+        giftLayer.appendChild(window.createGiftBar({
+          motionDuration: getGiftMotionDuration(),
+          onBeforeClose: beginGiftDrawerClose,
+          onClose: closeGiftDrawer
+        }));
+      }
+
+      function openGiftDrawer() {
+        if (!giftLayer || typeof window.createGiftBar !== 'function') return;
+        if (!giftLayer.querySelector('.nn-gift')) renderGiftDrawer();
+        const gift = giftLayer.querySelector('.nn-gift');
+        if (gift) gift.classList.remove('is-hidden');
+        giftLayer.classList.remove('is-closing');
+        giftLayer.classList.add('is-open');
+        giftLayer.setAttribute('aria-hidden', 'false');
+        framework.classList.remove('is-gift-closing');
+        framework.classList.add('is-gift-open');
+        if (voiceRoomMain) {
+          voiceRoomMain.classList.remove('is-gift-closing');
+          voiceRoomMain.classList.add('is-gift-open');
+        }
+        if (giftActionButton) giftActionButton.setAttribute('aria-pressed', 'true');
+      }
+
+      function toggleGiftDrawer() {
+        if (giftLayer && (giftLayer.classList.contains('is-open') || giftLayer.classList.contains('is-closing'))) return;
+        openGiftDrawer();
+      }
+
+      function renderInteractiveActionGroup(isInteractiveVoice) {
+        if (!actionGroupSlot || !voiceRoomMain) return;
+        voiceRoomMain.classList.toggle('is-interactive', isInteractiveVoice);
+        if (!isInteractiveVoice) {
+          actionGroupSlot.replaceChildren();
+          giftActionButton = null;
+          closeGiftDrawer();
+          return;
+        }
+        if (actionGroupSlot.children.length) return;
+        if (typeof window.createVoiceRoomActionGroup !== 'function') return;
+
+        const actionGroup = window.createVoiceRoomActionGroup({
+          perspective: 'user',
+          queueEnabled: true,
+          queueCount: 11,
+          showGift: true,
+          showPointsMall: false
+        });
+        giftActionButton = actionGroup.querySelector('button[aria-label="礼物"]');
+        if (giftActionButton) {
+          giftActionButton.setAttribute('aria-pressed', 'false');
+          giftActionButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            toggleGiftDrawer();
+          });
+        }
+        actionGroupSlot.appendChild(actionGroup);
+      }
+
+      function renderMicCards(option) {
+        cardSlot.replaceChildren();
+        activeCapacityOption = option;
+        syncScreenShareStageState();
+        const isInteractiveVoice = activeRoomTemplate === 'interactive';
+        const hasGuestMic = isInteractiveVoice && voiceRoomSettingsState.toggles.allowMemberMic;
+        const seatLayout = isInteractiveVoice
+          ? (hasGuestMic ? interactiveSeatLayouts.member[option.count] : interactiveSeatLayouts.fixed[option.count])
+          : null;
+        const usesInteractiveSeatLayout = Boolean(seatLayout);
+        activeUsesFixedSeatLayout = usesInteractiveSeatLayout;
+        renderInteractiveActionGroup(isInteractiveVoice);
+        activeRenderedMicCount = seatLayout ? seatLayout.slotCount : option.count;
+        const renderedOption = capacityOptions.find(function(item) {
+          return item.count === activeRenderedMicCount;
+        });
+        activePreferredColumns = renderedOption ? renderedOption.columns : option.columns;
+        const cardSizingOption = renderedOption || option;
+
+        if (usesInteractiveSeatLayout) {
+          let renderedFixedMicCount = 0;
+          Array.from({ length: seatLayout.slotCount }, function(_, slotIndex) {
+            if ((seatLayout.hiddenSlots || []).includes(slotIndex)) {
+              const placeholder = document.createElement('div');
+              placeholder.className = 'voice-room-page-card-grid__placeholder';
+              cardSlot.appendChild(placeholder);
+              return;
+            }
+            if (hasGuestMic && slotIndex === seatLayout.connectSlot) {
+              cardSlot.appendChild(createVoiceRoomMicCard({
+                state: 'guest',
+                index: String(slotIndex + 1),
+                width: cardSizingOption.cardWidth,
+                permission: false,
+                onClick: requestGuestMic
+              }));
+              return;
+            }
+            if (renderedFixedMicCount < option.count) {
+              cardSlot.appendChild(createInteractiveVoiceMicCard(cardSizingOption, slotIndex));
+              renderedFixedMicCount += 1;
+              return;
+            }
+            const placeholder = document.createElement('div');
+            placeholder.className = 'voice-room-page-card-grid__placeholder';
+            cardSlot.appendChild(placeholder);
+          });
+        } else {
+          Array.from({ length: option.count }, function(_, index) {
+            const sourceUser = capacityUsers[index % capacityUsers.length];
+            return index < capacityUsers.length
+              ? sourceUser
+              : Object.assign({}, sourceUser, { name: `${sourceUser.name}${index + 1}` });
+          }).forEach(function(user, index) {
+            const isScreenSharing = screenShareState.isActive && index === screenShareUserIndex;
+            cardSlot.appendChild(createVoiceRoomMicCard({
+              state: 'speaking',
+              showIndex: false,
+              width: option.cardWidth,
+              user: Object.assign({ levelImage: '', badges: [] }, user),
+              screenSharing: isScreenSharing,
+              screenShareCollapsed: isScreenSharing && screenShareState.isCollapsed,
+              screenShareMediaStream: isScreenSharing && screenShareState.isCollapsed ? screenShareState.stream : null,
+              onClick: isScreenSharing && screenShareState.isCollapsed ? restoreScreenShare : null
+            }));
+          });
+        }
+
+        scheduleMicCardLayout();
+        scheduleFloatingLiveVisibility();
+      }
+
+      let micCardLayoutFrame = null;
+
+      function syncMicCardOverflowState() {
+        if (!cardStage || !cardSlot) return;
+        if (screenShareState.isActive && !screenShareState.isCollapsed) {
+          cardStage.classList.remove('is-card-overflowing');
+          return;
+        }
+        const style = window.getComputedStyle(cardStage);
+        const availableHeight = Math.max(
+          0,
+          cardStage.clientHeight - Number.parseFloat(style.paddingTop) - Number.parseFloat(style.paddingBottom)
+        );
+        cardStage.classList.toggle('is-card-overflowing', cardSlot.scrollHeight > availableHeight);
+      }
+
+      function scheduleMicCardLayout() {
+        if (micCardLayoutFrame !== null) cancelAnimationFrame(micCardLayoutFrame);
+        micCardLayoutFrame = requestAnimationFrame(function() {
+          micCardLayoutFrame = requestAnimationFrame(function() {
+            micCardLayoutFrame = null;
+            updateMicCardLayout();
+            syncMicCardOverflowState();
+          });
+        });
+      }
+
+      function updateMicCardLayout() {
+        if (!activeCapacityOption || !cardMain) return;
+
+        const gap = 20;
+        const cardFooterHeight = 74;
+        const cardMaxWidth = 400;
+        const cardMinWidth = 140;
+        const availableWidth = Math.floor(cardMain.clientWidth);
+        const cardStageStyle = window.getComputedStyle(cardMain);
+        const verticalPadding = Number.parseFloat(cardStageStyle.paddingTop) + Number.parseFloat(cardStageStyle.paddingBottom);
+        const availableHeight = Math.max(0, Math.floor(cardMain.clientHeight - verticalPadding));
+        const renderedMicCount = activeRenderedMicCount || activeCapacityOption.count;
+        const preferredColumns = Math.min(activePreferredColumns, renderedMicCount);
+
+        if (screenShareState.isActive && !screenShareState.isCollapsed) {
+          const maxColumns = Math.max(1, Math.floor((availableWidth + gap) / (cardMinWidth + gap)));
+          const columns = Math.min(renderedMicCount, maxColumns);
+          const widthFromContainer = (availableWidth - gap * (columns - 1)) / columns;
+          const cardWidth = Math.max(cardMinWidth, Math.min(cardMaxWidth, widthFromContainer));
+          const gridWidth = columns * cardWidth + gap * (columns - 1);
+
+          cardSlot.style.setProperty('--voice-room-card-columns', String(columns));
+          cardSlot.style.setProperty('--voice-room-card-grid-max-width', `${Math.floor(gridWidth)}px`);
+          return;
+        }
+
+        if (activeUsesFixedSeatLayout) {
+          const rows = Math.ceil(renderedMicCount / preferredColumns);
+          const widthFromContainer = (availableWidth - gap * (preferredColumns - 1)) / preferredColumns;
+          const widthFromHeight = (availableHeight - gap * (rows - 1)) / rows - cardFooterHeight;
+          const cardWidth = Math.max(0, Math.min(cardMaxWidth, widthFromContainer, widthFromHeight));
+          const gridWidth = preferredColumns * cardWidth + gap * (preferredColumns - 1);
+
+          cardSlot.style.setProperty('--voice-room-card-columns', String(preferredColumns));
+          cardSlot.style.setProperty('--voice-room-card-grid-max-width', `${Math.floor(gridWidth)}px`);
+          return;
+        }
+
+        const widestColumnCount = Math.max(1, Math.floor((availableWidth + gap) / (cardMinWidth + gap)));
+        const maximumColumns = Math.min(renderedMicCount, Math.max(preferredColumns, widestColumnCount));
+        let layout = null;
+
+        for (let columns = preferredColumns; columns <= maximumColumns; columns += 1) {
+          const rows = Math.ceil(renderedMicCount / columns);
+          const widthFromContainer = (availableWidth - gap * (columns - 1)) / columns;
+          const widthFromHeight = (availableHeight - gap * (rows - 1)) / rows - cardFooterHeight;
+          const cardWidth = Math.min(cardMaxWidth, widthFromContainer, widthFromHeight);
+
+          if (cardWidth < cardMinWidth) continue;
+          if (!layout || cardWidth > layout.cardWidth || (cardWidth === layout.cardWidth && columns > layout.columns)) {
+            layout = { columns, cardWidth };
+          }
+        }
+
+        if (!layout) {
+          const columns = Math.max(1, Math.min(preferredColumns, widestColumnCount));
+          layout = {
+            columns,
+            cardWidth: Math.max(0, Math.min(cardMaxWidth, (availableWidth - gap * (columns - 1)) / columns))
+          };
+        }
+
+        const gridWidth = layout.columns * layout.cardWidth + gap * (layout.columns - 1);
+        cardSlot.style.setProperty('--voice-room-card-columns', String(layout.columns));
+        cardSlot.style.setProperty('--voice-room-card-grid-max-width', `${Math.floor(Math.max(0, gridWidth))}px`);
+      }
+
+      const defaultCapacityIndex = capacityOptions.findIndex(function(option) { return option.count === 4; });
+      capacityControlsSlot.appendChild(createTabs({
+        type: 'tertiary',
+        defaultActive: defaultCapacityIndex,
+        tabs: capacityOptions.map(function(option) {
+          return { name: `${option.count} 人` };
+        }),
+        onChange: function(event) {
+          renderMicCards(capacityOptions[event.index]);
+        }
+      }));
+
+      renderMicCards(capacityOptions[defaultCapacityIndex]);
+
+      const voiceRoomSettingsState = {
+        template: 'game',
+        seatCount: 5,
+        roomName: '绝地求生',
+        roomLimit: '10',
+        voiceStyle: 0,
+        toggles: {
+          allowMemberMic: false,
+          memberMicReview: false,
+          allowMemberLock: false,
+          entryVoiceReminder: false,
+          hostScreenShare: false
+        }
+      };
+
+      function syncVoiceRoomSettingsRadio(radio, checked) {
+        radio.classList.toggle('is-checked', checked);
+        radio.setAttribute('aria-checked', String(checked));
+        const dot = radio.querySelector('.nn-radio__dot');
+        if (dot) dot.style.display = checked ? 'block' : 'none';
+      }
+
+      function createVoiceRoomSettingsSeatIcons(count, allowMemberMic) {
+        const icons = document.createElement('span');
+        const memberMicLayouts = {
+          1: { iconCount: 2, slotCount: 2, size: 'var(--icon-size-x26)', width: '100%' },
+          2: { iconCount: 3, slotCount: 4, size: 'var(--icon-size-x18)', width: '118px' },
+          3: { iconCount: 4, slotCount: 4, size: 'var(--icon-size-x18)', width: '118px' },
+          4: { iconCount: 5, slotCount: 6, size: 'var(--icon-size-x16)', width: '100%' },
+          5: { iconCount: 6, slotCount: 6, size: 'var(--icon-size-x16)', width: '100%' },
+          6: { iconCount: 7, slotCount: 9, size: 'var(--icon-size-x12)', width: '118px', columns: 3 },
+          7: { iconCount: 8, slotCount: 9, size: 'var(--icon-size-x12)', width: '118px', columns: 3 },
+          8: { iconCount: 9, slotCount: 9, size: 'var(--icon-size-x12)', width: '118px' },
+          9: {
+            iconCount: 12,
+            slotCount: 12,
+            size: 'var(--icon-size-x12)',
+            width: '100%',
+            hiddenSlots: [0, 3],
+            connectSlot: 2
+          }
+        };
+        const fixedMicLayouts = {
+          1: { iconCount: 1, slotCount: 1, size: 'var(--icon-size-x30)', width: '100%' },
+          2: { iconCount: 2, slotCount: 2, size: 'var(--icon-size-x26)', width: '100%' },
+          3: { iconCount: 3, slotCount: 4, size: 'var(--icon-size-x18)', width: '118px' },
+          4: { iconCount: 4, slotCount: 4, size: 'var(--icon-size-x18)', width: '118px' },
+          5: { iconCount: 5, slotCount: 6, size: 'var(--icon-size-x16)', width: '100%' },
+          6: { iconCount: 6, slotCount: 6, size: 'var(--icon-size-x16)', width: '100%' },
+          7: { iconCount: 7, slotCount: 9, size: 'var(--icon-size-x12)', width: '118px', columns: 3 },
+          8: { iconCount: 8, slotCount: 9, size: 'var(--icon-size-x12)', width: '118px', columns: 3 },
+          9: { iconCount: 9, slotCount: 9, size: 'var(--icon-size-x12)', width: '118px' }
+        };
+        const iconLayout = (allowMemberMic ? memberMicLayouts : fixedMicLayouts)[count];
+        icons.className = [
+          'voice-room-settings-seat__icons',
+          count === 9 && allowMemberMic ? 'voice-room-settings-seat__icons--nine' : '',
+          iconLayout.columns === 3 ? 'voice-room-settings-seat__icons--three-column' : ''
+        ].filter(Boolean).join(' ');
+        icons.style.setProperty('--voice-room-settings-seat-icon-size', iconLayout.size);
+        icons.style.setProperty('--voice-room-settings-seat-icon-list-width', iconLayout.width);
+        Array.from({ length: iconLayout.slotCount }, function(_, index) {
+          const icon = document.createElement('i');
+          const isPlaceholder = index >= iconLayout.iconCount || (iconLayout.hiddenSlots || []).includes(index);
+          const isConnectMic = allowMemberMic && index === (iconLayout.connectSlot || 1);
+          icon.className = [
+            'nnicon',
+            isConnectMic ? 'nicon-a-ConnectMiclianmai-xianxing' : 'nicon-a-mic-linekaimai-xianxing',
+            'voice-room-settings-seat__icon',
+            isConnectMic ? 'voice-room-settings-seat__icon--link' : 'voice-room-settings-seat__icon--mic',
+            isPlaceholder ? 'voice-room-settings-seat__icon--placeholder' : ''
+          ].filter(Boolean).join(' ');
+          icon.setAttribute('aria-hidden', 'true');
+          icons.appendChild(icon);
+        });
+        return icons;
+      }
+
+      function createVoiceRoomSettingsGameContent(dialogState) {
+        const contentGrid = document.createElement('div');
+        contentGrid.className = 'voice-room-settings-content-grid';
+
+        const styleSection = document.createElement('section');
+        styleSection.className = 'voice-room-settings-section';
+        const styleTitle = document.createElement('h2');
+        styleTitle.className = 'voice-room-settings-section__title';
+        styleTitle.textContent = '语音样式';
+        styleSection.appendChild(styleTitle);
+
+        const styleCanvas = document.createElement('div');
+        styleCanvas.className = 'voice-room-settings-style-canvas';
+        const styleCards = [];
+        [
+          '../image/Avatar/头像1098.png', '../image/Avatar/头像619.png', '../image/Avatar/头像480.png', '../image/Avatar/头像441.png',
+          '../image/Avatar/头像496.png', '../image/Avatar/头像655.png', '../image/Avatar/头像686.png', '../image/Avatar/头像546.png',
+          '../image/Avatar/头像746.png', '../image/Avatar/头像829.png', '../image/Avatar/头像800.png', '../image/Avatar/头像1095.png'
+        ].forEach(function(src, index) {
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'voice-room-settings-style-card';
+          card.setAttribute('aria-label', `PLAYER-${index + 1}`);
+          const image = document.createElement('img');
+          image.className = 'voice-room-settings-style-card__image';
+          image.src = src;
+          image.alt = '';
+          const label = document.createElement('span');
+          label.className = 'voice-room-settings-style-card__label';
+          label.textContent = `PLAYER-${index + 1}`;
+          card.append(image, label);
+          card.addEventListener('click', function() {
+            dialogState.voiceStyle = index;
+            styleCards.forEach(function(item) {
+              item.classList.toggle('is-selected', item === card);
+            });
+          });
+          if (dialogState.voiceStyle === index) card.classList.add('is-selected');
+          styleCards.push(card);
+          styleCanvas.appendChild(card);
+        });
+        styleSection.appendChild(styleCanvas);
+        contentGrid.appendChild(styleSection);
+
+        const generalSection = document.createElement('section');
+        generalSection.className = 'voice-room-settings-general';
+        const generalTitle = document.createElement('h2');
+        generalTitle.className = 'voice-room-settings-general__title';
+        generalTitle.textContent = '通用设置';
+        generalSection.appendChild(generalTitle);
+
+        const roomName = document.createElement('label');
+        roomName.className = 'voice-room-settings-general__name';
+        const roomNameLabel = document.createElement('span');
+        roomNameLabel.className = 'voice-room-settings-general__label';
+        roomNameLabel.textContent = '房间名称';
+        roomName.appendChild(roomNameLabel);
+        roomName.appendChild(createInput({
+          value: dialogState.roomName,
+          charLimit: 10,
+          size: 'large',
+          onInput: function(event) {
+            dialogState.roomName = event.value;
+          }
+        }));
+        generalSection.appendChild(roomName);
+
+        const roomLimit = document.createElement('div');
+        roomLimit.className = 'voice-room-settings-general__name';
+        const roomLimitLabel = document.createElement('span');
+        roomLimitLabel.className = 'voice-room-settings-general__label';
+        roomLimitLabel.textContent = '房间人数限制';
+        roomLimit.appendChild(roomLimitLabel);
+        roomLimit.appendChild(createDropdownMenu({
+          appearance: 'filled',
+          size: 'large',
+          value: dialogState.roomLimit,
+          selectedIndex: ['10', '20', '50', '100'].indexOf(dialogState.roomLimit),
+          clearable: false,
+          className: 'voice-room-settings-room-limit',
+          items: ['10', '20', '50', '100'].map(function(value) { return { label: value }; }),
+          onChange: function(event) {
+            dialogState.roomLimit = event.value;
+          }
+        }));
+        generalSection.appendChild(roomLimit);
+        contentGrid.appendChild(generalSection);
+        return contentGrid;
+      }
+
+      function createVoiceRoomSettingsContent(dialogState) {
+        const content = document.createElement('div');
+        content.className = 'voice-room-settings-content';
+
+        const templateRow = document.createElement('div');
+        templateRow.className = 'voice-room-settings-template';
+        const templateTitle = document.createElement('p');
+        templateTitle.className = 'voice-room-settings-template__title';
+        templateTitle.textContent = '模板选择：';
+        templateRow.appendChild(templateTitle);
+
+        const templateOptions = document.createElement('div');
+        templateOptions.className = 'voice-room-settings-template__options';
+        templateOptions.setAttribute('role', 'radiogroup');
+        templateOptions.setAttribute('aria-label', '模板选择');
+        const templateRadios = [];
+        [
+          { value: 'game', text: '游戏语音' },
+          { value: 'interactive', text: '互动语音' }
+        ].forEach(function(option) {
+          const radio = createRadio({
+            text: option.text,
+            checked: dialogState.template === option.value,
+            interactive: true
+          });
+          radio.setAttribute('role', 'radio');
+          radio.setAttribute('aria-checked', String(dialogState.template === option.value));
+          radio.addEventListener('click', function() {
+            dialogState.template = option.value;
+            templateRadios.forEach(function(item) {
+              syncVoiceRoomSettingsRadio(item.radio, item.value === option.value);
+            });
+            renderTemplateContent();
+          });
+          templateRadios.push({ value: option.value, radio });
+          templateOptions.appendChild(radio);
+        });
+        templateRow.appendChild(templateOptions);
+        content.appendChild(templateRow);
+
+        let contentGrid = document.createElement('div');
+        contentGrid.className = 'voice-room-settings-content-grid';
+
+        function renderTemplateContent() {
+          contentGrid.replaceChildren();
+          if (dialogState.template === 'game') {
+            const gameContent = createVoiceRoomSettingsGameContent(dialogState);
+            contentGrid.replaceWith(gameContent);
+            contentGrid = gameContent;
+            return;
+          }
+
+        const seatSection = document.createElement('section');
+        seatSection.className = 'voice-room-settings-section';
+        const seatTitle = document.createElement('h2');
+        seatTitle.className = 'voice-room-settings-section__title';
+        seatTitle.textContent = '麦位设置';
+        seatSection.appendChild(seatTitle);
+        const seatGrid = document.createElement('div');
+        seatGrid.className = 'voice-room-settings-seat-grid';
+        seatGrid.setAttribute('role', 'radiogroup');
+        seatGrid.setAttribute('aria-label', '麦位数量');
+        const seatButtons = [];
+        Array.from({ length: 9 }, function(_, index) { return index + 1; }).forEach(function(count) {
+          const seatButton = document.createElement('button');
+          seatButton.type = 'button';
+          seatButton.className = 'voice-room-settings-seat';
+          seatButton.setAttribute('role', 'radio');
+          seatButton.setAttribute('aria-checked', String(dialogState.seatCount === count));
+          const label = document.createElement('span');
+          label.className = 'voice-room-settings-seat__label';
+          label.textContent = `${count}个麦位`;
+          const icons = createVoiceRoomSettingsSeatIcons(count, dialogState.toggles.allowMemberMic);
+          const check = document.createElement('i');
+          check.className = 'nnicon nicon-a-check-boldwancheng-jiacu voice-room-settings-seat__check';
+          seatButton.append(label, icons, check);
+          seatButton.addEventListener('click', function() {
+            dialogState.seatCount = count;
+            seatButtons.forEach(function(item) {
+              const selected = item.count === count;
+              item.button.classList.toggle('is-selected', selected);
+              item.button.setAttribute('aria-checked', String(selected));
+            });
+          });
+          if (dialogState.seatCount === count) seatButton.classList.add('is-selected');
+          seatButtons.push({ count, button: seatButton, icons });
+          seatGrid.appendChild(seatButton);
+        });
+        seatSection.appendChild(seatGrid);
+        contentGrid.appendChild(seatSection);
+
+        const generalSection = document.createElement('section');
+        generalSection.className = 'voice-room-settings-general';
+        const generalTitle = document.createElement('h2');
+        generalTitle.className = 'voice-room-settings-general__title';
+        generalTitle.textContent = '通用设置';
+        generalSection.appendChild(generalTitle);
+        const roomName = document.createElement('label');
+        roomName.className = 'voice-room-settings-general__name';
+        const roomNameLabel = document.createElement('span');
+        roomNameLabel.className = 'voice-room-settings-general__label';
+        roomNameLabel.textContent = '房间名称';
+        roomName.appendChild(roomNameLabel);
+        const roomNameInput = createInput({
+          value: dialogState.roomName,
+          charLimit: 10,
+          size: 'large',
+          onInput: function(event) {
+            dialogState.roomName = event.value;
+          }
+        });
+        roomName.appendChild(roomNameInput);
+        generalSection.appendChild(roomName);
+
+        const toggleList = document.createElement('div');
+        toggleList.className = 'voice-room-settings-toggle-list';
+        [
+          ['allowMemberMic', '允许成员连麦', '展示连麦功能允许所有成员连麦'],
+          ['memberMicReview', '成员连麦审核', '开启后连麦用户需要审核'],
+          ['allowMemberLock', '允许成员上固定麦', '非权限成员可自由上固定麦'],
+          ['entryVoiceReminder', '进房语音提醒', '开启后，用户进房时提醒房内有权限角色'],
+          ['hostScreenShare', '开启直播屏幕', '固定麦和连麦成员可使用屏幕分享']
+        ].forEach(function(setting) {
+          const [key, title, description] = setting;
+          const settingRow = document.createElement('div');
+          settingRow.className = 'voice-room-settings-toggle';
+          const copy = document.createElement('div');
+          copy.className = 'voice-room-settings-toggle__copy';
+          const titleEl = document.createElement('p');
+          titleEl.className = 'voice-room-settings-toggle__title';
+          titleEl.textContent = title;
+          const descriptionEl = document.createElement('p');
+          descriptionEl.className = 'voice-room-settings-toggle__description';
+          descriptionEl.textContent = description;
+          copy.append(titleEl, descriptionEl);
+          settingRow.appendChild(copy);
+          settingRow.appendChild(createSwitch({
+            size: 'default',
+            checked: dialogState.toggles[key],
+            onChange: function(checked) {
+              dialogState.toggles[key] = checked;
+              if (key === 'allowMemberMic') {
+                seatButtons.forEach(function(item) {
+                  const nextIcons = createVoiceRoomSettingsSeatIcons(item.count, checked);
+                  item.icons.replaceWith(nextIcons);
+                  item.icons = nextIcons;
+                });
+              }
+            }
+          }));
+          toggleList.appendChild(settingRow);
+        });
+        generalSection.appendChild(toggleList);
+        contentGrid.appendChild(generalSection);
+        }
+
+        renderTemplateContent();
+        content.appendChild(contentGrid);
+        return content;
+      }
+
+      function closeVoiceRoomSettingsDialog() {
+        voiceRoomSettingsModalLayer.classList.remove('is-open');
+        voiceRoomSettingsModalLayer.setAttribute('aria-hidden', 'true');
+        voiceRoomSettingsModalLayer.replaceChildren();
+      }
+
+      function openVoiceRoomSettingsDialog() {
+        const dialogState = {
+          template: voiceRoomSettingsState.template,
+          seatCount: voiceRoomSettingsState.seatCount,
+          roomName: voiceRoomSettingsState.roomName,
+          roomLimit: voiceRoomSettingsState.roomLimit,
+          voiceStyle: voiceRoomSettingsState.voiceStyle,
+          toggles: Object.assign({}, voiceRoomSettingsState.toggles)
+        };
+        const dialog = createToast({
+          title: '语音房设置',
+          content: createVoiceRoomSettingsContent(dialogState),
+          className: 'voice-room-settings-dialog',
+          onClose: closeVoiceRoomSettingsDialog,
+          footer: {
+            layout: 'double-horizontal',
+            buttons: [
+              {
+                text: '保存修改',
+                variant: 'system',
+                level: 'primary',
+                size: 'large',
+                onClick: function() {
+                  Object.assign(voiceRoomSettingsState, dialogState, {
+                    toggles: Object.assign({}, dialogState.toggles)
+                  });
+                  const roomTitle = roomHeader.querySelector('.nn-room-header-voice__title');
+                  if (roomTitle && dialogState.roomName) roomTitle.textContent = dialogState.roomName;
+                  activeRoomTemplate = dialogState.template;
+                  const matchingCapacity = capacityOptions.find(function(option) {
+                    return option.count === dialogState.seatCount;
+                  });
+                  renderMicCards(matchingCapacity || activeCapacityOption || capacityOptions[defaultCapacityIndex]);
+                  closeVoiceRoomSettingsDialog();
+                }
+              },
+              {
+                text: '取消',
+                variant: 'system',
+                level: 'secondary',
+                size: 'large',
+                onClick: closeVoiceRoomSettingsDialog
+              }
+            ]
+          }
+        });
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.setAttribute('aria-label', '语音房设置');
+        voiceRoomSettingsModalLayer.replaceChildren(dialog);
+        voiceRoomSettingsModalLayer.classList.add('is-open');
+        voiceRoomSettingsModalLayer.setAttribute('aria-hidden', 'false');
+      }
+
+      voiceRoomSettingsModalLayer.addEventListener('click', function(event) {
+        if (event.target === voiceRoomSettingsModalLayer) closeVoiceRoomSettingsDialog();
+      });
+
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && voiceRoomSettingsModalLayer.classList.contains('is-open')) {
+          closeVoiceRoomSettingsDialog();
+        }
+      });
+
+      const voiceRoomSettingsButton = roomHeader.querySelector('.nn-room-header-voice__right-button');
+      if (voiceRoomSettingsButton) voiceRoomSettingsButton.addEventListener('click', openVoiceRoomSettingsDialog);
+
+      if (window.ResizeObserver && cardMain) {
+        const cardLayoutObserver = new ResizeObserver(function() {
+          scheduleMicCardLayout();
+          scheduleFloatingLiveVisibility();
+          syncFloatingLivePosition();
+        });
+        cardLayoutObserver.observe(cardMain);
+        if (voiceRoomContent) cardLayoutObserver.observe(voiceRoomContent);
+      } else {
+        window.addEventListener('resize', function() {
+          scheduleMicCardLayout();
+          scheduleFloatingLiveVisibility();
+          syncFloatingLivePosition();
+        });
+      }
+
+      if (cardStage) {
+        cardStage.addEventListener('scroll', scheduleFloatingLiveVisibility, { passive: true });
+      }
+
+      if (floatingLiveSlot) {
+        floatingLiveSlot.addEventListener('pointerdown', function(event) {
+          if (!floatingLiveSlot.classList.contains('is-visible')) return;
+          if (event.button !== 0 && event.pointerType === 'mouse') return;
+          if (event.target.closest('button')) return;
+          if (!voiceRoomContent) return;
+          const mainRect = voiceRoomContent.getBoundingClientRect();
+          const floatingRect = floatingLiveSlot.getBoundingClientRect();
+          floatingLiveDragState = {
+            pointerId: event.pointerId,
+            startX: event.clientX,
+            startY: event.clientY,
+            left: floatingRect.left - mainRect.left,
+            top: floatingRect.top - mainRect.top
+          };
+          floatingLiveSlot.style.left = `${floatingLiveDragState.left}px`;
+          floatingLiveSlot.style.top = `${floatingLiveDragState.top}px`;
+          floatingLiveSlot.style.right = 'auto';
+          floatingLiveSlot.style.bottom = 'auto';
+          floatingLiveSlot.classList.add('is-dragging');
+          floatingLiveSlot.setPointerCapture(event.pointerId);
+          event.preventDefault();
+        });
+
+        floatingLiveSlot.addEventListener('pointermove', function(event) {
+          if (!floatingLiveDragState || event.pointerId !== floatingLiveDragState.pointerId) return;
+          const next = clampFloatingLivePosition(
+            floatingLiveDragState.left + event.clientX - floatingLiveDragState.startX,
+            floatingLiveDragState.top + event.clientY - floatingLiveDragState.startY
+          );
+          floatingLiveSlot.style.left = `${next.left}px`;
+          floatingLiveSlot.style.top = `${next.top}px`;
+        });
+
+        function endFloatingLiveDrag(event) {
+          if (!floatingLiveDragState || event.pointerId !== floatingLiveDragState.pointerId) return;
+          floatingLiveDragState = null;
+          floatingLiveSlot.classList.remove('is-dragging');
+          if (floatingLiveSlot.hasPointerCapture(event.pointerId)) {
+            floatingLiveSlot.releasePointerCapture(event.pointerId);
+          }
+        }
+
+        floatingLiveSlot.addEventListener('pointerup', endFloatingLiveDrag);
+        floatingLiveSlot.addEventListener('pointercancel', endFloatingLiveDrag);
+      }
+
+      chatSlot.appendChild(createVoiceRoomMessageBar({
+        onlineCount: 126,
+        selfMember: { name: '风见志郎', avatarSrc: '../image/Avatar/头像1098.png' }
+      }));
+
+      const voicePanel = createVoicePanel({
+        launchState: 'idle',
+        avatars: [
+          '../image/Avatar/头像480.png',
+          '../image/Avatar/头像441.png',
+          '../image/Avatar/头像496.png',
+          '../image/Avatar/头像655.png',
+          '../image/Avatar/头像686.png'
+        ],
+        speakerAvatar: '../image/Avatar/头像480.png'
+      });
+      voiceSlot.appendChild(voicePanel);
+
+      const screenShareButton = voicePanel.querySelector('.nn-voice-panel__control--screen');
+      if (screenShareButton) {
+        screenShareButton.addEventListener('click', async function() {
+          if (screenShareButton.getAttribute('aria-disabled') === 'true') return;
+          requestScreenShare();
+        });
+      }
+
+      const communityScroller = communitySlot.querySelector('.nn-community-combo__scroller');
+      const menuList = menuSlot.querySelector('.nn-menu-list');
+      const menuListWrapper = menuSlot.querySelector('.nn-menu-list-wrapper');
+      let frameworkMenuScrollOffset = 0;
+      let frameworkMenuMaxScroll = 0;
+
+      function syncFrameworkVoiceHeight() {
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        framework.style.setProperty('--framework-voice-height', `${voiceHeight}px`);
+        syncFrameworkMenuScroll();
+      }
+
+      function syncFrameworkMenuScroll() {
+        if (!menuList || !menuListWrapper) return;
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        const wrapperHeight = menuListWrapper.clientHeight;
+        const contentHeight = menuList.scrollHeight;
+        const contentBottom = menuList.offsetTop + contentHeight;
+        const visibleHeightBeforeVoice = Math.max(0, wrapperHeight - voiceHeight);
+        frameworkMenuMaxScroll = Math.max(0, contentBottom - visibleHeightBeforeVoice);
+        frameworkMenuScrollOffset = Math.min(frameworkMenuScrollOffset, frameworkMenuMaxScroll);
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+      }
+
+      function scrollFrameworkMenu(deltaY) {
+        syncFrameworkMenuScroll();
+        if (frameworkMenuMaxScroll <= 0) return false;
+        const nextOffset = Math.max(0, Math.min(frameworkMenuMaxScroll, frameworkMenuScrollOffset + deltaY));
+        if (nextOffset === frameworkMenuScrollOffset) return false;
+        frameworkMenuScrollOffset = nextOffset;
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+        return true;
+      }
+
+      function hideVoiceRoomInfo() {
+        framework.classList.add('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      function showVoiceRoomInfo() {
+        framework.classList.remove('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      if (window.ResizeObserver) {
+        const frameworkResizeObserver = new ResizeObserver(syncFrameworkVoiceHeight);
+        frameworkResizeObserver.observe(voiceSlot);
+        frameworkResizeObserver.observe(voicePanel);
+        if (menuList) frameworkResizeObserver.observe(menuList);
+        if (menuListWrapper) frameworkResizeObserver.observe(menuListWrapper);
+      }
+
+      syncFrameworkVoiceHeight();
+
+      const leaveVoiceButton = voicePanel.querySelector('.nn-voice-panel__leave');
+      if (leaveVoiceButton) leaveVoiceButton.addEventListener('click', hideVoiceRoomInfo);
+
+      const firstVoiceRoom = communitySlot.querySelector('.nn-community-room');
+      if (firstVoiceRoom) firstVoiceRoom.addEventListener('click', showVoiceRoomInfo);
+
+      if (menuListWrapper) {
+        menuListWrapper.addEventListener('wheel', function(event) {
+          if (scrollFrameworkMenu(event.deltaY)) event.preventDefault();
+        }, { passive: false });
+      }
+
+      voiceSlot.addEventListener('wheel', function(event) {
+        if (event.target.closest('.nn-slider, input, textarea, select, [contenteditable="true"], .nn-voice-mode__settings-popover')) return;
+        const menuRect = menuSlot.getBoundingClientRect();
+        const communityRect = communitySlot.getBoundingClientRect();
+        if (event.clientX >= menuRect.left && event.clientX <= menuRect.right) {
+          if (scrollFrameworkMenu(event.deltaY)) event.preventDefault();
+          return;
+        }
+        if (!communityScroller || event.clientX < communityRect.left || event.clientX > communityRect.right) return;
+        const previousScrollTop = communityScroller.scrollTop;
+        communityScroller.scrollTop += event.deltaY;
+        if (communityScroller.scrollTop !== previousScrollTop) event.preventDefault();
+      }, { passive: false });
+
+      const voiceBack = voicePanel.querySelector('.nn-voice-panel__back');
+      let restoreMenuTimer = null;
+      let restoreEndTimer = null;
+      let menuHoverTimer = null;
+      let isMenuPointerInside = false;
+
+      function clearMenuRestoreTimers() {
+        if (restoreMenuTimer) window.clearTimeout(restoreMenuTimer);
+        if (restoreEndTimer) window.clearTimeout(restoreEndTimer);
+        restoreMenuTimer = null;
+        restoreEndTimer = null;
+      }
+
+      function clearMenuHoverTimer() {
+        if (menuHoverTimer) window.clearTimeout(menuHoverTimer);
+        menuHoverTimer = null;
+      }
+
+      function showCollapsedMenuPreview() {
+        if (!framework.classList.contains('is-menu-collapsed')) return;
+        clearMenuHoverTimer();
+        framework.classList.remove('is-menu-hovered');
+        void framework.offsetWidth;
+        framework.classList.add('is-menu-hovered');
+      }
+
+      function scheduleCollapsedMenuHide() {
+        clearMenuHoverTimer();
+        menuHoverTimer = window.setTimeout(function() {
+          if (!isMenuPointerInside) framework.classList.remove('is-menu-hovered');
+          menuHoverTimer = null;
+        }, 80);
+      }
+
+      if (menuHoverZone) {
+        menuHoverZone.addEventListener('mouseenter', showCollapsedMenuPreview);
+        menuHoverZone.addEventListener('mouseleave', scheduleCollapsedMenuHide);
+      }
+
+      document.addEventListener('mousemove', function(event) {
+        if (!framework.classList.contains('is-menu-collapsed') || !framework.classList.contains('is-menu-hovered')) return;
+        const frameworkRect = framework.getBoundingClientRect();
+        const isInsideVerticalRange = event.clientY >= frameworkRect.top + 50 && event.clientY <= frameworkRect.bottom;
+        const isInsideLeaveZone = event.clientX >= frameworkRect.left && event.clientX <= frameworkRect.left + 70;
+        if (!isInsideVerticalRange || !isInsideLeaveZone) {
+          isMenuPointerInside = false;
+          framework.classList.remove('is-menu-hovered');
+        }
+      });
+
+      menuSlot.addEventListener('mouseenter', function() {
+        isMenuPointerInside = true;
+        showCollapsedMenuPreview();
+      });
+
+      menuSlot.addEventListener('mouseleave', function() {
+        isMenuPointerInside = false;
+        scheduleCollapsedMenuHide();
+      });
+
+      if (voiceBack) {
+        voiceBack.addEventListener('click', function() {
+          if (framework.classList.contains('is-menu-collapsed')) {
+            clearMenuRestoreTimers();
+            clearMenuHoverTimer();
+            framework.classList.remove('is-menu-hovered');
+            framework.classList.add('is-menu-restoring');
+            restoreMenuTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-collapsed');
+              restoreMenuTimer = null;
+            }, 80);
+            restoreEndTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-restoring');
+              restoreEndTimer = null;
+            }, 360);
+            return;
+          }
+          clearMenuRestoreTimers();
+          clearMenuHoverTimer();
+          framework.classList.remove('is-menu-restoring');
+          framework.classList.remove('is-menu-hovered');
+          framework.classList.add('is-menu-collapsed');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

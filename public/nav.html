@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>导航</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    body {
+      background: var(--gray-2);
+      margin: var(--space0);
+      padding: var(--space0);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <div class="nav-title">NN基础组件库</div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">基础</div>
+      <ul class="nav-list">
+        <li><a href="../index.html" id="nav-index" target="_parent"><span class="nav-link-label">Index 首页</span></a></li>
+        <li><a href="../basic/event-page.html" id="nav-colors" target="_parent"><span class="nav-link-label">Colors 颜色</span></a></li>
+        <li><a href="../basic/Typography.html" id="nav-typography" target="_parent"><span class="nav-link-label">Typography 字体</span></a></li>
+        <li><a href="../basic/Shadow.html" id="nav-shadow" target="_parent"><span class="nav-link-label">Shadow 阴影</span></a></li>
+      </ul>
+    </div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">通用</div>
+      <ul class="nav-list">
+        <li><a href="../basic/Icon.html" id="nav-icon" target="_parent"><span class="nav-link-label">Icon 图标</span></a></li>
+        <li><a href="../basic/button.html" id="nav-button" target="_parent"><span class="nav-link-label">Button 按钮</span></a></li>
+        <li><a href="../basic/Menu.html" id="nav-menu" target="_parent"><span class="nav-link-label">Menu 导航</span></a></li>
+        <li><a href="../basic/Breadcrumb.html" id="nav-breadcrumb" target="_parent"><span class="nav-link-label">Breadcrumb 面包屑</span></a></li>
+        <li><a href="../basic/tooltips.html" id="nav-tooltips" target="_parent"><span class="nav-link-label">Tooltip 文字提示</span></a></li>
+        <li><a href="../basic/Header.html" id="nav-header" target="_parent"><span class="nav-link-label">Header 头部</span></a></li>
+        <li><a href="../basic/DropdownMenu.html" id="nav-dropdown-menu" target="_parent"><span class="nav-link-label">Dropdown Menu 下拉菜单</span></a></li>
+        <li><a href="../basic/Pagination.html" id="nav-pagination" target="_parent"><span class="nav-link-label">Pagination 分页</span></a></li>
+      </ul>
+    </div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">数据输入</div>
+      <ul class="nav-list">
+        <li><a href="../basic/input.html" id="nav-input" target="_parent"><span class="nav-link-label">Input 输入框</span></a></li>
+        <li><a href="../basic/InputNumber.html" id="nav-input-number" target="_parent"><span class="nav-link-label">Input Number 数字输入</span></a></li>
+        <li><a href="../basic/Form.html" id="nav-form" target="_parent"><span class="nav-link-label">Form 表单</span></a></li>
+        <li><a href="../basic/DatePicker.html" id="nav-date-picker" target="_parent"><span class="nav-link-label">DatePicker 日期选择器</span></a></li>
+        <li><a href="../basic/CheckboxRadio.html" id="nav-checkbox-radio" target="_parent"><span class="nav-link-label">Checkbox & Radio 多选&单选</span></a></li>
+        <li><a href="../basic/Switch.html" id="nav-switch" target="_parent"><span class="nav-link-label">Switch 开关</span></a></li>
+        <li><a href="../basic/Upload.html" id="nav-upload" target="_parent"><span class="nav-link-label">Upload 上传</span></a></li>
+      </ul>
+    </div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">数据展示</div>
+      <ul class="nav-list">
+        <li><a href="../basic/Avatar.html" id="nav-avatar" target="_parent"><span class="nav-link-label">Avatar 头像</span></a></li>
+        <li><a href="../basic/Badge.html" id="nav-badge" target="_parent"><span class="nav-link-label">Badge 徽标</span></a></li>
+        <li><a href="../basic/Empty.html" id="nav-empty" target="_parent"><span class="nav-link-label">Empty 空状态</span></a></li>
+        <li><a href="../basic/Equity.html" id="nav-equity" target="_parent"><span class="nav-link-label">Equity 权益</span></a></li>
+        <li><a href="../basic/Slider.html" id="nav-slider" target="_parent"><span class="nav-link-label">Slider 滑块</span></a></li>
+        <li><a href="../basic/VideoPlayer.html" id="nav-video-player" target="_parent"><span class="nav-link-label">Video player 视频播放器</span></a></li>
+        <li><a href="../basic/Scrollbar.html" id="nav-scrollbar" target="_parent"><span class="nav-link-label">Scrollbar 滑动条</span></a></li>
+        <li><a href="../basic/Table.html" id="nav-table" target="_parent"><span class="nav-link-label">Table 表格</span></a></li>
+        <li><a href="../basic/Label.html" id="nav-label" target="_parent"><span class="nav-link-label">Label 标签</span></a></li>
+        <li><a href="../basic/Tabs.html" id="nav-tabs" target="_parent"><span class="nav-link-label">Tabs 标签页</span></a></li>
+      </ul>
+    </div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">反馈</div>
+      <ul class="nav-list">
+        <li><a href="../basic/Toast.html" id="nav-toast" target="_parent"><span class="nav-link-label">Toast 弹窗</span></a></li>
+        <li><a href="../basic/Message.html" id="nav-message" target="_parent"><span class="nav-link-label">Message 消息提示</span></a></li>
+      </ul>
+    </div>
+    </div>
+  </nav>
+  
+  <script>
+    function applyInit(data) {
+      if (data.darkMode) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+
+      if (data.activeNavId) {
+        document.querySelectorAll('.nav-list a.active').forEach(function(link) {
+          link.classList.remove('active');
+        });
+        var activeLink = document.getElementById(data.activeNavId);
+        if (activeLink) {
+          activeLink.classList.add('active');
+        }
+      }
+    }
+
+    function applyDarkMode(isDark) {
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+
+    function saveScrollPosition() {
+      const nav = document.querySelector('.nav-content');
+      if (nav) {
+        sessionStorage.setItem('nav-scrollTop', nav.scrollTop);
+      }
+    }
+
+    function restoreScrollPosition() {
+      const nav = document.querySelector('.nav-content');
+      if (nav) {
+        const savedPosition = sessionStorage.getItem('nav-scrollTop');
+        if (savedPosition !== null) {
+          nav.scrollTop = parseInt(savedPosition, 10);
+        }
+      }
+      updateNavFadeState();
+    }
+
+    function scrollActiveLinkIntoView() {
+      const nav = document.querySelector('.nav-content');
+      const activeLink = document.querySelector('.nav-list a.active');
+      if (!nav || !activeLink) return;
+
+      const navRect = nav.getBoundingClientRect();
+      const activeRect = activeLink.getBoundingClientRect();
+      const padding = 16;
+
+      if (activeRect.top < navRect.top + padding) {
+        nav.scrollTop -= navRect.top + padding - activeRect.top;
+      } else if (activeRect.bottom > navRect.bottom - padding) {
+        nav.scrollTop += activeRect.bottom - (navRect.bottom - padding);
+      }
+      updateNavFadeState();
+    }
+
+    function updateNavFadeState() {
+      const nav = document.querySelector('.nav');
+      const content = document.querySelector('.nav-content');
+      if (!nav || !content) return;
+
+      const maxScrollTop = Math.max(0, content.scrollHeight - content.clientHeight);
+      nav.classList.toggle('is-scroll-top', content.scrollTop > 0);
+      nav.classList.toggle('is-scroll-bottom', content.scrollTop < maxScrollTop - 1);
+    }
+
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'init') {
+        applyInit(e.data);
+        restoreScrollPosition();
+        scrollActiveLinkIntoView();
+      } else if (e.data && e.data.type === 'dark-mode') {
+        applyDarkMode(e.data.value);
+      }
+    });
+
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+      restoreScrollPosition();
+      updateNavFadeState();
+      const navContent = document.querySelector('.nav-content');
+      if (navContent) {
+        navContent.addEventListener('scroll', updateNavFadeState, { passive: true });
+      }
+      window.addEventListener('resize', updateNavFadeState);
+    })();
+
+    window.addEventListener('beforeunload', function() {
+      saveScrollPosition();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 业务组件库 - Toast Display 弹窗展示</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260512">
+  <style>
+    .toast-display-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .toast-display-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .toast-display-section-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .toast-display-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .toast-display-page-demo {
+      display: flex;
+      width: 100%;
+      padding: var(--space48);
+      overflow: visible;
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .toast-display-page-demo.toast-display-page-with-border {
+      border: 1px solid var(--gray-8);
+    }
+
+    .toast-display-api-section {
+      margin-top: var(--space80);
+    }
+
+    .toast-display-api-title {
+      margin: var(--space0) var(--space0) var(--space24) var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 26px;
+    }
+
+    .toast-display-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .toast-display-api-table th,
+    .toast-display-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .toast-display-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .toast-display-api-table td {
+      color: var(--gray-5);
+    }
+
+    .toast-display-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=business" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/b-nav.html?v=20260612-chat" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">页面组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">弹窗展示</span>
+      <h1 class="section-title">Toast Display 弹窗展示</h1>
+      <p class="description">用于展示通过基础弹窗组件嵌入其他基础组件与业务组件组合出的业务弹窗样式。</p>
+
+      <div class="toast-display-content">
+        <div class="toast-display-section">
+          <h2 class="toast-display-section-title">组队搜索筛选</h2>
+          <p class="toast-display-section-desc">外层调用 Toast 基础组件，内容区组合国家筛选、Tab、Input、Button 与社区房间列表。</p>
+          <div class="toast-display-page-demo toast-display-page-with-border">
+            <div id="toast-display-team-search-demo"></div>
+          </div>
+        </div>
+
+        <div class="toast-display-section">
+          <h2 class="toast-display-section-title">语音设置</h2>
+          <p class="toast-display-section-desc">外层调用 Toast 基础组件，内容区组合 Radio 与快捷键设置展示。</p>
+          <div class="toast-display-page-demo toast-display-page-with-border">
+            <div id="toast-display-voice-settings-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toast-display-api-section">
+        <h2 class="toast-display-api-title">API</h2>
+        <table class="toast-display-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>content</td><td>弹窗内容插槽，当前示例嵌入筛选栏与房间列表</td><td>Node | Function</td><td>-</td><td>-</td></tr>
+            <tr><td>showClose</td><td>是否展示基础弹窗关闭按钮</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>showFooter</td><td>是否展示基础弹窗底部按钮区</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>rooms</td><td>房间列表数据，实际业务可替换为接口返回的数据</td><td>Array</td><td>-</td><td>示例数据</td></tr>
+            <tr><td>voiceMode</td><td>语音设置弹窗的语音模式</td><td>string</td><td>sensing | pushToTalk</td><td>sensing</td></tr>
+            <tr><td>shortcuts</td><td>语音设置弹窗的快捷键配置</td><td>object</td><td>-</td><td>示例快捷键</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/input.js?v=20260526-toast-display"></script>
+  <script src="../basic%20components/radio.js?v=20260528-toast-display-voice-settings"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../basic%20components/tabs.js?v=20260526-toast-display"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../NN%20business%20components/community-navigation.js?v=20261116-cover-id-bg80"></script>
+  <script src="../NN%20business%20components/toast-display.js?v=20260611-toast-display-scrollbar-component"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('b-nav-toast-display');
+      renderToastDisplay('#toast-display-team-search-demo');
+      renderToastDisplayVoiceSettings('#toast-display-voice-settings-demo');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 业务组件库 - Community Navigation 社区导航</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260512">
+  <style>
+    .community-navigation-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .community-navigation-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .community-navigation-section-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .community-navigation-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .community-navigation-page-demo {
+      display: flex;
+      width: 100%;
+      padding: var(--space48);
+      overflow: visible;
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .community-navigation-page-demo.community-navigation-page-with-border {
+      border: 1px solid var(--gray-8);
+    }
+
+    .community-navigation-demo-min {
+      width: 276px;
+      min-width: 276px;
+      flex: 0 0 276px;
+    }
+
+    #community-navigation-combo-demo {
+      display: flex;
+      gap: var(--space48);
+      width: auto;
+      min-width: 0;
+      flex: 0 1 auto;
+      height: 640px;
+      overflow: hidden;
+    }
+
+    .community-navigation-config-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space12);
+      width: 296px;
+      min-width: 296px;
+      height: 640px;
+    }
+
+    .community-navigation-config-demo__title {
+      margin: 0;
+      color: var(--gray-4);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 20px;
+    }
+
+    .community-navigation-config-demo .nn-community-combo {
+      max-height: 608px;
+    }
+
+    .community-navigation-config-demo .nn-community-combo__scroller {
+      max-height: 608px;
+    }
+
+    .community-navigation-api-section {
+      margin-top: var(--space80);
+    }
+
+    .community-navigation-api-title {
+      margin: var(--space0) var(--space0) var(--space24) var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 26px;
+    }
+
+    .community-navigation-api-groups {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .community-navigation-api-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .community-navigation-api-group-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .community-navigation-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .community-navigation-api-table th,
+    .community-navigation-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .community-navigation-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .community-navigation-api-table td {
+      color: var(--gray-5);
+    }
+
+    .community-navigation-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=business" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/b-nav.html?v=20260612-chat" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">页面组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">社区导航</span>
+      <h1 class="section-title">Community Navigation 社区导航</h1>
+      <p class="description">用于业务社区侧边栏的导航条目，可配置插件、首页、通知数量、头像组，并可单独展示等级模块。</p>
+
+      <div class="community-navigation-content">
+        <div class="community-navigation-section">
+          <h2 class="community-navigation-section-title">社区导航组</h2>
+          <p class="community-navigation-section-desc">提供游戏社区与玩家社区两种内置配置；业务页面默认使用游戏社区，也可通过 communityType 切换。</p>
+          <div class="community-navigation-page-demo community-navigation-page-with-border">
+            <div class="community-navigation-demo-min" id="community-navigation-combo-demo"></div>
+          </div>
+        </div>
+
+        <div class="community-navigation-section">
+          <h2 class="community-navigation-section-title">插件</h2>
+          <p class="community-navigation-section-desc">插件项与头像组属于同一插件样式，可配置开启头像组、开启描述、描述前头像，以及关闭描述和头像组。</p>
+          <div class="community-navigation-page-demo community-navigation-page-with-border">
+            <div class="community-navigation-demo-min" id="community-navigation-plugin-demo"></div>
+          </div>
+        </div>
+
+        <div class="community-navigation-section">
+          <h2 class="community-navigation-section-title">首页</h2>
+          <p class="community-navigation-section-desc">首页项为单独导航样式，只展示社区首页入口本体，不包含等级条和经验数值。</p>
+          <div class="community-navigation-page-demo community-navigation-page-with-border">
+            <div class="community-navigation-demo-min" id="community-navigation-game-demo"></div>
+          </div>
+        </div>
+
+        <div class="community-navigation-section">
+          <h2 class="community-navigation-section-title">等级</h2>
+          <p class="community-navigation-section-desc">等级模块展示社区等级、我的等级和经验进度，进入页面时进度条从 0 缓动到当前值。</p>
+          <div class="community-navigation-page-demo community-navigation-page-with-border">
+            <div class="community-navigation-demo-min" id="community-navigation-level-demo"></div>
+          </div>
+        </div>
+
+        <div class="community-navigation-section">
+          <h2 class="community-navigation-section-title">社区封面</h2>
+          <p class="community-navigation-section-desc">支持右上菜单、社区认证标志和在线人数。</p>
+          <div class="community-navigation-page-demo community-navigation-page-with-border">
+            <div class="community-navigation-demo-min" id="community-navigation-top-demo"></div>
+          </div>
+        </div>
+
+        <div class="community-navigation-section">
+          <h2 class="community-navigation-section-title">房间</h2>
+          <p class="community-navigation-section-desc">房间导航样式支持普通房、互动语音房、已满、已锁和空房状态；普通房右上展示人数，互动语音房右上展示连麦图标，空房第二行仅展示空位加号。</p>
+          <div class="community-navigation-page-demo community-navigation-page-with-border">
+            <div class="community-navigation-demo-min" id="community-navigation-room-demo"></div>
+          </div>
+        </div>
+
+        <div class="community-navigation-section">
+          <h2 class="community-navigation-section-title">筛选操作</h2>
+          <p class="community-navigation-section-desc">用于语音房列表的操作条，包含筛选、招募队友和刷新入口。</p>
+          <div class="community-navigation-page-demo community-navigation-page-with-border">
+            <div class="community-navigation-demo-min" id="community-navigation-sift-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="community-navigation-api-section">
+        <h2 class="community-navigation-api-title">API 参考</h2>
+        <div class="community-navigation-api-groups">
+          <div class="community-navigation-api-group">
+            <h3 class="community-navigation-api-group-title">社区导航组</h3>
+            <table class="community-navigation-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>communityType</td><td>导航组内置配置</td><td>string</td><td>game | player</td><td>game</td></tr>
+                <tr><td>top</td><td>社区封面模块配置，可覆盖当前内置配置</td><td>object</td><td>-</td><td>{}</td></tr>
+                <tr><td>game</td><td>首页模块配置</td><td>object</td><td>-</td><td>{}</td></tr>
+                <tr><td>level</td><td>等级模块配置</td><td>object</td><td>-</td><td>{}</td></tr>
+                <tr><td>plugins</td><td>插件模块列表配置</td><td>Array</td><td>-</td><td>null</td></tr>
+                <tr><td>pluginsAfterSift</td><td>筛选操作下方的插件模块列表；游戏社区默认用于游戏交流和玩家社区，玩家社区默认用于游戏交流</td><td>Array</td><td>-</td><td>null</td></tr>
+                <tr><td>rooms</td><td>房间模块列表配置</td><td>Array</td><td>-</td><td>null</td></tr>
+                <tr><td>showLevel</td><td>是否展示等级模块</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>showSift</td><td>是否展示筛选操作模块</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>onPluginClick</td><td>点击插件导航后的统一回调，参数为插件配置、event 和当前导航元素</td><td>function</td><td>-</td><td>null</td></tr>
+                <tr><td>enablePageNavigation</td><td>是否启用首页、全员大厅、战绩·排名和旗下社区的页面跳转</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="community-navigation-api-group">
+            <h3 class="community-navigation-api-group-title">插件</h3>
+            <table class="community-navigation-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>state</td><td>展示状态</td><td>string</td><td>default | hover | focused</td><td>default</td></tr>
+                <tr><td>title</td><td>插件标题文本</td><td>string</td><td>-</td><td>Plug-in unit</td></tr>
+                <tr><td>icon</td><td>插件默认线性 icon class</td><td>string</td><td>-</td><td>a-Lounge-Linexianliaodating-xianxing</td></tr>
+                <tr><td>activeIcon</td><td>插件选中态 icon class</td><td>string</td><td>-</td><td>根据默认 icon 映射</td></tr>
+                <tr><td>pugcLabel</td><td>前置 PUGC 列表标签文本，配置后替代默认 icon</td><td>string</td><td>-</td><td>''</td></tr>
+                <tr><td>pugcLabelColor</td><td>PUGC 列表标签主色，调用 PUGC 标签能力</td><td>string</td><td>CSS color</td><td>''</td></tr>
+                <tr><td>showInfo</td><td>是否展示描述行</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>inlineInfo</td><td>描述是否与标题同行；滚动通知默认同行</td><td>boolean</td><td>true | false</td><td>按 infoItems 自动判断</td></tr>
+                <tr><td>info</td><td>描述行文本</td><td>string</td><td>-</td><td>Community Notice Description</td></tr>
+                <tr><td>showAvatar</td><td>仅非插件类型的描述行可展示前置头像；插件通知固定为无头像单行结构</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>infoItems</td><td>插件通知的滚动信息，支持 nickname、actionText、time 或纯文本</td><td>Array</td><td>-</td><td>null</td></tr>
+                <tr><td>showAvatarGroup</td><td>是否展示右侧头像组</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+                <tr><td>showBadge</td><td>是否展示右侧徽标</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>badge</td><td>右侧徽标文本</td><td>number | string</td><td>-</td><td>12</td></tr>
+                <tr><td>showCommentCount</td><td>是否展示评论数</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+                <tr><td>commentCount</td><td>评论数文本</td><td>number | string</td><td>-</td><td>12</td></tr>
+                <tr><td>onClick</td><td>点击导航项后的回调，参数为 event 和当前导航元素</td><td>function</td><td>-</td><td>null</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="community-navigation-api-group">
+            <h3 class="community-navigation-api-group-title">首页</h3>
+            <table class="community-navigation-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>title</td><td>首页名称</td><td>string</td><td>-</td><td>首页</td></tr>
+                <tr><td>icon</td><td>首页左侧 icon class</td><td>string</td><td>-</td><td>a-Communityhalls-Lineshequshouye-xianxing</td></tr>
+                <tr><td>showBadge</td><td>是否展示右侧徽标</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>badge</td><td>右侧徽标文本</td><td>number | string</td><td>-</td><td>12</td></tr>
+                <tr><td>showSettings</td><td>徽标右侧是否展示设置入口 icon</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="community-navigation-api-group">
+            <h3 class="community-navigation-api-group-title">等级</h3>
+            <table class="community-navigation-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>progress</td><td>当前经验进度</td><td>number</td><td>0 - 1</td><td>0.788</td></tr>
+                <tr><td>progressAssetSrc</td><td>经验进度条资产</td><td>string</td><td>-</td><td>../image/Community Level/lv6-progress.svg</td></tr>
+                <tr><td>communityLevelLabel</td><td>社区等级标签</td><td>string</td><td>-</td><td>社区等级</td></tr>
+                <tr><td>communityLevel</td><td>社区等级徽章配置，直接调用 Equity 的 createEquityCommunityLevel</td><td>object | false</td><td>{ lv, size }</td><td>{ lv: 6, size: 'compact' }</td></tr>
+                <tr><td>userLevelLabel</td><td>我的等级标签</td><td>string</td><td>-</td><td>我的等级</td></tr>
+                <tr><td>userLevel</td><td>用户等级徽章配置，直接调用 Equity 的 createEquityMemberLevel</td><td>object | false</td><td>{ lv }</td><td>{ lv: 13 }</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="community-navigation-api-group">
+            <h3 class="community-navigation-api-group-title">社区封面</h3>
+            <table class="community-navigation-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>imageSrc</td><td>社区封面图片；内置配置统一使用 Game logo 资源</td><td>string</td><td>-</td><td>../image/Game logo/game1-cover.webp</td></tr>
+                <tr><td>officialText</td><td>社区封面官方标签文本；游戏社区默认仅展示认证标志</td><td>string</td><td>-</td><td>空</td></tr>
+                <tr><td>officialCertColor</td><td>认证标识类型</td><td>string</td><td>blue | red</td><td>blue</td></tr>
+                <tr><td>communityLevel</td><td>玩家社区封面等级标志，调用 Equity 社区等级组件</td><td>object</td><td>{ lv, size }</td><td>null</td></tr>
+                <tr><td>communityId</td><td>玩家社区封面 ID，调用 Equity ID 组件</td><td>string</td><td>-</td><td>空</td></tr>
+                <tr><td>officialTooltip</td><td>认证标识 Hover 提示文案</td><td>string</td><td>-</td><td>按认证颜色自动匹配</td></tr>
+                <tr><td>officialSrc</td><td>认证 SVG 资源路径；包含“企业”时自动映射为 red</td><td>string</td><td>-</td><td>../image/Community Level/Official Certification.svg</td></tr>
+                <tr><td>onlineText</td><td>社区封面在线人数文本</td><td>string</td><td>-</td><td>18.5K</td></tr>
+                <tr><td>showMenu</td><td>社区封面是否展示右上菜单</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>showOfficial</td><td>是否展示官方标签</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>showOnline</td><td>是否展示在线人数</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="community-navigation-api-group">
+            <h3 class="community-navigation-api-group-title">房间</h3>
+            <table class="community-navigation-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>index</td><td>房间号</td><td>string | number</td><td>-</td><td>1</td></tr>
+                <tr><td>title</td><td>房间标题文本，超出一行默认省略，hover 时第二行展示剩余文本</td><td>string</td><td>-</td><td>亚服1=1找个固定的女搭子速来秒上车</td></tr>
+                <tr><td>type</td><td>房间类型，interactive 时右上展示连麦 icon，不展示人数</td><td>string</td><td>default | interactive</td><td>default</td></tr>
+                <tr><td>status</td><td>右上状态，full / lock 会替换人数展示</td><td>string</td><td>default | full | lock</td><td>default</td></tr>
+                <tr><td>total</td><td>最大人数</td><td>number</td><td>-</td><td>10</td></tr>
+                <tr><td>showAvatarGroup</td><td>是否展示头像组</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>avatars</td><td>头像组图片列表，人数默认跟随头像数量同步</td><td>string[]</td><td>-</td><td>默认头像列表</td></tr>
+                <tr><td>maxAvatarCount</td><td>头像组最大展示数量，超过后展示数字 + 标签</td><td>number</td><td>-</td><td>9</td></tr>
+                <tr><td>moreCount</td><td>头像数量超过 maxAvatarCount 后展示的数量标签</td><td>string</td><td>-</td><td>5+</td></tr>
+                <tr><td>showTeam</td><td>第二行右侧是否展示组队 icon，空房状态不会展示</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>showEmpty</td><td>是否展示空房加号；开启后人数为 0 / total</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="community-navigation-api-group">
+            <h3 class="community-navigation-api-group-title">筛选操作</h3>
+            <table class="community-navigation-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>filterText</td><td>筛选按钮文本</td><td>string</td><td>-</td><td>筛选</td></tr>
+                <tr><td>filterCount</td><td>筛选按钮右上角数量</td><td>number | string</td><td>-</td><td>9</td></tr>
+                <tr><td>showFilterBadge</td><td>是否展示筛选按钮右上角数量</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>recruitText</td><td>招募队友按钮文本</td><td>string</td><td>-</td><td>招募队友</td></tr>
+                <tr><td>showRefreshNew</td><td>是否展示刷新按钮 NEW 标识</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar"></script>
+  <script src="../NN%20business%20components/pugc.js?v=20260615-pugc-list-label-export"></script>
+  <script src="../NN%20business%20components/community-navigation.js?v=20261116-cover-id-bg80"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('b-nav-community-navigation');
+
+      var comboDemo = document.getElementById('community-navigation-combo-demo');
+      var pluginDemo = document.getElementById('community-navigation-plugin-demo');
+      var gameDemo = document.getElementById('community-navigation-game-demo');
+      var levelDemo = document.getElementById('community-navigation-level-demo');
+      var topDemo = document.getElementById('community-navigation-top-demo');
+      var roomDemo = document.getElementById('community-navigation-room-demo');
+      var siftDemo = document.getElementById('community-navigation-sift-demo');
+
+      function appendCommunityConfigDemo(title, communityType) {
+        var demo = document.createElement('div');
+        demo.className = 'community-navigation-config-demo';
+        var heading = document.createElement('h3');
+        heading.className = 'community-navigation-config-demo__title';
+        heading.textContent = title;
+        demo.appendChild(heading);
+        demo.appendChild(createCommunityNavigationCombo({
+          communityType: communityType,
+          enablePageNavigation: false
+        }));
+        comboDemo.appendChild(demo);
+      }
+
+      appendCommunityConfigDemo('配置 1 · 游戏社区', 'game');
+      appendCommunityConfigDemo('配置 2 · 玩家社区', 'player');
+
+      pluginDemo.appendChild(createCommunityNavigation({
+        items: [
+          { title: 'Plug-in unit', info: 'Community Notice Description', showBadge: true },
+          {
+            title: 'Plug-in unit',
+            icon: 'nicon-a-Grouping-Linezudui-xianxing',
+            showBadge: false,
+            infoItems: [
+              { nickname: '邪恶萨摩耶', actionText: '吃鸡了！', time: '1分钟前' },
+              { nickname: '星河不眠', actionText: '吃鸡了！', time: '3分钟前' },
+              { nickname: '普莱士袋熊', actionText: '吃鸡了！', time: '5分钟前' }
+            ]
+          },
+          { title: 'Plug-in unit', info: 'Community Notice Description', showBadge: true },
+          {
+            title: '商用游戏引擎的优化问题，终于摆到了台面上',
+            pugcLabel: '攻略',
+            pugcLabelColor: '#396DDE',
+            showInfo: false,
+            showBadge: false,
+            showCommentCount: true,
+            commentCount: 12
+          },
+          { title: 'Plug-in unit', showInfo: false, showBadge: false, showAvatarGroup: true },
+          { title: 'Plug-in unit', showInfo: false, showBadge: false, showAvatarGroup: false }
+        ]
+      }));
+
+      gameDemo.appendChild(createCommunityNavigation({
+        items: [
+          { type: 'game', title: '首页', showInfo: false, showBadge: true, gameIconSrc: '' },
+          { type: 'game', title: '首页', showInfo: false, showBadge: true, showSettings: true, gameIconSrc: '' }
+        ]
+      }));
+
+      levelDemo.appendChild(createCommunityNavigationLevel());
+
+      var topGrid = document.createElement('div');
+      topGrid.className = 'nn-community-top-grid';
+      topGrid.appendChild(createCommunityTopBanner());
+      topDemo.appendChild(topGrid);
+
+      roomDemo.appendChild(createCommunityRooms({
+        items: [
+          { index: 1, status: 'default' },
+          { index: 33, type: 'interactive', title: '互动语音房', showTeam: false, avatars: ['../image/Avatar/头像10.png', '../image/Avatar/头像311.png', '../image/Avatar/头像441.png', '../image/Avatar/头像480.png', '../image/Avatar/头像496.png', '../image/Avatar/头像498.png', '../image/Avatar/头像511.png', '../image/Avatar/头像542.png', '../image/Avatar/头像556.png', '../image/Avatar/头像558.png'], moreCount: '99+' },
+          { index: 12, status: 'full', title: '亚服1=1找个固定的女搭子速来秒上车' },
+          { index: 108, status: 'lock', title: '亚服1=1找个固定的女搭子速来秒上车' },
+          { index: 4, title: '游戏语音房', showEmpty: true, showAvatarGroup: false, showTeam: false }
+        ]
+      }));
+
+      siftDemo.appendChild(createCommunitySift());
+    });
+  </script>
+</body>
+</html>

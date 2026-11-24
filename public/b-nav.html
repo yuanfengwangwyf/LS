@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>业务导航</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    body {
+      background: var(--gray-2);
+      margin: var(--space0);
+      padding: var(--space0);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <div class="nav-title">NN业务组件库</div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">页面组件</div>
+      <ul class="nav-list">
+        <li><a href="../NN%20business/CommunityNavigation.html" id="b-nav-community-navigation" target="_parent"><span class="nav-link-label">Community Navigation 社区导航</span></a></li>
+        <li><a href="../NN%20business/ToastDisplay.html" id="b-nav-toast-display" target="_parent"><span class="nav-link-label">Toast Display 弹窗展示</span></a></li>
+        <li><a href="../NN%20business/VoicePanel.html" id="b-nav-voice-panel" target="_parent"><span class="nav-link-label">Voice Panel 语音面板</span></a></li>
+        <li><a href="../NN%20business/VoiceRoom.html" id="b-nav-voice-room" target="_parent"><span class="nav-link-label">Voice room 语音房</span></a></li>
+        <li><a href="../NN%20business/Gift.html" id="b-nav-gift" target="_parent"><span class="nav-link-label">Gift 礼物</span></a></li>
+        <li><a href="../NN%20business/Card.html" id="b-nav-card" target="_parent"><span class="nav-link-label">Card 卡片</span></a></li>
+        <li><a href="../NN%20business/DataCard.html" id="b-nav-data-card" target="_parent"><span class="nav-link-label">Data Card 资料卡</span></a></li>
+        <li><a href="../NN%20business/Carousel.html" id="b-nav-carousel" target="_parent"><span class="nav-link-label">Carousel 图片轮播</span></a></li>
+        <li><a href="../NN%20business/Leaderboard.html" id="b-nav-leaderboard" target="_parent"><span class="nav-link-label">Leaderboard 排行榜</span></a></li>
+        <li><a href="../NN%20business/Pugc.html" id="b-nav-pugc" target="_parent"><span class="nav-link-label">Pugc 内容</span></a></li>
+        <li><a href="../NN%20business/Comment.html" id="b-nav-comment" target="_parent"><span class="nav-link-label">Comment 评论</span></a></li>
+        <li><a href="../NN%20business/Record.html" id="b-nav-record" target="_parent"><span class="nav-link-label">Record 战绩</span></a></li>
+        <li><a href="../NN%20business/Chat.html" id="b-nav-chat" target="_parent"><span class="nav-link-label">Chat 聊天</span></a></li>
+        <li><a href="../NN%20business/MessageSent.html" id="b-nav-message-sent" target="_parent"><span class="nav-link-label">Message sent 消息发送</span></a></li>
+        <li><a href="../NN%20business/GlobalSearch.html" id="b-nav-global-search" target="_parent"><span class="nav-link-label">Global Search 全局搜索</span></a></li>
+      </ul>
+    </div>
+    </div>
+  </nav>
+
+  <script>
+    function applyInit(data) {
+      document.body.classList.toggle('dark-mode', Boolean(data.darkMode));
+
+      if (data.activeNavId) {
+        document.querySelectorAll('.nav-list a.active').forEach(function(link) {
+          link.classList.remove('active');
+        });
+
+        var activeLink = document.getElementById(data.activeNavId);
+        if (activeLink) {
+          activeLink.classList.add('active');
+        }
+      }
+    }
+
+    function applyDarkMode(isDark) {
+      document.body.classList.toggle('dark-mode', Boolean(isDark));
+    }
+
+    function saveScrollPosition() {
+      var nav = document.querySelector('.nav-content');
+      if (nav) {
+        sessionStorage.setItem('b-nav-scrollTop', nav.scrollTop);
+      }
+    }
+
+    function restoreScrollPosition() {
+      var nav = document.querySelector('.nav-content');
+      if (!nav) return;
+
+      var savedPosition = sessionStorage.getItem('b-nav-scrollTop');
+      if (savedPosition !== null) {
+        nav.scrollTop = parseInt(savedPosition, 10);
+      }
+      updateNavFadeState();
+    }
+
+    function updateNavFadeState() {
+      var nav = document.querySelector('.nav');
+      var content = document.querySelector('.nav-content');
+      if (!nav || !content) return;
+
+      var maxScrollTop = Math.max(0, content.scrollHeight - content.clientHeight);
+      nav.classList.toggle('is-scroll-top', content.scrollTop > 0);
+      nav.classList.toggle('is-scroll-bottom', content.scrollTop < maxScrollTop - 1);
+    }
+
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'init') {
+        applyInit(e.data);
+        restoreScrollPosition();
+      } else if (e.data && e.data.type === 'dark-mode') {
+        applyDarkMode(e.data.value);
+      }
+    });
+
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+      restoreScrollPosition();
+      updateNavFadeState();
+      var navContent = document.querySelector('.nav-content');
+      if (navContent) {
+        navContent.addEventListener('scroll', updateNavFadeState, { passive: true });
+      }
+      window.addEventListener('resize', updateNavFadeState);
+    })();
+
+    window.addEventListener('beforeunload', saveScrollPosition);
+  </script>
+</body>
+</html>

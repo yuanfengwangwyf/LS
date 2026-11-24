@@ -1,0 +1,270 @@
+.accelerator-twitch-drops-content {
+  position: relative;
+  display: flex !important;
+  flex-direction: column;
+  gap: var(--space0);
+}
+
+.accelerator-twitch-drops-title {
+  position: sticky;
+  top: var(--space0);
+  z-index: 12;
+  margin: var(--space0);
+  padding: var(--space16) var(--space0);
+  background: var(--gray-1);
+  color: var(--gray-3);
+  font-size: var(--font-size-header-2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-header-2);
+}
+
+.accelerator-twitch-drops-grid {
+  align-content: start;
+}
+
+.accelerator-twitch-drops-empty {
+  margin: var(--space0);
+  padding: var(--space32) var(--space0);
+  color: var(--gray-6);
+  font-size: var(--font-size-body);
+  text-align: center;
+}
+
+.accelerator-twitch-drops-dialog-overlay {
+  position: absolute;
+  inset: var(--space0);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space24);
+  background: var(--Black-A60);
+}
+
+.accelerator-twitch-drops-dialog-overlay[hidden] {
+  display: none;
+}
+
+.accelerator-twitch-drops-rewards-dialog__panel.nn-toast {
+  width: 720px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.accelerator-twitch-drops-dialog-overlay .nn-toast {
+  max-height: 100%;
+}
+
+.accelerator-twitch-drops-rewards-dialog__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space16);
+}
+
+.accelerator-twitch-drops-rewards-dialog__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space8);
+}
+
+.accelerator-twitch-drops-reward-row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding-bottom: 60px;
+}
+
+.accelerator-twitch-drops-reward-row__media {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--border-radius-4r);
+  background: var(--gray-10);
+}
+
+.accelerator-twitch-drops-reward-row__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gray-10);
+  object-fit: cover;
+}
+
+.accelerator-twitch-drops-reward-row__info {
+  position: absolute;
+  right: var(--space0);
+  bottom: var(--space0);
+  left: var(--space0);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space4);
+  min-width: 0;
+  padding: var(--space8);
+  border-radius: var(--border-radius-4r);
+  background: var(--gray-2);
+}
+
+.accelerator-twitch-drops-reward-row__info strong {
+  overflow: hidden;
+  color: var(--gray-3);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accelerator-twitch-drops-reward-row__info small {
+  color: var(--gray-6);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+}
+
+.accelerator-twitch-drops-reward-row__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space4);
+  max-height: var(--space0);
+  margin-top: var(--space0);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(var(--space8));
+  transition: max-height 0.25s ease, margin-top 0.25s ease, opacity 0.2s ease, transform 0.25s ease;
+}
+
+.accelerator-twitch-drops-reward-row__actions .nn-btn {
+  width: 100%;
+}
+
+.accelerator-twitch-drops-reward-row:hover .accelerator-twitch-drops-reward-row__actions,
+.accelerator-twitch-drops-reward-row:focus-within .accelerator-twitch-drops-reward-row__actions {
+  max-height: 72px;
+  margin-top: var(--space4);
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(var(--space0));
+}
+
+.accelerator-twitch-drops-rewards-empty {
+  margin: var(--space0);
+  padding: var(--space24) var(--space0);
+  color: var(--gray-6);
+  font-size: var(--font-size-body);
+  text-align: center;
+}
+
+.accelerator-twitch-drops-accounts-dialog__panel.nn-toast {
+  width: 520px;
+  max-width: 100%;
+}
+
+.accelerator-twitch-drops-accounts-dialog__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space16);
+}
+
+.accelerator-twitch-drops-accounts-dialog__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space8);
+}
+
+.accelerator-twitch-drops-account-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space12);
+  padding: var(--space8);
+  border-radius: var(--border-radius-4r);
+  background: var(--gray-10);
+}
+
+.accelerator-twitch-drops-account-row__avatar {
+  display: inline-flex;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.accelerator-twitch-drops-account-row__avatar .nn-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.accelerator-twitch-drops-account-row__info {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space4);
+  min-width: 0;
+}
+
+.accelerator-twitch-drops-account-row__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space8);
+  min-width: 0;
+}
+
+.accelerator-twitch-drops-account-row__heading strong {
+  overflow: hidden;
+  color: var(--gray-3);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accelerator-twitch-drops-account-row__info small {
+  color: var(--gray-6);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+}
+
+.accelerator-twitch-drops-account-row__actions {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.accelerator-twitch-drops-accounts-empty {
+  margin: var(--space0);
+  padding: var(--space24) var(--space0);
+  color: var(--gray-6);
+  font-size: var(--font-size-body);
+  text-align: center;
+}
+
+.accelerator-twitch-drops-accounts-dialog__add {
+  display: flex;
+}
+
+.accelerator-twitch-drops-accounts-add-button.nn-btn {
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .accelerator-twitch-drops-rewards-dialog__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .accelerator-twitch-drops-rewards-dialog__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accelerator-twitch-drops-reward-row__actions {
+    transition: none;
+  }
+
+  .accelerator-twitch-drops-reward-row:hover .accelerator-twitch-drops-reward-row__actions,
+  .accelerator-twitch-drops-reward-row:focus-within .accelerator-twitch-drops-reward-row__actions {
+    transform: none;
+  }
+}

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 业务组件库 - Comment 评论</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261112-comment">
+  <style>
+    .comment-content,
+    .comment-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comment-content {
+      gap: var(--space48);
+    }
+
+    .comment-section {
+      gap: var(--space16);
+    }
+
+    .comment-section-title,
+    .comment-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-title);
+    }
+
+    .comment-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .comment-page-demo {
+      display: flex;
+      width: 100%;
+      padding: var(--space48);
+      overflow: visible;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .comment-api-section {
+      margin-top: var(--space80);
+    }
+
+    .comment-api-title {
+      margin-bottom: var(--space24);
+      line-height: 26px;
+    }
+
+    .comment-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-body);
+    }
+
+    .comment-api-table th,
+    .comment-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comment-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .comment-api-table td {
+      color: var(--gray-5);
+    }
+
+    .comment-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+
+    @media (max-width: 760px) {
+      .comment-page-demo {
+        padding: var(--space20);
+      }
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.documentElement.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=business" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/b-nav.html?v=20261112-comment" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">页面组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">评论</span>
+      <h1 class="section-title">Comment 评论</h1>
+      <p class="description">用于展示带作者信息、评价内容和反馈数量的评论。正文默认最多显示三行，仅在内容超过三行时出现展开操作。</p>
+
+      <div class="comment-content">
+        <div class="comment-section">
+          <h2 class="comment-section-title">长评论</h2>
+          <p class="comment-section-desc">超过三行的正文默认收起；点击“展开”查看完整内容，再点击“收起”恢复三行展示。三行以内不显示操作入口。</p>
+          <div class="comment-page-demo" data-code-preview="true">
+            <div id="comment-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="comment-api-section">
+        <h2 class="comment-api-title">API 参考</h2>
+        <table class="comment-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>avatarSrc</td><td>作者头像图片地址，由 Avatar 组件负责裁切与展示</td><td>string</td><td>-</td><td>../image/Avatar/default.png</td></tr>
+            <tr><td>username</td><td>作者名称</td><td>string</td><td>-</td><td>tomin_kk</td></tr>
+            <tr><td>userTag</td><td>作者身份标签</td><td>string</td><td>-</td><td>NN用户</td></tr>
+            <tr><td>title</td><td>评论结论文案；留空时由 sentiment 自动生成</td><td>string</td><td>-</td><td>''（显示为推荐）</td></tr>
+            <tr><td>sentiment</td><td>评论态度，并同步切换推荐或不推荐图标</td><td>string</td><td>positive | negative</td><td>positive</td></tr>
+            <tr><td>publishedAt</td><td>发布日期</td><td>string</td><td>-</td><td>2025-04-03</td></tr>
+            <tr><td>playtime</td><td>游戏时长</td><td>string</td><td>-</td><td>80小时55分</td></tr>
+            <tr><td>paragraphs</td><td>评论正文段落</td><td>string[] | string</td><td>-</td><td>Figma 示例内容</td></tr>
+            <tr><td>likeCount</td><td>左下角点赞数量</td><td>number | string</td><td>-</td><td>17.3k</td></tr>
+            <tr><td>dislikeCount</td><td>左下角点踩数量</td><td>number | string</td><td>-</td><td>28</td></tr>
+            <tr><td>expanded</td><td>初始是否展开全文</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>fluid</td><td>是否随父容器宽度铺满</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>onLike</td><td>点赞或取消点赞后的回调，返回 active、delta、数量与事件</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>onDislike</td><td>点踩或取消点踩后的回调，返回 active、delta、数量与事件</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>onToggle</td><td>展开或收起后的回调，返回 expanded、event 与 element</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../NN%20business%20components/comment.js?v=20261117-comment-sentiment-icon-color"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('b-nav-comment');
+      renderComment('#comment-demo');
+    });
+  </script>
+</body>
+</html>

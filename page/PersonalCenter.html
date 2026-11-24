@@ -1,0 +1,4163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Personal Center 我的</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-unit-shift">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261111-launch-update-icons">
+  <script src="../iconfont/iconfont.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 100%;
+      min-height: 100vh;
+      margin: var(--space0);
+      overflow: auto;
+      background: var(--gray-1);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+    }
+
+    body.is-personal-center-expanded #nav-iframe {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .personal-center-shell {
+      min-width: 1280px;
+      min-height: calc(100vh - 60px);
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .personal-center-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-width: 1280px;
+      min-height: 900px;
+    }
+
+    .personal-center-framework {
+      --personal-center-header-height: 50px;
+      --personal-center-menu-width: 70px;
+      position: relative;
+      width: 1280px;
+      height: 900px;
+      min-width: 1280px;
+      min-height: 900px;
+      overflow: hidden;
+      background: var(--gray-1);
+      color: var(--gray-3);
+    }
+
+    .personal-center-framework::after {
+      position: absolute;
+      inset: var(--space0);
+      z-index: 120;
+      box-shadow: inset 0 0 0 1px var(--gray-8);
+      content: '';
+      pointer-events: none;
+    }
+
+    .personal-center-framework.is-expanded {
+      position: fixed;
+      inset: var(--space0);
+      z-index: 2000;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .personal-center-framework__header {
+      position: absolute;
+      top: var(--space0);
+      left: var(--space0);
+      z-index: 30;
+      width: 100%;
+      height: var(--personal-center-header-height);
+    }
+
+    .personal-center-framework__header .nn-header {
+      width: 100% !important;
+      padding-right: var(--space0);
+      border-bottom-color: var(--gray-10);
+    }
+
+    .personal-center-framework__header .nn-header--default {
+      padding-left: calc(var(--personal-center-menu-width) + var(--space24));
+    }
+
+    .personal-center-framework__menu {
+      position: absolute;
+      top: var(--personal-center-header-height);
+      bottom: var(--space0);
+      left: var(--space0);
+      z-index: 20;
+      width: var(--personal-center-menu-width);
+      overflow: visible;
+      background: var(--gray-1);
+    }
+
+    .personal-center-framework__menu .nn-menu {
+      width: var(--personal-center-menu-width);
+      height: 100%;
+      min-height: 0;
+    }
+
+    .personal-center-framework__content {
+      position: absolute;
+      top: var(--personal-center-header-height);
+      right: var(--space0);
+      bottom: var(--space0);
+      left: var(--personal-center-menu-width);
+      overflow: hidden;
+      background: var(--gray-1);
+    }
+
+    .personal-center-content {
+      height: 100%;
+      padding: var(--space24) var(--space24) var(--space40);
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .personal-center-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    .personal-center-content.is-steam-dashboard {
+      overflow: hidden;
+    }
+
+    .personal-center-content.is-steam-dashboard .personal-center-content__inner {
+      height: 100%;
+    }
+
+    .personal-center-content__inner {
+      width: 100%;
+      max-width: 1600px;
+      margin: var(--space0) auto;
+    }
+
+    .personal-center-account-management {
+      width: 100%;
+      max-width: 1130px;
+      min-height: 100%;
+      margin: var(--space0) auto;
+    }
+
+    .personal-center-account-management[hidden] {
+      display: none;
+    }
+
+    .personal-center-steam-dashboard {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      max-width: 1600px;
+      min-height: 0;
+      flex-direction: column;
+      margin: var(--space0) auto;
+    }
+
+    .personal-center-steam-dashboard[hidden] {
+      display: none;
+    }
+
+    .personal-center-steam-dashboard__sticky-header {
+      flex: 0 0 auto;
+      padding: var(--space0) var(--space0) var(--space16);
+      background: var(--gray-1);
+    }
+
+    .personal-center-steam-dashboard__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space16);
+      margin-bottom: var(--space24);
+    }
+
+    .personal-center-steam-dashboard__column-headings {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(480px, 0.9fr);
+      gap: var(--space24);
+    }
+
+    .personal-center-steam-dashboard__title,
+    .personal-center-steam-dashboard__section-title {
+      margin: var(--space0);
+    }
+
+    .personal-center-steam-dashboard__title {
+      color: var(--gray-3);
+      font-size: var(--font-size-header-2);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-header-2);
+    }
+
+    .personal-center-steam-dashboard__layout {
+      display: grid;
+      min-height: 0;
+      flex: 1 1 auto;
+      grid-template-columns: minmax(0, 1fr) minmax(480px, 0.9fr);
+      align-items: stretch;
+      gap: var(--space24);
+      overflow: visible;
+    }
+
+    .personal-center-steam-dashboard__column {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .personal-center-steam-dashboard__column--ranking {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space12);
+    }
+
+    .personal-center-steam-dashboard__column-scroller {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .personal-center-steam-dashboard__column--ranking .personal-center-steam-dashboard__column-scroller {
+      height: auto;
+      min-height: 0;
+      flex: 1 1 auto;
+    }
+
+    .personal-center-steam-dashboard__ranking-toolbar {
+      display: flex;
+      min-width: 0;
+      min-height: 38px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space16);
+    }
+
+    .personal-center-steam-dashboard__ranking-tabs {
+      min-width: 0;
+    }
+
+    .personal-center-steam-dashboard__ranking-region {
+      width: 184px;
+      flex: 0 0 auto;
+    }
+
+    .personal-center-steam-dashboard__ranking-region:empty {
+      display: none;
+    }
+
+    .personal-center-steam-dashboard__ranking-region .nn-dropdown {
+      width: 100%;
+    }
+
+    .personal-center-steam-dashboard__section-title {
+      color: var(--gray-5);
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-title);
+    }
+
+    .personal-center-steam-dashboard__game-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space12);
+    }
+
+    .personal-center-steam-dashboard__game-list .nn-wishlist-card {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .personal-center-steam-dashboard__table {
+      min-width: 0;
+    }
+
+    .personal-center-steam-dashboard__table .personal-center-steam-dashboard__ranking-table-wrap,
+    .personal-center-steam-dashboard__table .personal-center-steam-dashboard__ranking-table {
+      overflow: visible;
+    }
+
+    .personal-center-steam-dashboard__table .personal-center-steam-dashboard__ranking-table.nn-table--sticky-header .nn-table__head-cell {
+      top: var(--space0);
+      z-index: 11;
+    }
+
+    .personal-center-steam-dashboard__table .personal-center-steam-dashboard__ranking-table.nn-table--sticky-footer .nn-table__foot-cell {
+      height: 64px;
+      bottom: var(--space0);
+      z-index: 11;
+    }
+
+    .personal-center-user-profile {
+      display: flex;
+      align-items: center;
+      gap: var(--space48);
+      margin-bottom: var(--space40);
+    }
+
+    .personal-center-user-profile__main {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      flex: 1 1 auto;
+      gap: var(--space16);
+    }
+
+    .personal-center-user-profile__avatar {
+      flex: 0 0 auto;
+    }
+
+    .personal-center-user-profile__content {
+      display: flex;
+      min-width: 0;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: var(--space4);
+    }
+
+    .personal-center-user-profile__identity,
+    .personal-center-user-profile__meta,
+    .personal-center-user-profile__stats {
+      display: flex;
+      align-items: center;
+    }
+
+    .personal-center-user-profile__identity {
+      gap: var(--space6);
+    }
+
+    .personal-center-user-profile__edit-action {
+      display: inline-flex;
+      margin-left: var(--space10);
+    }
+
+    .personal-center-user-profile__name {
+      overflow: hidden;
+      color: var(--gray-3);
+      font-size: var(--font-size-header-2);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-header-2);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-center-user-profile__gender {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--icon-size-x10);
+      height: var(--icon-size-x10);
+      flex: 0 0 var(--icon-size-x10);
+      color: var(--Esports-Blue-LD);
+      font-size: var(--icon-size-x10);
+      line-height: var(--icon-size-x10);
+    }
+
+    .personal-center-user-profile__meta {
+      gap: var(--space10);
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-user-profile__meta-item + .personal-center-user-profile__meta-item {
+      padding-left: var(--space10);
+      border-left: 1px solid var(--gray-8);
+    }
+
+    .personal-center-user-profile__signature {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-center-user-profile__stats {
+      flex: 0 0 auto;
+      gap: var(--space40);
+      margin-left: var(--space80);
+    }
+
+    .personal-center-user-profile__stat {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      gap: var(--space0);
+    }
+
+    .personal-center-user-profile__stat-value {
+      color: var(--gray-3);
+      font-family: var(--font-family-din);
+      font-size: var(--font-size-data-number);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-header-1);
+    }
+
+    .personal-center-user-profile__stat-label {
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-game-data {
+      margin-bottom: var(--space40);
+    }
+
+    .personal-center-game-overview {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space16);
+      margin-bottom: var(--space16);
+    }
+
+    .personal-center-game-overview__stat {
+      display: grid;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-10);
+      box-sizing: border-box;
+    }
+
+    .personal-center-game-overview__stat--summary {
+      --personal-center-summary-number-size: 60px;
+      min-height: 180px;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      align-items: center;
+      gap: var(--space24);
+      padding: var(--space24);
+    }
+
+    .personal-center-game-overview__stat--interactive {
+      cursor: pointer;
+      transition: border-color 160ms ease, background-color 160ms ease;
+    }
+
+    .personal-center-game-overview__stat--interactive:hover {
+      border-color: var(--gray-8);
+      background: var(--gray-9);
+    }
+
+    .personal-center-game-overview__stat--interactive:focus-visible {
+      outline: 1px solid var(--Esports-Blue);
+      outline-offset: var(--space2);
+    }
+
+    .personal-center-game-overview__primary {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .personal-center-game-overview__stat--summary .personal-center-game-overview__primary {
+      align-self: center;
+      gap: var(--space16);
+    }
+
+    .personal-center-game-overview__stat--summary .personal-center-game-overview__primary .accelerator-asset-detail-stat__value {
+      order: 2;
+      flex: 0 0 auto;
+      align-self: flex-start;
+    }
+
+    .personal-center-game-overview__stat--summary .personal-center-duration-segment {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--space2);
+      white-space: nowrap;
+    }
+
+    .personal-center-metric-unit-text {
+      display: block;
+      transform: translateY(calc(var(--space2) * -1));
+      line-height: normal;
+      white-space: nowrap;
+    }
+
+    .personal-center-game-overview__stat--summary .personal-center-summary-number {
+      display: block;
+      flex: 0 0 auto;
+      color: var(--gray-3);
+      font-family: var(--font-family-din);
+      font-size: var(--personal-center-summary-number-size);
+      font-weight: var(--font-weight-bold);
+      line-height: 1;
+    }
+
+    .personal-center-game-overview__stat--summary .personal-center-metric-unit-text {
+      font-size: var(--font-size-header-3);
+      font-style: normal;
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-header-3);
+    }
+
+    .personal-center-game-overview__label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space0);
+      order: 1;
+      color: var(--gray-4);
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-title);
+      white-space: nowrap;
+    }
+
+    .personal-center-game-overview__label .nn-user-data-card__title-icon {
+      font-weight: var(--font-weight-normal);
+    }
+
+    .personal-center-game-overview__meta-value {
+      display: grid;
+      width: 100%;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space20) var(--space24);
+      box-sizing: border-box;
+    }
+
+    .personal-center-game-overview__stat--summary .personal-center-game-overview__meta-value {
+      align-self: center;
+      align-content: center;
+    }
+
+    .personal-center-game-overview__rank-item {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space4);
+      white-space: nowrap;
+    }
+
+    .personal-center-game-overview__rank-scope {
+      overflow: hidden;
+      max-width: 100%;
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+      text-overflow: ellipsis;
+    }
+
+    .personal-center-game-overview__rank-value {
+      display: inline-flex;
+      align-items: center;
+      color: var(--gray-3);
+      font-size: var(--font-size-header-3);
+      font-variant-numeric: tabular-nums;
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-header-3);
+    }
+
+    .personal-center-rank-current,
+    .personal-center-rank-all {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .personal-center-rank-current {
+      font-size: var(--font-size-subtitle);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .personal-center-rank-label {
+      color: var(--gray-6);
+      font-weight: var(--font-weight-normal);
+    }
+
+    .personal-center-rank-number {
+      color: var(--gray-5);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .personal-center-rank-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space0);
+      margin-left: var(--space4);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-caption);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-caption);
+      white-space: nowrap;
+    }
+
+    .personal-center-rank-trend > span:last-child {
+      margin-left: -1px;
+    }
+
+    .personal-center-rank-trend .nnicon {
+      display: inline-flex;
+      width: var(--icon-size-x6);
+      height: var(--icon-size-x6);
+      flex: 0 0 var(--icon-size-x6);
+      align-items: center;
+      justify-content: center;
+      font-size: var(--icon-size-x6);
+      line-height: var(--icon-size-x6);
+    }
+
+    .personal-center-rank-trend--up {
+      color: var(--Green);
+    }
+
+    .personal-center-rank-trend--down {
+      color: var(--Red);
+    }
+
+    .personal-center-recommendations .nn-wishlist-card__data-rank-value {
+      display: inline-flex;
+      align-items: baseline;
+    }
+
+    .personal-center-rank-all {
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-normal);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-game-overview__rank-arrow {
+      position: static;
+      width: var(--icon-size-x8);
+      height: var(--icon-size-x8);
+      margin-left: var(--space0);
+      font-size: var(--icon-size-x8);
+      line-height: var(--icon-size-x8);
+      transform: none;
+      transition: transform 0.16s ease;
+    }
+
+    .personal-center-game-overview__stat:hover .personal-center-game-overview__rank-arrow {
+      transform: translateX(var(--space2));
+    }
+
+    .personal-center-accelerator-overview {
+      margin-top: var(--space16);
+    }
+
+    .personal-center-game-overview__stat--accelerator {
+      --personal-center-accelerator-value-size: 52px;
+      min-height: 160px;
+      grid-template-columns: minmax(240px, 0.75fr) minmax(0, 1.25fr) minmax(180px, 224px);
+      align-content: center;
+      align-items: end;
+      gap: var(--space24);
+      padding: var(--space24) var(--space32);
+    }
+
+    .personal-center-game-overview__stat--accelerator .personal-center-game-overview__primary {
+      justify-content: flex-start;
+      gap: var(--space16);
+    }
+
+    .personal-center-game-overview__stat--accelerator .personal-center-game-overview__meta-value {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-content: normal;
+      gap: var(--space24);
+    }
+
+    .personal-center-game-overview__stat--accelerator .nn-game-accelerator-popover__duration-value {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--space4);
+      order: 2;
+      align-self: flex-start;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
+
+    .personal-center-game-overview__stat--accelerator .nn-game-accelerator-popover__duration-segment {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--space2);
+    }
+
+    .personal-center-game-overview__stat--accelerator .nn-game-accelerator-popover__duration-number {
+      display: block;
+      flex: 0 0 auto;
+      color: var(--gray-3);
+      font-family: var(--font-family-din);
+      font-size: var(--personal-center-accelerator-value-size);
+      font-weight: var(--font-weight-bold);
+      line-height: 1;
+    }
+
+    .personal-center-game-overview__stat--accelerator .nn-game-accelerator-popover__duration-unit {
+      display: block;
+      transform: translateY(calc(var(--space2) * -1));
+      color: var(--gray-5);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-medium);
+      line-height: normal;
+    }
+
+    .personal-center-game-overview__stat--accelerator .personal-center-game-overview__rank-scope {
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-game-overview__stat--accelerator .personal-center-game-overview__rank-value {
+      font-size: var(--font-size-header-2);
+      line-height: var(--line-height-header-2);
+    }
+
+    .personal-center-accelerator-actions {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      align-items: stretch;
+      align-self: center;
+      justify-content: center;
+      gap: var(--space12);
+    }
+
+    .personal-center-accelerator-actions .nn-btn {
+      width: 100%;
+    }
+
+    .personal-center-auto-pause-modal {
+      position: absolute;
+      inset: var(--space0);
+      z-index: 160;
+      display: grid;
+      place-items: center;
+      padding: var(--space24);
+      background: var(--mask);
+      font-family: var(--font-family-main);
+    }
+
+    .personal-center-auto-pause-dialog.nn-toast {
+      width: 560px;
+      max-width: 100%;
+    }
+
+    .personal-center-auto-pause-content {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .personal-center-auto-pause-intro {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space6);
+      padding: var(--space16);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-10);
+    }
+
+    .personal-center-auto-pause-intro__title {
+      color: var(--gray-3);
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .personal-center-auto-pause-intro__description,
+    .personal-center-auto-pause-intro__notice,
+    .personal-center-auto-pause-requirement__description {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-auto-pause-intro__notice {
+      color: var(--gray-5);
+    }
+
+    .personal-center-auto-pause-requirements {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space8);
+    }
+
+    .personal-center-auto-pause-requirement {
+      display: grid;
+      min-width: 0;
+      grid-template-columns: var(--icon-size-x12) minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--space12);
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-2);
+    }
+
+    .personal-center-auto-pause-requirement__icon {
+      display: inline-flex;
+      width: var(--icon-size-x12);
+      height: var(--icon-size-x12);
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-6);
+      font-size: var(--icon-size-x9);
+      line-height: var(--icon-size-x12);
+    }
+
+    .personal-center-auto-pause-requirement.is-success .personal-center-auto-pause-requirement__icon,
+    .personal-center-auto-pause-requirement.is-success .personal-center-auto-pause-requirement__status {
+      color: var(--Green);
+    }
+
+    .personal-center-auto-pause-requirement.is-checking .personal-center-auto-pause-requirement__icon,
+    .personal-center-auto-pause-requirement.is-checking .personal-center-auto-pause-requirement__status {
+      color: var(--Esports-Blue);
+    }
+
+    .personal-center-auto-pause-requirement__copy {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: var(--space2);
+    }
+
+    .personal-center-auto-pause-requirement__title {
+      color: var(--gray-4);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-auto-pause-requirement__control {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--space8);
+    }
+
+    .personal-center-auto-pause-requirement__status {
+      min-width: 56px;
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-caption);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .personal-center-auto-pause-ready {
+      display: flex;
+      align-items: center;
+      gap: var(--space8);
+      color: var(--Green);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-auto-pause-ready .nnicon {
+      width: var(--icon-size-x8);
+      height: var(--icon-size-x8);
+      font-size: var(--icon-size-x8);
+      line-height: var(--icon-size-x8);
+    }
+
+    .personal-center-platform-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space16);
+      align-items: stretch;
+    }
+
+    .personal-center-platform-card {
+      --personal-center-platform-value-size: 40px;
+      display: flex;
+      height: 420px;
+      min-width: 0;
+      flex-direction: column;
+      gap: var(--space16);
+      padding: var(--space12) var(--space24) var(--space20);
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-10);
+    }
+
+    .personal-center-platform-card__header,
+    .personal-center-platform-card__brand,
+    .personal-center-platform-card__account,
+    .personal-center-platform-card__account-name-row,
+    .personal-center-platform-card__id-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .personal-center-platform-card__header {
+      justify-content: space-between;
+      min-height: var(--icon-size-x12);
+      gap: var(--space8);
+    }
+
+    .personal-center-platform-card__brand {
+      min-width: 0;
+      gap: var(--space8);
+      color: var(--gray-3);
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-title);
+    }
+
+    .personal-center-platform-card__brand .nnicon {
+      width: var(--icon-size-x12);
+      height: var(--icon-size-x12);
+      flex: 0 0 var(--icon-size-x12);
+      color: var(--gray-4);
+      font-size: var(--icon-size-x12);
+      line-height: var(--icon-size-x12);
+    }
+
+    .personal-center-platform-card--add {
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
+
+    .personal-center-platform-card--add:hover {
+      background: var(--gray-10);
+    }
+
+    .personal-center-platform-card--add:hover .personal-center-platform-card__add-icon,
+    .personal-center-platform-card--add:hover .personal-center-platform-card__add-label {
+      color: var(--gray-4);
+    }
+
+    .personal-center-platform-card__add-content {
+      display: flex;
+      width: 100%;
+      min-height: 100%;
+      flex: 1 1 auto;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space20);
+    }
+
+    .personal-center-platform-card__add-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--icon-size-x20);
+      height: var(--icon-size-x20);
+      color: var(--gray-5);
+      font-size: var(--icon-size-x20);
+      line-height: var(--icon-size-x20);
+    }
+
+    .personal-center-platform-card__add-label {
+      color: var(--gray-6);
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .personal-center-platform-card__manage.nn-btn {
+      width: var(--icon-size-x9);
+      height: var(--icon-size-x9);
+      min-width: var(--icon-size-x9);
+      padding: var(--space0);
+      color: var(--gray-5);
+    }
+
+    .personal-center-platform-card__account {
+      gap: var(--space12);
+    }
+
+    .personal-center-steam-card__avatar {
+      flex: 0 0 auto;
+    }
+
+    .personal-center-platform-card__account-copy {
+      display: flex;
+      min-width: 0;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: var(--space2);
+    }
+
+    .personal-center-platform-card__account-name-row {
+      height: 24px;
+      min-width: 0;
+      gap: var(--space6);
+    }
+
+    #personal-center-steam-account {
+      display: flex;
+      align-items: center;
+      height: 24px;
+      line-height: 0;
+    }
+
+    .personal-center-platform-card__account-name {
+      overflow: hidden;
+      color: var(--gray-4);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-body);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-center-platform-card__updated {
+      display: flex;
+      align-items: center;
+      height: 24px;
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+    }
+
+    .personal-center-platform-card__id-row {
+      height: 20px;
+      min-width: 0;
+    }
+
+    .personal-center-platform-card__id {
+      display: block;
+      overflow: hidden;
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-center-platform-card__metrics {
+      display: flex;
+      width: 100%;
+      flex: 1 1 auto;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: var(--space0);
+      min-width: 0;
+      padding-top: var(--space16);
+      padding-left: var(--space0);
+      box-sizing: border-box;
+    }
+
+    .personal-center-platform-card__metrics > .nn-user-data-card {
+      width: 100%;
+      height: 76px;
+      min-width: 0;
+      min-height: 76px;
+      flex: 1 1 0;
+      padding: var(--space8) var(--space0);
+      overflow: visible;
+      border: 0;
+      border-radius: var(--border-radius-4r);
+      background: transparent;
+      transform: none;
+      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover,
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible {
+      border-color: transparent;
+      background: transparent;
+    }
+
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover {
+      transform: none;
+    }
+
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover .nn-user-data-card__rank-label,
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover .nn-user-data-card__rank-value,
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover .nn-user-data-card__rank-arrow,
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover .personal-center-rank-all,
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover .personal-center-platform-rank__label,
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover .personal-center-platform-rank__value:not(.personal-center-rank-tone--first, .personal-center-rank-tone--second, .personal-center-rank-tone--third),
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible .nn-user-data-card__rank-label,
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible .nn-user-data-card__rank-value,
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible .nn-user-data-card__rank-arrow,
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible .personal-center-rank-all,
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible .personal-center-platform-rank__label,
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible .personal-center-platform-rank__value:not(.personal-center-rank-tone--first, .personal-center-rank-tone--second, .personal-center-rank-tone--third) {
+      color: var(--gray-4);
+    }
+
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible {
+      outline: 1px solid var(--Esports-Blue-LD);
+      outline-offset: var(--space4);
+    }
+
+    .personal-center-platform-card__metrics .nn-user-data-card__content {
+      display: grid;
+      width: 100%;
+      height: 100%;
+      grid-template-columns: minmax(144px, 0.75fr) minmax(0, 2.25fr);
+      grid-template-rows: 30px 20px;
+      align-content: center;
+      align-items: center;
+      column-gap: var(--space24);
+    }
+
+    .personal-center-platform-card__metrics .nn-user-data-card__title {
+      grid-column: 1;
+      grid-row: 2;
+      margin-top: var(--space0);
+      transform: translateY(calc(var(--space4) * -1));
+    }
+
+    .personal-center-platform-card__metrics .nn-user-data-card__value-group {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .personal-center-platform-card__metrics .nn-user-data-card__value {
+      font-size: var(--personal-center-platform-value-size);
+    }
+
+    .personal-center-platform-card__metrics .nn-user-data-card__rank {
+      display: grid;
+      width: 100%;
+      height: 100%;
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space16);
+      align-items: center;
+      margin-top: var(--space0);
+      padding-top: var(--space0);
+      padding-left: var(--space24);
+      border-top: 0;
+      border-left: 0;
+      box-sizing: border-box;
+      pointer-events: none;
+      transform: translateX(var(--space0));
+      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover .nn-user-data-card__rank,
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible .nn-user-data-card__rank {
+      transform: translateX(calc(var(--space24) * -1));
+    }
+
+    .personal-center-platform-row-arrow {
+      position: absolute;
+      top: 50%;
+      right: var(--space0);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--icon-size-x10);
+      height: var(--icon-size-x10);
+      color: var(--gray-5);
+      font-size: var(--icon-size-x10);
+      line-height: var(--icon-size-x10);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(var(--space8), -50%) rotate(90deg);
+      transition:
+        color 0.16s ease,
+        opacity 0.16s ease,
+        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .personal-center-platform-card__metrics > .nn-user-data-card:hover .personal-center-platform-row-arrow,
+    .personal-center-platform-card__metrics > .nn-user-data-card:focus-visible .personal-center-platform-row-arrow {
+      color: var(--gray-4);
+      opacity: 1;
+      transform: translate(var(--space0), -50%) rotate(90deg);
+    }
+
+    .personal-center-platform-rank {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space2);
+    }
+
+    .personal-center-platform-rank__label {
+      overflow: hidden;
+      max-width: 100%;
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: color 0.16s ease;
+    }
+
+    .personal-center-platform-rank__value-row {
+      display: inline-flex;
+      min-width: 0;
+      align-items: center;
+    }
+
+    .personal-center-platform-rank__value {
+      color: var(--gray-4);
+      font-size: var(--font-size-subtitle);
+      font-variant-numeric: tabular-nums;
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-subtitle);
+      white-space: nowrap;
+      transition: color 0.16s ease;
+    }
+
+    .personal-center-platform-rank .personal-center-rank-trend {
+      margin-left: var(--space4);
+    }
+
+    .personal-center-platform-card__metrics .nn-user-data-card__art,
+    .personal-center-platform-card__metrics .nn-user-data-card__value-arrows {
+      display: none;
+    }
+
+    .personal-center-platform-card__metrics .nn-user-data-card__title,
+    .personal-center-platform-card__metrics .personal-center-rank-all {
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-platform-card__metrics .nn-user-data-card__unit {
+      font-size: var(--font-size-caption);
+      line-height: normal;
+    }
+
+    .personal-center-platform-card__metrics .personal-center-rank-current .nn-user-data-card__rank-label,
+    .personal-center-platform-card__metrics .personal-center-rank-current .nn-user-data-card__rank-value {
+      font-size: var(--font-size-subtitle);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .personal-center-platform-card__metrics .nn-user-data-card__rank-arrow {
+      width: var(--icon-size-x9);
+      height: var(--icon-size-x9);
+      flex: 0 0 var(--icon-size-x9);
+      font-size: var(--icon-size-x9);
+      line-height: var(--icon-size-x9);
+    }
+
+    .personal-center-platform-card .personal-center-steam-card__name {
+      max-width: 128px;
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-title);
+    }
+
+    .personal-center-platform-card .personal-center-steam-card__steam-id {
+      width: 100%;
+      height: 20px;
+      padding: var(--space0);
+      border: 0;
+      background: transparent;
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-platform-card .personal-center-steam-card__level {
+      padding: var(--space0) var(--space6);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+    }
+
+    .personal-center-platform-card .personal-center-steam-card__friends {
+      align-self: flex-start;
+      max-width: 100%;
+    }
+
+    .personal-center-platform-card .personal-center-steam-card__name-arrow {
+      width: var(--icon-size-x9);
+      height: var(--icon-size-x9);
+      flex: 0 0 var(--icon-size-x9);
+    }
+
+    .personal-center-section + .personal-center-section {
+      margin-top: var(--space32);
+    }
+
+    .personal-center-steam-card {
+      --gray-3: var(--White-A90);
+      --gray-4: var(--White-A80);
+      --gray-5: var(--White-A70);
+      --gray-6: var(--White-A50);
+      --gray-8: var(--White-A10);
+      --gray-9: var(--White-A6);
+      --gray-10: var(--White-A4);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 100px;
+      padding: var(--space16);
+      overflow: hidden;
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-4r);
+      box-sizing: border-box;
+      background: radial-gradient(ellipse 500px 50px at 500px 50px, var(--steam-card-bg-center) 0%, var(--steam-card-bg-middle) 50%, var(--steam-card-bg-edge) 100%);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+    }
+
+    .personal-center-steam-card__content,
+    .personal-center-steam-card__identity,
+    .personal-center-steam-card__meta,
+    .personal-center-steam-card__name-group,
+    .personal-center-steam-card__steam-id,
+    .personal-center-steam-card__friends,
+    .personal-center-steam-card__friend-avatars {
+      display: flex;
+      align-items: center;
+    }
+
+    .personal-center-steam-card__content {
+      position: relative;
+      z-index: 2;
+      gap: var(--space12);
+      min-width: 0;
+    }
+
+    .personal-center-steam-card__avatar {
+      display: flex;
+      align-items: center;
+      line-height: 0;
+      flex: 0 0 auto;
+    }
+
+    .personal-center-steam-card__details {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space10);
+      min-width: 0;
+    }
+
+    .personal-center-steam-card__identity {
+      gap: var(--space10);
+      min-width: 0;
+    }
+
+    .personal-center-steam-card__name-group {
+      gap: var(--space2);
+      min-width: 0;
+    }
+
+    .personal-center-steam-card__account-dropdown.nn-dropdown.nn-dropdown-medium {
+      width: auto;
+      flex: 0 0 auto;
+    }
+
+    .personal-center-steam-card__account-dropdown .nn-dropdown-panel {
+      top: calc(100% + var(--space8));
+      width: 260px;
+    }
+
+    .personal-center-steam-card__account-option {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: var(--space10);
+    }
+
+    .personal-center-steam-card__account-option-copy {
+      display: flex;
+      min-width: 0;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: var(--space2);
+    }
+
+    .personal-center-steam-card__account-option-name,
+    .personal-center-steam-card__account-option-id {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-center-steam-card__account-option-name {
+      color: var(--gray-4);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .personal-center-steam-card__account-option-id {
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+    }
+
+    .personal-center-steam-card__account-option-check {
+      flex: 0 0 auto;
+      color: var(--Esports-Blue-LD);
+      font-size: var(--icon-size-x8);
+      line-height: var(--icon-size-x8);
+    }
+
+    .personal-center-steam-card__name {
+      max-width: 180px;
+      overflow: hidden;
+      color: var(--gray-4);
+      font-size: var(--font-size-header-3);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-header-3);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-center-steam-card__name-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-6);
+      font-size: var(--icon-size-x9);
+      line-height: var(--icon-size-x9);
+      cursor: pointer;
+    }
+
+    .personal-center-steam-card__name-arrow:hover,
+    .personal-center-steam-card__name-arrow:focus-visible,
+    .personal-center-steam-card__name-arrow[aria-expanded="true"] {
+      color: var(--gray-3);
+    }
+
+    .personal-center-steam-card__name-arrow:focus-visible {
+      outline: 1px solid var(--gray-6);
+      outline-offset: var(--space2);
+    }
+
+    .personal-center-steam-card__level {
+      padding: var(--space2) var(--space6);
+      border-radius: var(--border-radius-2r);
+      background: var(--gray-9);
+      color: var(--gray-5);
+      font-size: var(--font-size-caption);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-caption);
+      white-space: nowrap;
+    }
+
+    .personal-center-steam-card__updated {
+      padding-left: var(--space8);
+      border-left: 1px solid var(--gray-8);
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+      white-space: nowrap;
+    }
+
+    .personal-center-steam-card__meta {
+      gap: var(--space24);
+      min-width: 0;
+    }
+
+    .personal-center-steam-card__steam-id {
+      gap: var(--space4);
+      height: 24px;
+      padding: var(--space0) var(--space4) var(--space0) var(--space8);
+      overflow: hidden;
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-4r);
+      box-sizing: border-box;
+      background: var(--gray-10);
+      color: var(--gray-6);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+      white-space: nowrap;
+    }
+
+    .personal-center-steam-card__friends {
+      flex: 0 0 auto;
+      gap: var(--space4);
+      height: 24px;
+      padding: var(--space0) var(--space4) var(--space0) var(--space8);
+      overflow: hidden;
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-4r);
+      box-sizing: border-box;
+      background: var(--gray-10);
+      color: var(--gray-5);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .personal-center-steam-card__friends:hover {
+      background: var(--gray-9);
+    }
+
+    .personal-center-steam-card__friends:focus-visible {
+      outline: 1px solid var(--Esports-Blue-LD);
+      outline-offset: var(--space2);
+    }
+
+    .personal-center-steam-card__friend-avatars {
+      gap: var(--space4);
+    }
+
+    .personal-center-steam-card__friend-avatar.nn-avatar,
+    .personal-center-steam-card__friend-more {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 16px;
+    }
+
+    .personal-center-steam-card__friend-more {
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-9);
+    }
+
+    .personal-center-steam-card__friend-more .nnicon {
+      color: var(--gray-4);
+      font-size: var(--icon-size-x8);
+      line-height: var(--icon-size-x8);
+    }
+
+    .personal-center-steam-card__action.nn-btn {
+      position: relative;
+      z-index: 3;
+      width: 167px;
+      flex: 0 0 auto;
+    }
+
+    .personal-center-steam-card__watermark-clip {
+      position: absolute;
+      inset: var(--space0) var(--space0) var(--space0) auto;
+      z-index: 1;
+      width: 455px;
+      overflow: hidden;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    .personal-center-steam-card__watermark {
+      position: absolute;
+      top: -17px;
+      right: 208px;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 227px;
+      height: 227px;
+      color: var(--Neutral-0);
+      font-size: 227px;
+      line-height: 227px;
+      opacity: 0.04;
+      pointer-events: none;
+    }
+
+    .personal-center-section__heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space16);
+      margin-bottom: var(--space16);
+    }
+
+    .personal-center-section__title {
+      color: var(--gray-3);
+      font-size: var(--font-size-header-3);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-header-3);
+    }
+
+    .personal-center-recommendations {
+      display: block;
+    }
+
+    .personal-center-game-library-table-wrap,
+    .personal-center-game-library-table {
+      overflow-y: hidden;
+    }
+
+    .personal-center-game-library-table__game {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: var(--space12);
+    }
+
+    .personal-center-game-library-table__cover {
+      width: 96px;
+      height: 54px;
+      flex: 0 0 auto;
+      border-radius: var(--border-radius-4r);
+      object-fit: cover;
+    }
+
+    .personal-center-game-library-table__game-copy {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: var(--space4);
+    }
+
+    .personal-center-game-library-table__game-title,
+    .personal-center-game-library-table__game-description {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-center-game-library-table__game-title {
+      color: var(--gray-4);
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .personal-center-game-library-table__game-description {
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-caption);
+    }
+
+    .personal-center-game-library-table__platforms {
+      display: inline-flex;
+      width: calc((var(--icon-size-x10) * 2) + var(--space8));
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+      column-gap: var(--space8);
+      row-gap: var(--space8);
+      color: var(--gray-5);
+    }
+
+    .personal-center-game-library-table .nn-table__head-cell:nth-child(5),
+    .personal-center-game-library-table .nn-table__body-cell:nth-child(5) {
+      padding-left: var(--space32);
+    }
+
+    .personal-center-game-library-table__platform {
+      display: inline-flex;
+      width: var(--icon-size-x10);
+      height: var(--icon-size-x10);
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 var(--icon-size-x10);
+    }
+
+    .personal-center-game-library-table__platform .nnicon {
+      font-size: var(--icon-size-x10);
+      line-height: var(--icon-size-x10);
+    }
+
+    .personal-center-game-library-table__rank-group {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .personal-center-game-library-table .nn-table__row {
+      cursor: pointer;
+    }
+
+    .personal-center-game-library-table .nn-table__row:focus-visible {
+      outline: 1px solid var(--brand-default);
+      outline-offset: -1px;
+    }
+
+    .personal-center-game-ranking-modal {
+      position: absolute;
+      inset: var(--space0);
+      z-index: 150;
+      display: grid;
+      place-items: center;
+      padding: var(--space24);
+      background: var(--mask);
+      font-family: var(--font-family-main);
+    }
+
+    .personal-center-game-ranking-dialog.nn-toast {
+      width: 540px;
+      max-width: 100%;
+    }
+
+    .personal-center-game-ranking-dialog .nn-toast__title {
+      min-width: 0;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-center-game-ranking-content {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      gap: var(--space12);
+    }
+
+    .personal-center-game-ranking-toolbar {
+      display: flex;
+      min-width: 0;
+      min-height: 38px;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space16);
+    }
+
+    .personal-center-game-ranking-tabs {
+      min-width: 0;
+    }
+
+    .personal-center-game-ranking-region {
+      width: 184px;
+      flex: 0 0 auto;
+    }
+
+    .personal-center-game-ranking-region:empty {
+      display: none;
+    }
+
+    .personal-center-game-ranking-region .nn-dropdown {
+      width: 100%;
+    }
+
+    .personal-center-ranking-current-card {
+      display: grid;
+      width: 100%;
+      min-width: 480px;
+      min-height: 64px;
+      flex: 0 0 auto;
+      grid-template-columns: 72fr 88fr 184fr 120fr;
+      align-items: center;
+      background: var(--gray-10);
+    }
+
+    .personal-center-ranking-current-card__cell {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      padding: var(--space12) var(--space16);
+      color: var(--gray-4);
+      font-size: var(--font-size-subtitle);
+      line-height: var(--line-height-subtitle);
+      box-sizing: border-box;
+    }
+
+    .personal-center-ranking-current-card__cell--avatar {
+      justify-content: center;
+    }
+
+    .personal-center-ranking-current-card__cell--rank {
+      justify-content: flex-start;
+    }
+
+    .personal-center-ranking-current-card__cell--name {
+      overflow: hidden;
+      font-weight: var(--font-weight-semibold);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-center-ranking-current-card__cell--metric {
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .personal-center-game-ranking-badge {
+      display: block;
+      width: 28px;
+      height: 35px;
+      object-fit: contain;
+    }
+
+    .personal-center-game-ranking-number-cell {
+      display: flex;
+      width: 28px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .personal-center-game-ranking-number {
+      display: block;
+      font-family: var(--font-family-din);
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-bold);
+      line-height: normal;
+    }
+
+    .personal-center-game-ranking-number-group {
+      display: inline-grid;
+      grid-template-columns: max-content 0;
+      align-items: end;
+    }
+
+    .personal-center-steam-dashboard__ranking-table .nn-table__foot-cell .personal-center-rank-trend,
+    .personal-center-steam-metric-ranking-table .nn-table__foot-cell .personal-center-rank-trend {
+      position: static;
+      min-width: max-content;
+      transform: none;
+    }
+
+    .personal-center-game-ranking-metric {
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-subtitle);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .personal-center-rank-tone--first {
+      color: var(--Leaderboard-Rank-First);
+    }
+
+    .personal-center-rank-tone--second {
+      color: var(--Leaderboard-Rank-Second);
+    }
+
+    .personal-center-rank-tone--third {
+      color: var(--Leaderboard-Rank-Third);
+    }
+
+    .personal-center-game-ranking-dialog .nn-table-wrap > .nn-scrollbar:not(.nn-scrollbar--horizontal) {
+      display: none;
+    }
+
+    .personal-center-scrollbar.nn-scrollbar {
+      --nn-scrollbar-thumb-color: var(--gray-7);
+      --nn-scrollbar-thumb-hover-color: var(--gray-6);
+    }
+
+    @media (max-width: 1100px) {
+      .personal-center-user-profile {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: var(--space16);
+      }
+
+      .personal-center-user-profile__main {
+        align-items: center;
+      }
+
+      .personal-center-game-overview {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .personal-center-game-overview__stat--accelerator {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .personal-center-game-overview__stat--accelerator .personal-center-game-overview__meta-value {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .personal-center-platform-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+    }
+  </style>
+  <script>
+    (function() {
+      document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&amp;library=page" title="NN 页面顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261114-personal-center-my" title="NN 页面导航" frameborder="0"></iframe>
+
+  <main class="personal-center-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">Personal Center 我的</span>
+      <h1 class="section-title">Personal Center 我的</h1>
+      <p class="description">集中展示玩家的 Steam 资料与游戏资产排名。</p>
+
+      <div class="personal-center-stage" data-code-preview="true">
+        <div id="personal-center-framework" class="personal-center-framework" aria-label="我的">
+          <div id="personal-center-header" class="personal-center-framework__header"></div>
+          <div id="personal-center-menu" class="personal-center-framework__menu"></div>
+          <div class="personal-center-framework__content">
+            <div id="personal-center-content" class="personal-center-content">
+              <div id="personal-center-main-view" class="personal-center-content__inner" data-nn-header-align>
+                <section class="personal-center-user-profile" aria-label="我的 NN 用户信息">
+                  <div class="personal-center-user-profile__main">
+                    <div id="personal-center-user-avatar" class="personal-center-user-profile__avatar"></div>
+                    <div class="personal-center-user-profile__content">
+                      <div class="personal-center-user-profile__identity">
+                        <strong class="personal-center-user-profile__name">邪恶萨摩耶</strong>
+                        <i class="nnicon nicon-a-Mannan personal-center-user-profile__gender" aria-label="男"></i>
+                        <span id="personal-center-edit-profile-action" class="personal-center-user-profile__edit-action"></span>
+                      </div>
+                      <div class="personal-center-user-profile__meta">
+                        <span class="personal-center-user-profile__meta-item">ID：9002301</span>
+                        <span class="personal-center-user-profile__meta-item">IP 属地：上海</span>
+                        <span class="personal-center-user-profile__meta-item personal-center-user-profile__signature" aria-label="个性签名">签名：热爱游戏，也热爱每一次并肩作战。喜欢探索未知世界、收集有趣的游戏，也期待遇见更多志同道合的伙伴。</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="personal-center-game-data" aria-labelledby="personal-center-game-data-title">
+                  <div class="personal-center-section__heading">
+                    <h3 id="personal-center-game-data-title" class="personal-center-section__title">我的游戏数据</h3>
+                  </div>
+                  <div id="personal-center-game-overview" class="personal-center-game-overview" aria-label="游戏总数据"></div>
+
+                  <div class="personal-center-platform-grid" aria-label="游戏平台数据">
+                    <article class="personal-center-platform-card personal-center-platform-card--steam" aria-label="Steam 平台数据">
+                      <header class="personal-center-platform-card__header">
+                        <span class="personal-center-platform-card__brand">
+                          <i class="nnicon nicon-a-STEAM-fillSTEAM-mianxing" aria-hidden="true"></i>
+                          <strong>Steam</strong>
+                        </span>
+                      </header>
+                      <div class="personal-center-platform-card__account">
+                        <div id="personal-center-steam-avatar" class="personal-center-steam-card__avatar"></div>
+                        <div class="personal-center-platform-card__account-copy">
+                          <div class="personal-center-platform-card__account-name-row">
+                            <div id="personal-center-steam-account"></div>
+                            <span class="personal-center-steam-card__level">LV6</span>
+                            <span id="personal-center-steam-arrow"></span>
+                            <div id="personal-center-steam-action"></div>
+                          </div>
+                          <div class="personal-center-platform-card__id-row">
+                            <span class="personal-center-steam-card__steam-id">
+                              <span id="personal-center-steam-id-text">Steam ID：76561198805355097</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <span class="personal-center-steam-card__friends">
+                        共同好友
+                        <span id="personal-center-steam-friends" class="personal-center-steam-card__friend-avatars"></span>
+                      </span>
+                      <div id="personal-center-steam-metrics" class="personal-center-platform-card__metrics"></div>
+                    </article>
+
+                    <article class="personal-center-platform-card personal-center-platform-card--add" aria-label="关联更多平台">
+                      <div class="personal-center-platform-card__add-content">
+                        <i class="nnicon nicon-a-add-linetianjia-xianxing personal-center-platform-card__add-icon" aria-hidden="true"></i>
+                        <span class="personal-center-platform-card__add-label">关联更多平台</span>
+                      </div>
+                    </article>
+                  </div>
+
+                  <div id="personal-center-accelerator-overview" class="personal-center-accelerator-overview" aria-label="加速器数据"></div>
+                </section>
+
+                <section class="personal-center-section" aria-labelledby="personal-center-my-games-title">
+                  <div class="personal-center-section__heading">
+                    <h3 id="personal-center-my-games-title" class="personal-center-section__title">我的游戏</h3>
+                  </div>
+                  <div id="personal-center-recommendations" class="personal-center-recommendations"></div>
+                </section>
+              </div>
+              <div id="personal-center-account-management" class="personal-center-account-management" role="main" hidden></div>
+              <div id="personal-center-steam-dashboard" class="personal-center-steam-dashboard" role="main" hidden></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/checkbox.js?v=20261113-steam-authorization"></script>
+  <script src="../basic%20components/input.js?v=20261114-accelerator-search-sync"></script>
+  <script src="../basic%20components/label.js?v=20261111-certification-icon-20px"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-indicator-resize"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/table.js?v=20261113-table-panel-surface"></script>
+  <script src="../basic%20components/menu.js?v=20261117-menu-avatar-size-selected-stroke"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+  <script src="../Accelerator%20business%20components/steam-account-management.js?v=20261114-home-state-sync"></script>
+  <script src="../Accelerator%20business%20components/steam-authorization.js?v=20261119-smooth-progress"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-personal-center');
+
+      const framework = document.getElementById('personal-center-framework');
+      const content = document.getElementById('personal-center-content');
+      const contentWrap = framework.querySelector('.personal-center-framework__content');
+      const header = createHeader({
+        width: '100%',
+        showBack: true
+      });
+      document.getElementById('personal-center-header').appendChild(header);
+
+      function syncDarkMode(isDark) {
+        localStorage.setItem('dark-mode', String(isDark));
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
+        notifyIframeDarkMode(isDark);
+      }
+
+      const themeButton = header.querySelector('.nn-header__icon-btn--more');
+      if (themeButton) {
+        themeButton.addEventListener('click', function() {
+          syncDarkMode(!document.body.classList.contains('dark-mode'));
+        });
+      }
+
+      const windowIcons = header.querySelectorAll('.nn-header__window-icon');
+      if (windowIcons[1]) {
+        windowIcons[1].setAttribute('role', 'button');
+        windowIcons[1].setAttribute('tabindex', '0');
+        windowIcons[1].setAttribute('aria-label', '适配浏览器最大尺寸');
+        function toggleExpanded() {
+          const isExpanded = framework.classList.toggle('is-expanded');
+          document.body.classList.toggle('is-personal-center-expanded', isExpanded);
+        }
+        windowIcons[1].addEventListener('click', toggleExpanded);
+        windowIcons[1].addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleExpanded();
+          }
+        });
+      }
+
+      document.getElementById('personal-center-menu').appendChild(createInteractiveMenu({
+        selectedActionIndex: 2,
+        selectedItemIndex: -1
+      }));
+
+      document.getElementById('personal-center-user-avatar').appendChild(createAvatar({
+        src: '../image/Avatar/头像706.png',
+        text: '邪恶萨摩耶',
+        size: 70
+      }));
+
+      document.getElementById('personal-center-edit-profile-action').appendChild(createButton({
+        text: '编辑资料',
+        variant: 'system',
+        level: 'secondary',
+        size: 'default'
+      }));
+
+      const steamDemoAccounts = [
+        { userName: '邪恶萨摩耶', steamId: '76561198805355097', avatarSrc: '../image/Avatar/头像1095.png' },
+        { userName: 'Sophie', steamId: '76561198805355108', avatarSrc: '../image/Avatar/头像716.png' },
+        { userName: '一林', steamId: '76561198805355119', avatarSrc: '../image/Avatar/头像717.png' }
+      ];
+      const steamAccounts = steamDemoAccounts.slice();
+      let activeSteamId = steamAccounts[0].steamId;
+      const steamAvatarSlot = document.getElementById('personal-center-steam-avatar');
+      const steamAccountSlot = document.getElementById('personal-center-steam-account');
+      const steamArrowSlot = document.getElementById('personal-center-steam-arrow');
+      const steamIdText = document.getElementById('personal-center-steam-id-text');
+      const mainView = document.getElementById('personal-center-main-view');
+      const accountManagementView = document.getElementById('personal-center-account-management');
+      const steamDashboardView = document.getElementById('personal-center-steam-dashboard');
+      const headerBack = header.querySelector('.nn-header__back');
+      let accountManagementOpen = false;
+      let currentPersonalView = 'main';
+      let currentDashboardType = 'playtime';
+      let contentScrollbar = null;
+      let steamDashboardScrollbars = [];
+      let autoPauseModal = null;
+      let autoPauseTrigger = null;
+      let autoPauseUpgraded = false;
+      let autoPauseChecking = false;
+      let acceleratorActionsSlot = null;
+      let acceleratorDurationStat = null;
+      let acceleratorDurationNumberNodes = [];
+      let acceleratorRemainingSeconds = (164 * 60 * 60) + (33 * 60) + 22;
+      let acceleratorCountdownRunning = true;
+      let acceleratorCountdownTimer = null;
+      const autoPauseRequirements = [
+        {
+          key: 'nnClient',
+          title: '使用 NN PC 客户端加速',
+          description: '时长自动暂停需要由 NN PC 客户端发起加速',
+          actionText: '去使用',
+          met: false
+        },
+        {
+          key: 'leigodClosed',
+          title: '退出雷神加速器客户端',
+          description: '开启后不能使用雷神加速器客户端加速',
+          actionText: '去退出',
+          met: false
+        },
+        {
+          key: 'notification',
+          title: '开启 NN APP 通知权限',
+          description: '用于接收停止加速与时长自动暂停通知',
+          actionText: '去开启',
+          met: false
+        }
+      ];
+
+      function destroySteamDashboardScrollbars() {
+        steamDashboardScrollbars.forEach(function(scrollbar) {
+          if (scrollbar && typeof scrollbar.destroy === 'function') scrollbar.destroy();
+        });
+        steamDashboardScrollbars = [];
+      }
+
+      function activeSteamAccount() {
+        return steamAccounts.find(function(account) {
+          return account.steamId === activeSteamId;
+        }) || steamAccounts[0];
+      }
+
+      function renderSteamAvatar(account) {
+        steamAvatarSlot.replaceChildren(createAvatar({
+          src: account.avatarSrc,
+          text: account.userName,
+          size: 46
+        }));
+      }
+
+      function renderSteamAccountDropdown() {
+        const account = activeSteamAccount();
+        const steamNameGroup = document.createElement('span');
+        steamNameGroup.className = 'personal-center-steam-card__name-group';
+        const steamName = document.createElement('span');
+        steamName.className = 'personal-center-steam-card__name';
+        steamName.textContent = account.userName;
+        const steamNameArrow = document.createElement('i');
+        steamNameArrow.className = 'nnicon nicon-a-Arrow-down-linejiantouxia-xianxing personal-center-steam-card__name-arrow';
+        steamNameArrow.setAttribute('role', 'button');
+        steamNameArrow.setAttribute('tabindex', '0');
+        steamNameArrow.setAttribute('aria-label', '切换 Steam 账号');
+        steamNameArrow.setAttribute('aria-haspopup', 'listbox');
+        steamNameGroup.appendChild(steamName);
+
+        const steamAccountDropdown = createDropdownMenu({
+          appearance: 'no-padding',
+          size: 'medium',
+          triggerElement: steamNameGroup,
+          items: steamAccounts,
+          selectedIndex: Math.max(0, steamAccounts.findIndex(function(item) {
+            return item.steamId === activeSteamId;
+          })),
+          className: 'personal-center-steam-card__account-dropdown',
+          itemRenderer: function(context) {
+            const option = document.createElement('div');
+            option.className = 'personal-center-steam-card__account-option';
+            option.appendChild(createAvatar({
+              src: context.item.avatarSrc,
+              text: context.item.userName,
+              size: 36
+            }));
+            const copy = document.createElement('span');
+            copy.className = 'personal-center-steam-card__account-option-copy';
+            const name = document.createElement('span');
+            name.className = 'personal-center-steam-card__account-option-name';
+            name.textContent = context.item.userName;
+            const id = document.createElement('span');
+            id.className = 'personal-center-steam-card__account-option-id';
+            id.textContent = context.item.steamId;
+            copy.appendChild(name);
+            copy.appendChild(id);
+            option.appendChild(copy);
+            if (context.selected) {
+              const check = document.createElement('i');
+              check.className = 'nnicon nicon-a-check-linewancheng-xianxing personal-center-steam-card__account-option-check';
+              check.setAttribute('aria-label', '当前账号');
+              option.appendChild(check);
+            }
+            return option;
+          },
+          onChange: function(payload) {
+            if (payload && payload.item) setActiveSteamAccount(payload.item);
+          },
+          onOpenChange: function(open) {
+            steamNameArrow.className = open
+              ? 'nnicon nicon-a-Arrowup-linejiantoushang-xianxing personal-center-steam-card__name-arrow'
+              : 'nnicon nicon-a-Arrow-down-linejiantouxia-xianxing personal-center-steam-card__name-arrow';
+            steamNameArrow.setAttribute('aria-expanded', String(open));
+          }
+        });
+        function toggleSteamAccountDropdown(event) {
+          event.stopPropagation();
+          steamAccountDropdown._dropdownMenu.setOpen(!steamAccountDropdown.classList.contains('nn-dropdown-open'));
+        }
+        steamNameArrow.addEventListener('click', toggleSteamAccountDropdown);
+        steamNameArrow.addEventListener('keydown', function(event) {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          toggleSteamAccountDropdown(event);
+        });
+        steamAccountSlot.replaceChildren(steamAccountDropdown);
+        steamArrowSlot.replaceChildren(steamNameArrow);
+      }
+
+      function setActiveSteamAccount(account, rerenderDropdown) {
+        if (!account) return;
+        activeSteamId = account.steamId;
+        renderSteamAvatar(account);
+        steamIdText.textContent = 'Steam ID：' + account.steamId;
+        if (rerenderDropdown !== false) renderSteamAccountDropdown();
+      }
+
+      function showMainView() {
+        destroySteamDashboardScrollbars();
+        currentPersonalView = 'main';
+        accountManagementOpen = false;
+        content.classList.remove('is-steam-dashboard');
+        accountManagementView.hidden = true;
+        steamDashboardView.hidden = true;
+        mainView.hidden = false;
+        content.scrollTop = 0;
+        if (contentScrollbar) requestAnimationFrame(contentScrollbar.update);
+      }
+
+      function closeAccountManagement() {
+        showMainView();
+      }
+
+      function openSteamAuthorization(event) {
+        const nextAccount = steamDemoAccounts.find(function(account) {
+          return !steamAccounts.some(function(bound) { return bound.steamId === account.steamId; });
+        });
+        if (!nextAccount || typeof createAcceleratorSteamAuthorizationModal !== 'function') return;
+        createAcceleratorSteamAuthorizationModal({
+          trigger: event && event.currentTarget,
+          mountTarget: framework,
+          onCheckSteamLogin: function() {
+            return new Promise(function(resolve) {
+              window.setTimeout(function() {
+                resolve({
+                  loggedIn: true,
+                  steamId: nextAccount.steamId,
+                  authorizedSteamId: nextAccount.steamId,
+                  displayName: nextAccount.userName,
+                  avatarSrc: nextAccount.avatarSrc
+                });
+              }, 650);
+            });
+          },
+          onComplete: function() {
+            steamAccounts.push(nextAccount);
+            setActiveSteamAccount(nextAccount);
+            renderAccountManagement();
+          }
+        });
+      }
+
+      function renderAccountManagement() {
+        accountManagementView.replaceChildren(createAcceleratorSteamAccountManagement({
+          accounts: steamAccounts,
+          activeSteamId: activeSteamId,
+          maxAccounts: 3,
+          onSwitch: function(account, event, management) {
+            setActiveSteamAccount(account);
+            management.setActiveSteamId(activeSteamId);
+          },
+          onUnbind: function(account) {
+            if (steamAccounts.length === 1) {
+              showMessage({
+                state: 'warning',
+                text: '请至少保留一个 Steam 账号',
+                duration: 2000,
+                mountTarget: framework
+              });
+              return;
+            }
+            const index = steamAccounts.findIndex(function(item) {
+              return item.steamId === account.steamId;
+            });
+            if (index === -1) return;
+            steamAccounts.splice(index, 1);
+            if (activeSteamId === account.steamId && steamAccounts.length) {
+              setActiveSteamAccount(steamAccounts[0]);
+            } else {
+              renderSteamAccountDropdown();
+            }
+            renderAccountManagement();
+          },
+          onAdd: openSteamAuthorization
+        }));
+      }
+
+      function openAccountManagement() {
+        destroySteamDashboardScrollbars();
+        renderAccountManagement();
+        currentPersonalView = 'management';
+        accountManagementOpen = true;
+        content.classList.remove('is-steam-dashboard');
+        mainView.hidden = true;
+        steamDashboardView.hidden = true;
+        accountManagementView.hidden = false;
+        content.scrollTop = 0;
+      }
+
+      function handlePersonalCenterBack() {
+        if (currentPersonalView === 'management') {
+          closeAccountManagement();
+          return;
+        }
+        if (currentPersonalView === 'steam-dashboard') {
+          showMainView();
+        }
+      }
+
+      if (headerBack) {
+        headerBack.setAttribute('role', 'button');
+        headerBack.setAttribute('tabindex', '0');
+        headerBack.addEventListener('click', function() {
+          handlePersonalCenterBack();
+        });
+        headerBack.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handlePersonalCenterBack();
+          }
+        });
+      }
+
+      setActiveSteamAccount(activeSteamAccount());
+
+      const platformFriendAvatarSources = [
+        '../image/Avatar/头像748.png',
+        '../image/Avatar/头像562.png',
+        '../image/Avatar/头像827.png',
+        '../image/Avatar/头像1098.png'
+      ];
+      [
+        { slotId: 'personal-center-steam-friends', platformName: 'Steam' }
+      ].forEach(function(platform) {
+        const friendSlot = document.getElementById(platform.slotId);
+        platformFriendAvatarSources.forEach(function(source, index) {
+          const friendAvatar = createAvatar({
+            src: source,
+            text: platform.platformName + '好友' + (index + 1),
+            size: 16
+          });
+          friendAvatar.classList.add('personal-center-steam-card__friend-avatar');
+          friendSlot.appendChild(friendAvatar);
+        });
+        const friendMore = document.createElement('span');
+        friendMore.className = 'personal-center-steam-card__friend-more';
+        friendMore.innerHTML = '<i class="nnicon nicon-a-more-fillgengduo-mianxing" aria-label="更多 ' + platform.platformName + ' 好友"></i>';
+        friendSlot.appendChild(friendMore);
+      });
+
+      const steamFriendsTrigger = document.querySelector('.personal-center-steam-card__friends');
+      steamFriendsTrigger.setAttribute('role', 'button');
+      steamFriendsTrigger.setAttribute('tabindex', '0');
+      steamFriendsTrigger.setAttribute('aria-label', '查看 Steam 好友');
+      function openSteamFriends(event) {
+        event.stopPropagation();
+        createAcceleratorSteamFriendsModal({
+          trigger: steamFriendsTrigger,
+          mountTarget: framework,
+          onFriendAction: function(friend) {
+            showMessage({
+              state: 'success',
+              text: friend.action === 'message' ? '已打开聊天' : '已发送好友申请',
+              duration: 2000,
+              mountTarget: framework
+            });
+          }
+        });
+      }
+      steamFriendsTrigger.addEventListener('click', openSteamFriends);
+      steamFriendsTrigger.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openSteamFriends(event);
+        }
+      });
+
+      document.getElementById('personal-center-steam-action').appendChild(createButton({
+        text: '',
+        variant: 'system',
+        level: 'tertiary',
+        size: 'small',
+        icon: '<i class="nnicon nicon-a-settings-lineshezhi-xianxing" aria-hidden="true"></i>',
+        iconPosition: 'only',
+        iconSize: 'var(--icon-size-x9)',
+        className: 'personal-center-platform-card__manage',
+        onClick: openAccountManagement
+      }));
+      document.querySelector('#personal-center-steam-action .personal-center-platform-card__manage').setAttribute('aria-label', '管理 Steam 账号');
+
+      function createRankTrend(delta) {
+        const numericDelta = Number(delta);
+        if (!Number.isFinite(numericDelta) || numericDelta === 0) return null;
+        const isUp = numericDelta > 0;
+        const trend = document.createElement('span');
+        trend.className = 'personal-center-rank-trend personal-center-rank-trend--' + (isUp ? 'up' : 'down');
+        trend.setAttribute('aria-label', '排名' + (isUp ? '上升' : '下降') + Math.abs(numericDelta) + '名');
+        const icon = document.createElement('i');
+        icon.className = 'nnicon ' + (isUp
+          ? 'nicon-a-Arrow1up-linejiantou1shang-xianxing'
+          : 'nicon-a-Arrow1down-linejiantou1xia-xianxing');
+        icon.setAttribute('aria-hidden', 'true');
+        const value = document.createElement('span');
+        value.textContent = Math.abs(numericDelta);
+        trend.appendChild(icon);
+        trend.appendChild(value);
+        return trend;
+      }
+
+      function rankTrendDescription(delta) {
+        const numericDelta = Number(delta);
+        if (!Number.isFinite(numericDelta) || numericDelta === 0) return '';
+        return '，排名' + (numericDelta > 0 ? '上升' : '下降') + Math.abs(numericDelta) + '名';
+      }
+
+      const assetCards = [
+        {
+          text: '游戏时长',
+          value: '606',
+          description: 'h',
+          rank: 651,
+          rankDelta: 12,
+          ranks: [
+            { scope: '全球排名', value: '651', delta: 12 },
+            { scope: '全国排名', value: '128' },
+            { scope: '湖北省排名', value: '24' },
+            { scope: '武汉市排名', value: '8' }
+          ],
+          tooltipContent: '当前 Steam 账号在全部游戏中的累计游玩时长',
+          imageSrc: '../image/Steam achievements/time.png',
+          type: 'playtime'
+        },
+        {
+          text: '拥有游戏',
+          value: '18',
+          description: '款',
+          rank: 147,
+          rankDelta: 0,
+          ranks: [
+            { scope: '全球排名', value: '147' },
+            { scope: '全国排名', value: '36' },
+            { scope: '湖北省排名', value: '9' },
+            { scope: '武汉市排名', value: '3' }
+          ],
+          tooltipContent: '当前 Steam 库中已拥有的游戏数量',
+          imageSrc: '../image/Steam achievements/game.png',
+          type: 'games'
+        },
+        {
+          text: '账号年限',
+          value: '8',
+          description: '年',
+          rank: 562,
+          rankDelta: -4,
+          ranks: [
+            { scope: '全球排名', value: '562', delta: -4 },
+            { scope: '全国排名', value: '119' },
+            { scope: '湖北省排名', value: '27' },
+            { scope: '武汉市排名', value: '9' }
+          ],
+          tooltipContent: '当前 Steam 账号自注册以来的使用年限',
+          imageSrc: '../image/Steam achievements/time.png',
+          type: 'years'
+        }
+      ];
+
+      const overviewCards = [
+        {
+          text: '游戏总时长',
+          value: '606',
+          description: 'h',
+          rankingType: 'playtime',
+          className: 'personal-center-game-overview__stat--summary',
+          tooltipContent: '所有已关联游戏平台账号的累计游戏时长',
+          ranks: [
+            { scope: '全球排名', value: '651', delta: 12 },
+            { scope: '全国排名', value: '128' },
+            { scope: '湖北省排名', value: '24' },
+            { scope: '武汉市排名', value: '8' }
+          ]
+        },
+        {
+          text: '游戏总数量',
+          value: '18',
+          description: '款',
+          rankingType: 'games',
+          className: 'personal-center-game-overview__stat--summary',
+          tooltipContent: '所有已关联游戏平台账号的游戏总数',
+          ranks: [
+            { scope: '全球排名', value: '147' },
+            { scope: '全国排名', value: '36' },
+            { scope: '湖北省排名', value: '9' },
+            { scope: '武汉市排名', value: '3' }
+          ]
+        }
+      ];
+      const acceleratorOverviewCards = [
+        {
+          text: '加速总时长',
+          segments: [
+            { value: '164', unit: '时' },
+            { value: '33', unit: '分' },
+            { value: '22', unit: '秒' }
+          ],
+          tooltipContent: '使用加速器累计产生的游戏加速时长',
+          rankingType: 'acceleration',
+          className: 'personal-center-game-overview__stat--accelerator',
+          showAcceleratorActions: true,
+          ranks: [
+            { scope: '全球排名', value: '856', delta: -4 },
+            { scope: '全国排名', value: '212' },
+            { scope: '湖北省排名', value: '43' },
+            { scope: '武汉市排名', value: '14' }
+          ]
+        }
+      ];
+
+      function acceleratorDurationParts() {
+        const totalSeconds = Math.max(0, Math.floor(acceleratorRemainingSeconds));
+        return [
+          String(Math.floor(totalSeconds / 3600)),
+          String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0'),
+          String(totalSeconds % 60).padStart(2, '0')
+        ];
+      }
+
+      function syncAcceleratorDuration() {
+        const values = acceleratorDurationParts();
+        const card = acceleratorOverviewCards[0];
+        card.segments.forEach(function(segment, index) {
+          segment.value = values[index];
+        });
+        acceleratorDurationNumberNodes.forEach(function(number, index) {
+          number.textContent = values[index];
+        });
+        if (acceleratorDurationStat) {
+          const valueDescription = card.segments.map(function(segment) {
+            return segment.value + segment.unit;
+          }).join('');
+          const rankDescription = card.ranks.map(function(rank) {
+            return rank.scope + rank.value + rankTrendDescription(rank.delta);
+          }).join('，');
+          acceleratorDurationStat.setAttribute('aria-label', card.text + '，' + valueDescription + '，' + rankDescription);
+        }
+      }
+
+      function stopAcceleratorCountdown() {
+        if (acceleratorCountdownTimer) window.clearInterval(acceleratorCountdownTimer);
+        acceleratorCountdownTimer = null;
+      }
+
+      function startAcceleratorCountdown() {
+        stopAcceleratorCountdown();
+        if (!acceleratorCountdownRunning || acceleratorRemainingSeconds <= 0) return;
+        acceleratorCountdownTimer = window.setInterval(function() {
+          acceleratorRemainingSeconds = Math.max(0, acceleratorRemainingSeconds - 1);
+          syncAcceleratorDuration();
+          if (acceleratorRemainingSeconds === 0) {
+            acceleratorCountdownRunning = false;
+            stopAcceleratorCountdown();
+            if (autoPauseUpgraded) renderAcceleratorActions(acceleratorActionsSlot);
+          }
+        }, 1000);
+      }
+
+      function setAcceleratorCountdownRunning(isRunning) {
+        acceleratorCountdownRunning = Boolean(isRunning) && acceleratorRemainingSeconds > 0;
+        if (acceleratorCountdownRunning) startAcceleratorCountdown();
+        else stopAcceleratorCountdown();
+      }
+
+      function autoPauseRequirementsMet() {
+        return autoPauseRequirements.every(function(requirement) {
+          return requirement.met;
+        });
+      }
+
+      function closeAutoPauseModal() {
+        if (!autoPauseModal) return;
+        const trigger = autoPauseTrigger;
+        autoPauseModal.remove();
+        autoPauseModal = null;
+        autoPauseTrigger = null;
+        autoPauseChecking = false;
+        document.removeEventListener('keydown', handleAutoPauseKeydown);
+        if (trigger && trigger.isConnected) trigger.focus();
+      }
+
+      function handleAutoPauseKeydown(event) {
+        if (event.key === 'Escape') closeAutoPauseModal();
+      }
+
+      function renderAutoPauseRequirements(content, completeButton) {
+        content.replaceChildren();
+
+        const intro = document.createElement('div');
+        intro.className = 'personal-center-auto-pause-intro';
+        const introTitle = document.createElement('strong');
+        introTitle.className = 'personal-center-auto-pause-intro__title';
+        introTitle.textContent = '切换到时长自动暂停模式';
+        const introDescription = document.createElement('p');
+        introDescription.className = 'personal-center-auto-pause-intro__description';
+        introDescription.textContent = '游戏结束后，NN APP 会通知 NN PC 客户端自动暂停加速时长。';
+        const introNotice = document.createElement('p');
+        introNotice.className = 'personal-center-auto-pause-intro__notice';
+        introNotice.textContent = '请使用 NN PC 客户端加速，不能使用雷神加速器客户端加速，并开启 NN APP 通知权限。';
+        intro.appendChild(introTitle);
+        intro.appendChild(introDescription);
+        intro.appendChild(introNotice);
+        content.appendChild(intro);
+
+        const list = document.createElement('div');
+        list.className = 'personal-center-auto-pause-requirements';
+        autoPauseRequirements.forEach(function(requirement) {
+          const row = document.createElement('div');
+          row.className = 'personal-center-auto-pause-requirement' + (
+            autoPauseChecking ? ' is-checking' : requirement.met ? ' is-success' : ''
+          );
+
+          const icon = document.createElement('i');
+          icon.className = 'nnicon personal-center-auto-pause-requirement__icon ' + (
+            autoPauseChecking
+              ? 'nicon-a-loadingjiazai'
+              : requirement.met
+                ? 'nicon-a-check-linewancheng-xianxing'
+                : 'nicon-a-warning-lineweixianjingshi-xianxing'
+          );
+          icon.setAttribute('aria-hidden', 'true');
+
+          const copy = document.createElement('div');
+          copy.className = 'personal-center-auto-pause-requirement__copy';
+          const title = document.createElement('strong');
+          title.className = 'personal-center-auto-pause-requirement__title';
+          title.textContent = requirement.title;
+          const description = document.createElement('p');
+          description.className = 'personal-center-auto-pause-requirement__description';
+          description.textContent = requirement.description;
+          copy.appendChild(title);
+          copy.appendChild(description);
+
+          const control = document.createElement('div');
+          control.className = 'personal-center-auto-pause-requirement__control';
+          const status = document.createElement('span');
+          status.className = 'personal-center-auto-pause-requirement__status';
+          status.textContent = autoPauseChecking ? '检测中' : requirement.met ? '符合要求' : '待处理';
+          control.appendChild(status);
+          if (!autoPauseChecking && !requirement.met) {
+            control.appendChild(createButton({
+              text: requirement.actionText,
+              variant: 'system',
+              level: 'tertiary',
+              size: 'default',
+              onClick: function() {
+                requirement.met = true;
+                renderAutoPauseRequirements(content, completeButton);
+              }
+            }));
+          }
+
+          row.appendChild(icon);
+          row.appendChild(copy);
+          row.appendChild(control);
+          list.appendChild(row);
+        });
+        content.appendChild(list);
+
+        const ready = autoPauseRequirementsMet();
+        if (ready && !autoPauseChecking) {
+          const readyMessage = document.createElement('div');
+          readyMessage.className = 'personal-center-auto-pause-ready';
+          readyMessage.innerHTML = '<i class="nnicon nicon-a-check-linewancheng-xianxing" aria-hidden="true"></i><span>已符合全部要求，可完成升级</span>';
+          content.appendChild(readyMessage);
+        }
+        if (completeButton) {
+          completeButton.disabled = !ready || autoPauseChecking;
+          completeButton.setAttribute('aria-disabled', String(completeButton.disabled));
+        }
+      }
+
+      function renderAcceleratorActions(actions) {
+        if (!actions) return;
+        actions.replaceChildren();
+        actions.dataset.autoPauseState = autoPauseUpgraded
+          ? (acceleratorCountdownRunning ? 'running' : 'paused')
+          : 'upgrade-required';
+        if (autoPauseUpgraded) {
+          const nextRunning = !acceleratorCountdownRunning;
+          actions.appendChild(createButton({
+            text: nextRunning ? '恢复时长' : '暂停时长',
+            variant: 'primary',
+            level: 'primary',
+            size: 'large',
+            icon: nextRunning
+              ? '<i class="nnicon nicon-a-refresh-fillshuaxin-xianxing" aria-hidden="true"></i>'
+              : '<i class="nnicon nicon-a-Suspend-linezanting-xianxing" aria-hidden="true"></i>',
+            iconPosition: 'left',
+            iconSize: 'var(--icon-size-x8)',
+            onClick: function(event) {
+              if (event) event.stopPropagation();
+              setAcceleratorCountdownRunning(nextRunning);
+              renderAcceleratorActions(actions);
+              if (typeof showMessage === 'function') {
+                showMessage({
+                  state: 'success',
+                  text: nextRunning ? '加速时长已恢复' : '加速时长已暂停',
+                  mountTarget: framework
+                });
+              }
+            }
+          }));
+          return;
+        }
+
+        actions.appendChild(createButton({
+          text: '升级自动暂停',
+          variant: 'primary',
+          level: 'primary',
+          size: 'large',
+          icon: '<i class="nnicon nicon-a-Arrowright-linejiantouyou-xianxing" aria-hidden="true"></i>',
+          iconPosition: 'right',
+          iconSize: 'var(--icon-size-x6)',
+          onClick: function(event) {
+            if (event) event.stopPropagation();
+            openAutoPauseUpgradeModal(event && event.currentTarget);
+          }
+        }));
+      }
+
+      function openAutoPauseUpgradeModal(trigger) {
+        closeAutoPauseModal();
+        autoPauseTrigger = trigger || null;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'personal-center-auto-pause-modal';
+        const modalContent = document.createElement('div');
+        modalContent.className = 'personal-center-auto-pause-content';
+        let dialog = null;
+        let completeButton = null;
+        let detectButton = null;
+
+        function runDetection() {
+          if (autoPauseChecking) return;
+          autoPauseChecking = true;
+          if (detectButton) {
+            detectButton.disabled = true;
+            detectButton.setButtonText('检测中');
+          }
+          renderAutoPauseRequirements(modalContent, completeButton);
+          window.setTimeout(function() {
+            if (!overlay.isConnected) return;
+            autoPauseRequirements.forEach(function(requirement) {
+              requirement.met = true;
+            });
+            autoPauseChecking = false;
+            if (detectButton) {
+              detectButton.disabled = false;
+              detectButton.setButtonText('重新检测');
+            }
+            renderAutoPauseRequirements(modalContent, completeButton);
+          }, 650);
+        }
+
+        function completeUpgrade() {
+          if (!autoPauseRequirementsMet() || autoPauseChecking) return;
+          autoPauseUpgraded = true;
+          setAcceleratorCountdownRunning(false);
+          closeAutoPauseModal();
+          renderAcceleratorActions(acceleratorActionsSlot);
+          if (typeof showMessage === 'function') {
+            showMessage({
+              state: 'success',
+              text: '已切换到时长自动暂停模式',
+              mountTarget: framework
+            });
+          }
+        }
+
+        dialog = createToast({
+          title: '升级自动暂停',
+          subtitle: '检测并完成以下条件',
+          content: modalContent,
+          showFooter: true,
+          footer: {
+            layout: 'double-horizontal',
+            buttons: [
+              {
+                text: '重新检测',
+                variant: 'system',
+                level: 'secondary',
+                size: 'large',
+                className: 'personal-center-auto-pause-detect-button',
+                onClick: runDetection
+              },
+              {
+                text: '完成升级',
+                variant: 'primary',
+                level: 'primary',
+                size: 'large',
+                disabled: true,
+                className: 'personal-center-auto-pause-complete-button',
+                onClick: completeUpgrade
+              }
+            ]
+          },
+          className: 'personal-center-auto-pause-dialog',
+          onClose: closeAutoPauseModal
+        });
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.setAttribute('aria-labelledby', 'personal-center-auto-pause-title');
+        const title = dialog.querySelector('.nn-toast__title');
+        if (title) title.id = 'personal-center-auto-pause-title';
+        const closeButton = dialog.querySelector('.nn-toast__close');
+        if (closeButton) closeButton.setAttribute('aria-label', '关闭升级自动暂停');
+        completeButton = dialog.querySelector('.personal-center-auto-pause-complete-button');
+        detectButton = dialog.querySelector('.personal-center-auto-pause-detect-button');
+        renderAutoPauseRequirements(modalContent, completeButton);
+
+        overlay.appendChild(dialog);
+        overlay.addEventListener('click', function(event) {
+          if (event.target === overlay) closeAutoPauseModal();
+        });
+        framework.appendChild(overlay);
+        autoPauseModal = overlay;
+        document.addEventListener('keydown', handleAutoPauseKeydown);
+        if (closeButton) closeButton.focus();
+      }
+
+      function renderOverviewCards(cards, slot) {
+        if (!slot) return;
+        cards.forEach(function(card) {
+          const stat = document.createElement('article');
+          stat.className = 'accelerator-asset-detail-stat personal-center-game-overview__stat' + (card.className ? ' ' + card.className : '');
+          const rankDescription = card.ranks.map(function(rank) {
+            return rank.scope + rank.value + rankTrendDescription(rank.delta);
+          }).join('，');
+          const valueDescription = Array.isArray(card.segments)
+            ? card.segments.map(function(segment) { return segment.value + segment.unit; }).join('')
+            : card.value + card.description;
+          stat.setAttribute('aria-label', card.text + '，' + valueDescription + '，' + rankDescription);
+          if (card.rankingType) {
+            stat.classList.add('personal-center-game-overview__stat--interactive');
+            stat.setAttribute('role', 'button');
+            stat.tabIndex = 0;
+            stat.addEventListener('click', function(event) {
+              if (event.target.closest('[data-overview-action]')) return;
+              openSteamMetricRankingModal(card.rankingType, stat);
+            });
+            stat.addEventListener('keydown', function(event) {
+              if (event.target !== stat || (event.key !== 'Enter' && event.key !== ' ')) return;
+              event.preventDefault();
+              openSteamMetricRankingModal(card.rankingType, stat);
+            });
+          }
+
+          const value = document.createElement('div');
+          if (Array.isArray(card.segments)) {
+            value.className = 'nn-game-accelerator-popover__duration-value';
+            card.segments.forEach(function(segment) {
+              const segmentElement = document.createElement('span');
+              segmentElement.className = 'nn-game-accelerator-popover__duration-segment';
+              const number = document.createElement('span');
+              number.className = 'nn-game-accelerator-popover__duration-number';
+              number.textContent = segment.value;
+              if (card.showAcceleratorActions) acceleratorDurationNumberNodes.push(number);
+              const unit = document.createElement('span');
+              unit.className = 'nn-game-accelerator-popover__duration-unit personal-center-metric-unit-text';
+              unit.textContent = segment.unit;
+              segmentElement.appendChild(number);
+              segmentElement.appendChild(unit);
+              value.appendChild(segmentElement);
+            });
+          } else {
+            value.className = 'accelerator-asset-detail-stat__value';
+            const segmentElement = document.createElement('span');
+            segmentElement.className = 'personal-center-duration-segment';
+            const number = document.createElement('span');
+            number.className = 'personal-center-summary-number';
+            number.textContent = card.value;
+            const unit = document.createElement('em');
+            unit.className = 'personal-center-metric-unit-text';
+            unit.textContent = card.description;
+            segmentElement.appendChild(number);
+            segmentElement.appendChild(unit);
+            value.appendChild(segmentElement);
+          }
+
+          const primary = document.createElement('div');
+          primary.className = 'personal-center-game-overview__primary';
+          const label = document.createElement('span');
+          label.className = 'personal-center-game-overview__label';
+          const labelText = document.createElement('span');
+          labelText.textContent = card.text;
+          label.appendChild(labelText);
+          if (card.tooltipContent && typeof createTooltip === 'function') {
+            const labelIcon = document.createElement('span');
+            labelIcon.className = 'nnicon nicon-a-query-lineyiwen-xianxing nn-user-data-card__title-icon';
+            labelIcon.setAttribute('tabindex', '0');
+            labelIcon.setAttribute('aria-label', card.text + '说明');
+            const labelTooltip = createTooltip({
+              content: card.tooltipContent,
+              direction: 'top',
+              trigger: labelIcon,
+              type: 'rich',
+              width: 280,
+              portal: true
+            });
+            labelTooltip.classList.add('nn-user-data-card__title-tooltip');
+            label.appendChild(labelTooltip);
+          }
+          primary.appendChild(value);
+          primary.appendChild(label);
+          stat.appendChild(primary);
+          const metaValue = document.createElement('div');
+          metaValue.className = 'personal-center-game-overview__meta-value';
+          card.ranks.forEach(function(rank) {
+            const rankItem = document.createElement('span');
+            rankItem.className = 'personal-center-game-overview__rank-item';
+            const rankScope = document.createElement('span');
+            rankScope.className = 'personal-center-game-overview__rank-scope';
+            rankScope.textContent = rank.scope;
+            const rankValue = document.createElement('span');
+            rankValue.className = 'personal-center-game-overview__rank-value';
+            rankValue.textContent = rank.value;
+            applyTopRankTone(rankValue, rank.value);
+            const rankTrend = createRankTrend(rank.delta);
+            if (rankTrend) rankValue.appendChild(rankTrend);
+            rankItem.appendChild(rankScope);
+            rankItem.appendChild(rankValue);
+            metaValue.appendChild(rankItem);
+          });
+          stat.appendChild(metaValue);
+          if (card.showAcceleratorActions && typeof createButton === 'function') {
+            acceleratorDurationStat = stat;
+            const actions = document.createElement('div');
+            actions.className = 'personal-center-accelerator-actions';
+            actions.setAttribute('aria-label', '加速时长操作');
+            actions.dataset.overviewAction = 'true';
+            acceleratorActionsSlot = actions;
+            renderAcceleratorActions(actions);
+            stat.appendChild(actions);
+          }
+          slot.appendChild(stat);
+        });
+      }
+
+      renderOverviewCards(overviewCards, document.getElementById('personal-center-game-overview'));
+      renderOverviewCards(acceleratorOverviewCards, document.getElementById('personal-center-accelerator-overview'));
+      syncAcceleratorDuration();
+      startAcceleratorCountdown();
+
+      const assetDetailGames = [
+        { title: '怪物猎人：荒野-凌越', description: 'Monster Hunter: Wilds - Beyond', cover: 'game-monster-hunter.png', time: '81.5', games: '2025.05.03', achievements: '42', platforms: ['steam', 'wg'] },
+        { title: '湮灭之潮', description: 'Tides of Annihilation', cover: 'game-tides.png', time: '74', games: '2025.04.22', achievements: '31', platforms: ['steam'] },
+        { title: '影之刃：零', description: 'Phantom Blade Zero', cover: 'game-phantom-blade.png', time: '70', games: '2025.04.10', achievements: '28', platforms: ['steam'] },
+        { title: '生化危机：维罗妮卡重制版', description: 'Resident Evil Code: Veronica Remake', cover: 'game-resident-evil.png', time: '66.2', games: '2025.03.28', achievements: '36', platforms: ['epic'] },
+        { title: '血源：诅咒', description: 'Bloodborne', cover: 'game-bloodborne.png', time: '58.7', games: '2024.12.17', achievements: '24', platforms: ['steam'] },
+        { title: '最终幻想：共鸣', description: 'Final Fantasy: Resonance', cover: 'game-final-fantasy.png', time: '53', games: '2024.10.08', achievements: '39', platforms: ['epic', 'steam'] },
+        { title: '鬼武者：剑之道', description: 'Onimusha: Way of the Sword', cover: 'game-onimusha.png', time: '49', games: '2024.07.12', achievements: '27', platforms: ['wg', 'steam', 'epic'] },
+        { title: '龙之信条2：黑暗觉醒', description: 'Dragon’s Dogma 2: Dark Arisen', cover: 'game-dragons-dogma.png', time: '47.3', games: '2024.05.29', achievements: '19', platforms: ['steam'] },
+        { title: '《巫师3：狂猎》- 重制版', description: 'The Witcher 3: Wild Hunt Remake', cover: 'game-witcher-remake.png', time: '43.5', games: '2024.02.16', achievements: '45', platforms: ['wg'] }
+      ];
+
+      const steamDashboardConfigs = {
+        playtime: {
+          tabName: '游戏时长',
+          pageTitle: 'Steam游戏时长',
+          sectionTitle: '我的游戏时长排行',
+          rankingTitle: '我的Steam游戏总时长排行',
+          rankingValues: ['1482.6', '1328.4', '1214.9', '1098.6', '982.5', '901.3', '846.7', '792.4', '731.8', '689.2', '642.8', '598.1', '552.6', '509.4', '471.7', '438.9', '401.2', '367.8', '334.6', '302.3'],
+          currentRank: '651',
+          currentRankDelta: 12,
+          scopeRanks: {
+            global: { value: '651', delta: 12 },
+            national: { value: '128', delta: 0 },
+            province: { value: '24', delta: 0 },
+            city: { value: '8', delta: 0 }
+          },
+          currentValue: '606',
+          rankingUnit: 'h'
+        },
+        games: {
+          tabName: '拥有游戏',
+          pageTitle: 'Steam拥有游戏（18款）',
+          sectionTitle: '',
+          rankingTitle: 'Steam 游戏数量排行',
+          rankingValues: ['1482', '1328', '1214', '1098', '982', '901', '846', '792', '731', '689', '648', '612', '574', '539', '503', '468', '431', '397', '361', '328'],
+          currentRank: '147',
+          currentRankDelta: 0,
+          scopeRanks: {
+            global: { value: '147', delta: 0 },
+            national: { value: '36', delta: 0 },
+            province: { value: '9', delta: 0 },
+            city: { value: '3', delta: 0 }
+          },
+          currentValue: '18',
+          rankingUnit: '款'
+        },
+        acceleration: {
+          tabName: '加速时长',
+          pageTitle: '加速总时长',
+          sectionTitle: '我的加速时长排行',
+          rankingTitle: '加速总时长排行',
+          rankingValues: ['486.2', '467.6', '449.0', '430.4', '411.8', '393.2', '374.6', '356.0', '337.4', '318.8', '301.6', '284.3', '267.1', '249.8', '232.6', '215.4', '198.1', '180.9', '172.2', '168.4'],
+          currentRank: '856',
+          currentRankDelta: -4,
+          scopeRanks: {
+            global: { value: '856', delta: -4 },
+            national: { value: '212', delta: 0 },
+            province: { value: '43', delta: 0 },
+            city: { value: '14', delta: 0 }
+          },
+          currentValue: '164.6',
+          rankingUnit: 'h'
+        },
+        years: {
+          tabName: '账号年限',
+          pageTitle: 'Steam账号年限',
+          sectionTitle: '我的Steam账号年限',
+          rankingTitle: '我的Steam账号年限排行',
+          rankingValues: ['22', '21', '20', '19', '18', '17', '16', '15', '14', '13', '12', '12', '11', '11', '10', '10', '9', '9', '9', '8'],
+          currentRank: '562',
+          currentRankDelta: -4,
+          scopeRanks: {
+            global: { value: '562', delta: -4 },
+            national: { value: '119', delta: 0 },
+            province: { value: '27', delta: 0 },
+            city: { value: '9', delta: 0 }
+          },
+          currentValue: '8',
+          rankingUnit: '年'
+        }
+      };
+
+      const steamDashboardRankingScopes = [
+        { key: 'global', name: '全球榜' },
+        { key: 'national', name: '全国榜' },
+        { key: 'province', name: '省榜' },
+        { key: 'city', name: '市榜' }
+      ];
+      const steamDashboardProvinceOptions = [
+        { label: '湖北省' },
+        { label: '广东省' },
+        { label: '浙江省' },
+        { label: '江苏省' },
+        { label: '四川省' }
+      ];
+      const steamDashboardCityOptions = [
+        { label: '武汉市' },
+        { label: '宜昌市' },
+        { label: '襄阳市' },
+        { label: '荆州市' },
+        { label: '黄石市' }
+      ];
+
+      function topRankToneClass(value) {
+        const normalizedRank = Number(String(value).replace(/[^0-9.-]/g, ''));
+        if (normalizedRank === 1) return 'personal-center-rank-tone--first';
+        if (normalizedRank === 2) return 'personal-center-rank-tone--second';
+        if (normalizedRank === 3) return 'personal-center-rank-tone--third';
+        return '';
+      }
+
+      function applyTopRankTone(element, value) {
+        const toneClass = topRankToneClass(value);
+        if (toneClass) element.classList.add(toneClass);
+        return element;
+      }
+
+      function createGameRankingNumberCell(value) {
+        const number = document.createElement('span');
+        number.className = 'personal-center-game-ranking-number-cell personal-center-game-ranking-number';
+        number.textContent = value;
+        applyTopRankTone(number, value);
+        return number;
+      }
+
+      function createGameRankingNumberGroup(value, rankDelta) {
+        const group = document.createElement('span');
+        group.className = 'personal-center-game-ranking-number-group';
+        group.appendChild(createGameRankingNumberCell(value));
+        const rankTrend = createRankTrend(rankDelta);
+        if (rankTrend) group.appendChild(rankTrend);
+        return group;
+      }
+
+      function createPersonalRankingCurrentCard(row, metricKey) {
+        const card = document.createElement('div');
+        card.className = 'personal-center-ranking-current-card';
+        card.setAttribute('role', 'group');
+        card.setAttribute('aria-label', '我的排名 ' + row.rank + '，' + row.userName + '，' + row[metricKey]);
+
+        const rankCell = document.createElement('div');
+        rankCell.className = 'personal-center-ranking-current-card__cell personal-center-ranking-current-card__cell--rank';
+        rankCell.appendChild(createGameRankingNumberGroup(row.rank, row.rankDelta));
+
+        const avatarCell = document.createElement('div');
+        avatarCell.className = 'personal-center-ranking-current-card__cell personal-center-ranking-current-card__cell--avatar';
+        avatarCell.appendChild(createAvatar({
+          src: row.avatarSrc,
+          text: row.userName,
+          size: 32
+        }));
+
+        const nameCell = document.createElement('div');
+        nameCell.className = 'personal-center-ranking-current-card__cell personal-center-ranking-current-card__cell--name';
+        nameCell.textContent = row.userName;
+
+        const metricCell = document.createElement('div');
+        metricCell.className = 'personal-center-ranking-current-card__cell personal-center-ranking-current-card__cell--metric';
+        const metric = document.createElement('span');
+        metric.className = 'personal-center-game-ranking-metric';
+        metric.textContent = row[metricKey];
+        metricCell.appendChild(metric);
+
+        card.appendChild(rankCell);
+        card.appendChild(avatarCell);
+        card.appendChild(nameCell);
+        card.appendChild(metricCell);
+        return card;
+      }
+
+      function getSteamDashboardCurrentUserRow(config, options) {
+        const tableOptions = options || {};
+        const rankingScope = tableOptions.scope || 'global';
+        const scopeRank = config.scopeRanks && config.scopeRanks[rankingScope]
+          ? config.scopeRanks[rankingScope]
+          : { value: config.currentRank, delta: config.currentRankDelta };
+        const regionIndex = Number.isFinite(tableOptions.regionIndex) ? tableOptions.regionIndex : 0;
+        const regionRankOffset = rankingScope === 'province'
+          ? regionIndex * 7
+          : rankingScope === 'city'
+            ? regionIndex * 3
+            : 0;
+        const account = activeSteamAccount();
+        return {
+          rank: String(Number(scopeRank.value) + regionRankOffset),
+          rankDelta: scopeRank.delta,
+          avatarSrc: account.avatarSrc,
+          userName: account.userName,
+          metric: config.currentValue + config.rankingUnit
+        };
+      }
+
+      function createSteamDashboardRankingTable(config, options) {
+        const tableOptions = options || {};
+        const rankingScope = tableOptions.scope || 'global';
+        function renderRankingMetric(value) {
+          const metric = document.createElement('span');
+          metric.className = 'personal-center-game-ranking-metric';
+          metric.textContent = value;
+          return metric;
+        }
+
+        const rowLimit = Number.isFinite(tableOptions.rowLimit)
+          ? Math.max(0, tableOptions.rowLimit)
+          : config.rankingValues.length;
+        const rankingRows = config.rankingValues.slice(0, rowLimit).map(function(value, index) {
+          const profile = gameRankingProfiles[index];
+          return {
+            rank: String(index + 1),
+            rankAsset: index < 3 ? '../image/rank/Ranking' + (index + 1) + '.png' : '',
+            avatarSrc: profile.avatarSrc,
+            userName: profile.userName,
+            metric: value + config.rankingUnit
+          };
+        });
+        const table = createTable({
+          height: tableOptions.height || 104 + rankingRows.length * 56,
+          rowHeight: 56,
+          headerHeight: 40,
+          minWidth: 480,
+          surface: tableOptions.surface || 'page',
+          stickyHeader: true,
+          className: tableOptions.className || 'personal-center-steam-dashboard__ranking-table',
+          columns: [
+            {
+              key: 'rank',
+              title: '排名',
+              width: 72,
+              align: 'left',
+              render: function(value, row) {
+                if (row.rankAsset) {
+                  const badge = document.createElement('img');
+                  badge.className = 'personal-center-game-ranking-badge';
+                  badge.src = row.rankAsset;
+                  badge.alt = '第' + value + '名';
+                  return badge;
+                }
+                return createGameRankingNumberCell(value);
+              }
+            },
+            {
+              key: 'avatarSrc',
+              title: '用户头像',
+              width: 88,
+              align: 'center',
+              render: function(value, row) {
+                return createAvatar({
+                  src: value,
+                  text: row.userName,
+                  size: 32
+                });
+              }
+            },
+            { key: 'userName', title: '用户昵称', width: 184 },
+            {
+              key: 'metric',
+              title: config.tabName,
+              width: 120,
+              align: 'right',
+              render: config.rankingUnit === 'h' ? renderRankingMetric : undefined
+            }
+          ],
+          data: rankingRows
+        });
+        const tableRegion = table.querySelector('.nn-table');
+        if (tableRegion) {
+          tableRegion.setAttribute('aria-label', (tableOptions.scopeTitle || '全球榜') + '，' + config.rankingTitle);
+        }
+        return table;
+      }
+
+      function openSteamMetricRankingModal(type, trigger) {
+        closeGameRankingModal();
+        const config = steamDashboardConfigs[type];
+        if (!config) return;
+        const titleText = type === 'years' ? 'Steam账号年限排行' : config.rankingTitle;
+        const overlay = document.createElement('div');
+        overlay.className = 'personal-center-game-ranking-modal';
+        overlay.trigger = trigger;
+
+        const rankingContent = document.createElement('div');
+        rankingContent.className = 'personal-center-game-ranking-content';
+        const rankingToolbar = document.createElement('div');
+        rankingToolbar.className = 'personal-center-game-ranking-toolbar';
+        const rankingTabsSlot = document.createElement('div');
+        rankingTabsSlot.className = 'personal-center-game-ranking-tabs';
+        const rankingRegionSlot = document.createElement('div');
+        rankingRegionSlot.className = 'personal-center-game-ranking-region';
+        const currentCardSlot = document.createElement('div');
+        const tableSlot = document.createElement('div');
+        rankingToolbar.appendChild(rankingTabsSlot);
+        rankingToolbar.appendChild(rankingRegionSlot);
+        rankingContent.appendChild(rankingToolbar);
+        rankingContent.appendChild(currentCardSlot);
+        rankingContent.appendChild(tableSlot);
+
+        const dialog = createToast({
+          title: titleText,
+          content: rankingContent,
+          showFooter: false,
+          showClose: true,
+          className: 'personal-center-game-ranking-dialog',
+          onClose: closeGameRankingModal
+        });
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.setAttribute('aria-labelledby', 'personal-center-steam-metric-ranking-title');
+        const title = dialog.querySelector('.nn-toast__title');
+        if (title) title.id = 'personal-center-steam-metric-ranking-title';
+        const closeButton = dialog.querySelector('.nn-toast__close');
+        if (closeButton) closeButton.setAttribute('aria-label', '关闭' + titleText);
+
+        const state = {
+          scope: 'global',
+          provinceIndex: 0,
+          cityIndex: 0
+        };
+        const provinceDropdown = createDropdownMenu({
+          appearance: 'filled',
+          size: 'medium',
+          value: steamDashboardProvinceOptions[0].label,
+          selectedIndex: 0,
+          clearable: false,
+          items: steamDashboardProvinceOptions,
+          onChange: function(payload) {
+            state.provinceIndex = payload.selectedIndex;
+            renderRanking();
+          }
+        });
+        const cityDropdown = createDropdownMenu({
+          appearance: 'filled',
+          size: 'medium',
+          value: steamDashboardCityOptions[0].label,
+          selectedIndex: 0,
+          clearable: false,
+          items: steamDashboardCityOptions,
+          onChange: function(payload) {
+            state.cityIndex = payload.selectedIndex;
+            renderRanking();
+          }
+        });
+        function renderRegionControl() {
+          if (state.scope === 'province') {
+            rankingRegionSlot.replaceChildren(provinceDropdown);
+          } else if (state.scope === 'city') {
+            rankingRegionSlot.replaceChildren(cityDropdown);
+          } else {
+            rankingRegionSlot.replaceChildren();
+          }
+        }
+        function renderRanking() {
+          const regionIndex = state.scope === 'province'
+            ? state.provinceIndex
+            : state.scope === 'city'
+              ? state.cityIndex
+              : 0;
+          const scopeItem = steamDashboardRankingScopes.find(function(item) {
+            return item.key === state.scope;
+          });
+          const table = createSteamDashboardRankingTable(config, {
+            scope: state.scope,
+            scopeTitle: scopeItem ? scopeItem.name : '全球榜',
+            regionIndex: regionIndex,
+            rowLimit: 10,
+            height: 548,
+            surface: 'panel',
+            className: 'personal-center-steam-metric-ranking-table'
+          });
+          currentCardSlot.replaceChildren(createPersonalRankingCurrentCard(
+            getSteamDashboardCurrentUserRow(config, { scope: state.scope, regionIndex: regionIndex }),
+            'metric'
+          ));
+          tableSlot.replaceChildren(table);
+          const tableRegion = table.querySelector('.nn-table');
+          if (tableRegion) tableRegion.setAttribute('aria-label', titleText);
+          if (overlay.isConnected) {
+            requestAnimationFrame(function() {
+              if (overlay.scrollbar && typeof overlay.scrollbar.destroy === 'function') overlay.scrollbar.destroy();
+              overlay.scrollbar = bindToastScrollbar(dialog, tableRegion, {
+                className: 'personal-center-game-ranking-scrollbar'
+              });
+            });
+          }
+        }
+        rankingTabsSlot.appendChild(createTabs({
+          type: 'secondary',
+          tabs: steamDashboardRankingScopes.map(function(scope) {
+            return { name: scope.name, key: scope.key };
+          }),
+          defaultActive: 0,
+          onChange: function(payload) {
+            state.scope = payload.tab.key;
+            renderRegionControl();
+            renderRanking();
+          }
+        }));
+        renderRegionControl();
+        renderRanking();
+        overlay.appendChild(dialog);
+        overlay.addEventListener('click', function(event) {
+          if (event.target === overlay) closeGameRankingModal();
+        });
+        framework.appendChild(overlay);
+        gameRankingModal = overlay;
+        requestAnimationFrame(function() {
+          const tableRegion = tableSlot.querySelector('.nn-table');
+          overlay.scrollbar = bindToastScrollbar(dialog, tableRegion, {
+            className: 'personal-center-game-ranking-scrollbar'
+          });
+        });
+        document.addEventListener('keydown', handleGameRankingKeydown);
+        if (closeButton) closeButton.focus();
+      }
+
+      function createSteamDashboardGameCard(game, index, type) {
+        const options = {
+          imageSrc: '../image/Game Store/' + game.cover,
+          gameTitle: game.title,
+          description: game.description,
+          coverSize: 'large',
+          platforms: game.platforms,
+          rightType: 'data'
+        };
+        if (type === 'games') {
+          options.dataValue = game.games;
+          options.dataUnit = '';
+          options.dataLabel = '入库时间';
+          options.hideDataRank = true;
+        } else {
+          const timeRank = gameTimeRanks[index];
+          options.rank = index + 1;
+          options.dataValue = game.time;
+          options.dataUnit = 'h';
+          options.dataLabel = '游戏时长';
+          options.hideDataRank = true;
+          options.onClick = function(event, trigger) {
+            openGameRankingModal(game, timeRank.value, trigger, timeRank.delta, timeRank.ranks);
+          };
+        }
+        const card = createAcceleratorWishListCard(options);
+        if (type === 'playtime') {
+          card.setAttribute('role', 'button');
+          card.setAttribute('tabindex', '0');
+          card.setAttribute('aria-label', game.title + '，查看时长全站排行');
+          card.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              card.click();
+            }
+          });
+        }
+        return card;
+      }
+
+      function renderSteamDashboardRankingTable(config, slots) {
+        const rankingScope = slots.rankingScope || 'global';
+        const isProvince = rankingScope === 'province';
+        const isCity = rankingScope === 'city';
+        const regionOptions = isProvince
+          ? steamDashboardProvinceOptions
+          : isCity
+            ? steamDashboardCityOptions
+            : [];
+        const regionIndex = isProvince
+          ? slots.provinceIndex
+          : isCity
+            ? slots.cityIndex
+            : 0;
+        const scopeItem = steamDashboardRankingScopes.find(function(item) {
+          return item.key === rankingScope;
+        });
+        const selectedRegion = regionOptions[regionIndex];
+        const scopeTitle = selectedRegion
+          ? selectedRegion.label + '榜'
+          : scopeItem
+            ? scopeItem.name
+            : '全球榜';
+        const currentUserRow = getSteamDashboardCurrentUserRow(config, {
+          scope: rankingScope,
+          regionIndex: regionIndex
+        });
+        slots.currentCard.replaceChildren(createPersonalRankingCurrentCard(currentUserRow, 'metric'));
+        slots.table.replaceChildren(createSteamDashboardRankingTable(config, {
+          scope: rankingScope,
+          scopeTitle: scopeTitle,
+          regionIndex: regionIndex
+        }));
+        if (slots.rightScroller) slots.rightScroller.scrollTop = 0;
+        requestAnimationFrame(function() {
+          if (steamDashboardScrollbars[1]) steamDashboardScrollbars[1].update();
+        });
+      }
+
+      function renderSteamDashboardContent(type, slots) {
+        const config = steamDashboardConfigs[type] || steamDashboardConfigs.playtime;
+        currentDashboardType = type in steamDashboardConfigs ? type : 'playtime';
+        slots.leftTitle.textContent = config.sectionTitle;
+        slots.rightTitle.textContent = config.rankingTitle;
+
+        slots.gameList.replaceChildren();
+        if (currentDashboardType !== 'years') {
+          assetDetailGames.slice(0, 8).forEach(function(game, index) {
+            slots.gameList.appendChild(createSteamDashboardGameCard(game, index, currentDashboardType));
+          });
+        }
+
+        renderSteamDashboardRankingTable(config, slots);
+      }
+
+      function openSteamDashboard(type) {
+        destroySteamDashboardScrollbars();
+        currentDashboardType = type in steamDashboardConfigs ? type : 'playtime';
+        const config = steamDashboardConfigs[currentDashboardType];
+        steamDashboardView.replaceChildren();
+
+        const stickyHeader = document.createElement('div');
+        stickyHeader.className = 'personal-center-steam-dashboard__sticky-header';
+        const header = document.createElement('header');
+        header.className = 'personal-center-steam-dashboard__header';
+        const title = document.createElement('h2');
+        title.className = 'personal-center-steam-dashboard__title';
+        title.textContent = config.pageTitle;
+        header.appendChild(title);
+
+        const layout = document.createElement('div');
+        layout.className = 'personal-center-steam-dashboard__layout';
+        const left = document.createElement('section');
+        left.className = 'personal-center-steam-dashboard__column';
+        const right = document.createElement('section');
+        right.className = 'personal-center-steam-dashboard__column personal-center-steam-dashboard__column--ranking';
+        const leftScroller = document.createElement('div');
+        leftScroller.className = 'personal-center-steam-dashboard__column-scroller';
+        const rightScroller = document.createElement('div');
+        rightScroller.className = 'personal-center-steam-dashboard__column-scroller';
+        const rankingToolbar = document.createElement('div');
+        rankingToolbar.className = 'personal-center-steam-dashboard__ranking-toolbar';
+        const rankingTabsSlot = document.createElement('div');
+        rankingTabsSlot.className = 'personal-center-steam-dashboard__ranking-tabs';
+        const rankingRegionSlot = document.createElement('div');
+        rankingRegionSlot.className = 'personal-center-steam-dashboard__ranking-region';
+        const rankingCurrentCardSlot = document.createElement('div');
+        rankingCurrentCardSlot.className = 'personal-center-steam-dashboard__ranking-current-card';
+        rankingToolbar.appendChild(rankingTabsSlot);
+        rankingToolbar.appendChild(rankingRegionSlot);
+
+        const leftTitle = document.createElement('h3');
+        leftTitle.className = 'personal-center-steam-dashboard__section-title';
+        const rightTitle = document.createElement('h3');
+        rightTitle.className = 'personal-center-steam-dashboard__section-title';
+        const columnHeadings = document.createElement('div');
+        columnHeadings.className = 'personal-center-steam-dashboard__column-headings';
+        columnHeadings.appendChild(leftTitle);
+        columnHeadings.appendChild(rightTitle);
+        const gameList = document.createElement('div');
+        gameList.className = 'personal-center-steam-dashboard__game-list';
+        const table = document.createElement('div');
+        table.className = 'personal-center-steam-dashboard__table';
+
+        leftScroller.appendChild(gameList);
+        rightScroller.appendChild(table);
+        left.appendChild(leftScroller);
+        right.appendChild(rankingToolbar);
+        right.appendChild(rankingCurrentCardSlot);
+        right.appendChild(rightScroller);
+        layout.appendChild(left);
+        layout.appendChild(right);
+
+        const slots = {
+          leftTitle: leftTitle,
+          rightTitle: rightTitle,
+          gameList: gameList,
+          table: table,
+          currentCard: rankingCurrentCardSlot,
+          rightScroller: rightScroller,
+          rankingScope: 'global',
+          provinceIndex: 0,
+          cityIndex: 0
+        };
+        const provinceDropdown = createDropdownMenu({
+          appearance: 'filled',
+          size: 'medium',
+          value: steamDashboardProvinceOptions[0].label,
+          selectedIndex: 0,
+          clearable: false,
+          items: steamDashboardProvinceOptions,
+          className: 'personal-center-steam-dashboard__region-dropdown',
+          onChange: function(payload) {
+            slots.provinceIndex = payload.selectedIndex;
+            renderSteamDashboardRankingTable(config, slots);
+          }
+        });
+        const cityDropdown = createDropdownMenu({
+          appearance: 'filled',
+          size: 'medium',
+          value: steamDashboardCityOptions[0].label,
+          selectedIndex: 0,
+          clearable: false,
+          items: steamDashboardCityOptions,
+          className: 'personal-center-steam-dashboard__region-dropdown',
+          onChange: function(payload) {
+            slots.cityIndex = payload.selectedIndex;
+            renderSteamDashboardRankingTable(config, slots);
+          }
+        });
+        function renderRankingRegionControl() {
+          if (slots.rankingScope === 'province') {
+            rankingRegionSlot.replaceChildren(provinceDropdown);
+            return;
+          }
+          if (slots.rankingScope === 'city') {
+            rankingRegionSlot.replaceChildren(cityDropdown);
+            return;
+          }
+          rankingRegionSlot.replaceChildren();
+        }
+        rankingTabsSlot.appendChild(createTabs({
+          type: 'secondary',
+          tabs: steamDashboardRankingScopes.map(function(scope) {
+            return { name: scope.name, key: scope.key };
+          }),
+          defaultActive: 0,
+          onChange: function(payload) {
+            slots.rankingScope = payload.tab.key;
+            renderRankingRegionControl();
+            renderSteamDashboardRankingTable(config, slots);
+          }
+        }));
+        renderRankingRegionControl();
+        stickyHeader.appendChild(header);
+        stickyHeader.appendChild(columnHeadings);
+        steamDashboardView.appendChild(stickyHeader);
+        steamDashboardView.appendChild(layout);
+        renderSteamDashboardContent(currentDashboardType, slots);
+
+        currentPersonalView = 'steam-dashboard';
+        accountManagementOpen = false;
+        content.classList.add('is-steam-dashboard');
+        mainView.hidden = true;
+        accountManagementView.hidden = true;
+        steamDashboardView.hidden = false;
+        content.scrollTop = 0;
+        requestAnimationFrame(function() {
+          if (contentScrollbar) contentScrollbar.update();
+          if (typeof createScrollbar !== 'function') return;
+          steamDashboardScrollbars = [
+            createScrollbar({
+              target: leftScroller,
+              container: left,
+              hoverTarget: left,
+              variant: 'page',
+              right: 'calc(var(--space12) * -1)',
+              minThumbSize: 60,
+              className: 'personal-center-scrollbar'
+            }),
+            createScrollbar({
+              target: rightScroller,
+              container: right,
+              hoverTarget: right,
+              variant: 'page',
+              right: 'calc(var(--space12) * -1)',
+              top: function() {
+                return Math.max(0, rightScroller.getBoundingClientRect().top - right.getBoundingClientRect().top);
+              },
+              minThumbSize: 60,
+              className: 'personal-center-scrollbar'
+            })
+          ].filter(Boolean);
+        });
+      }
+
+      const platformMetricSets = [
+        { platform: 'steam', cards: assetCards }
+      ];
+
+      platformMetricSets.forEach(function(group) {
+        const metricSlot = document.getElementById('personal-center-' + group.platform + '-metrics');
+        group.cards.forEach(function(card) {
+          const isSteam = group.platform === 'steam';
+          let cardElement = null;
+          const openRankingDestination = function(event, trigger) {
+            if (!isSteam) return;
+            const source = trigger || cardElement;
+            if (card.type === 'years') {
+              openSteamMetricRankingModal(card.type, source);
+              return;
+            }
+            openSteamDashboard(card.type || 'playtime');
+          };
+          cardElement = createAcceleratorUserDataCard(Object.assign({}, card, {
+            rankLabel: '排名：',
+            onClick: isSteam ? openRankingDestination : null,
+            ariaLabel: card.text + '，' + card.value + card.description + '，' + card.ranks.map(function(rank) {
+              return rank.scope + rank.value + rankTrendDescription(rank.delta);
+            }).join('，')
+          }));
+          const metricUnit = cardElement.querySelector('.nn-user-data-card__unit');
+          if (metricUnit) metricUnit.classList.add('personal-center-metric-unit-text');
+          const rankControl = cardElement.querySelector('.nn-user-data-card__rank');
+          rankControl.replaceChildren();
+          card.ranks.forEach(function(rank) {
+            const rankItem = document.createElement('span');
+            rankItem.className = 'personal-center-platform-rank';
+
+            const rankScope = document.createElement('span');
+            rankScope.className = 'personal-center-platform-rank__label';
+            rankScope.textContent = rank.scope;
+
+            const rankValueRow = document.createElement('span');
+            rankValueRow.className = 'personal-center-platform-rank__value-row';
+            const rankValue = document.createElement('span');
+            rankValue.className = 'personal-center-platform-rank__value';
+            rankValue.textContent = rank.value;
+            applyTopRankTone(rankValue, rank.value);
+            rankValueRow.appendChild(rankValue);
+            const rankTrend = createRankTrend(rank.delta);
+            if (rankTrend) rankValueRow.appendChild(rankTrend);
+
+            rankItem.appendChild(rankScope);
+            rankItem.appendChild(rankValueRow);
+            rankControl.appendChild(rankItem);
+          });
+          const metricContent = cardElement.querySelector('.nn-user-data-card__content');
+          const rowArrow = document.createElement('i');
+          rowArrow.className = 'nnicon nicon-a-Arrowflat-Linejiantoubianshang-xianxing personal-center-platform-row-arrow';
+          rowArrow.setAttribute('aria-hidden', 'true');
+          metricContent.appendChild(rowArrow);
+          metricSlot.appendChild(cardElement);
+        });
+      });
+
+      const gameTimeRanks = [
+        { value: 523, label: '全球排名', delta: 8, ranks: [{ scope: '全球排名', value: 523 }, { scope: '全国排名', value: 128 }, { scope: '湖北省排名', value: 24 }, { scope: '武汉市排名', value: 8 }] },
+        { value: 286, label: '全球排名', delta: 0, ranks: [{ scope: '全球排名', value: 286 }, { scope: '全国排名', value: 71 }, { scope: '湖北省排名', value: 15 }, { scope: '武汉市排名', value: 5 }] },
+        { value: 412, label: '全球排名', delta: -5, ranks: [{ scope: '全球排名', value: 412 }, { scope: '全国排名', value: 103 }, { scope: '湖北省排名', value: 21 }, { scope: '武汉市排名', value: 7 }] },
+        { value: 847, label: '全球排名', delta: 12, ranks: [{ scope: '全球排名', value: 847 }, { scope: '全国排名', value: 206 }, { scope: '湖北省排名', value: 42 }, { scope: '武汉市排名', value: 13 }] },
+        { value: 158, label: '全球排名', delta: -2, ranks: [{ scope: '全球排名', value: 158 }, { scope: '全国排名', value: 39 }, { scope: '湖北省排名', value: 8 }, { scope: '武汉市排名', value: 3 }] },
+        { value: 731, label: '全球排名', delta: 0, ranks: [{ scope: '全球排名', value: 731 }, { scope: '全国排名', value: 178 }, { scope: '湖北省排名', value: 36 }, { scope: '武汉市排名', value: 11 }] },
+        { value: 394, label: '全球排名', delta: 7, ranks: [{ scope: '全球排名', value: 394 }, { scope: '全国排名', value: 98 }, { scope: '湖北省排名', value: 20 }, { scope: '武汉市排名', value: 6 }] },
+        { value: 966, label: '全球排名', delta: -4, ranks: [{ scope: '全球排名', value: 966 }, { scope: '全国排名', value: 235 }, { scope: '湖北省排名', value: 48 }, { scope: '武汉市排名', value: 15 }] }
+      ];
+      const recommendationsSlot = document.getElementById('personal-center-recommendations');
+      const gameRankingProfiles = [
+        { userName: '星河旅人', avatarSrc: '../image/Avatar/头像511.png' },
+        { userName: 'NorthWind', avatarSrc: '../image/Avatar/头像706.png' },
+        { userName: '柚子不加糖', avatarSrc: '../image/Avatar/头像72.png' },
+        { userName: 'SilentNova', avatarSrc: '../image/Avatar/头像664.png' },
+        { userName: '落日收藏家', avatarSrc: '../image/Avatar/头像659.png' },
+        { userName: 'Echo_7', avatarSrc: '../image/Avatar/头像498.png' },
+        { userName: '青空', avatarSrc: '../image/Avatar/头像311.png' },
+        { userName: 'NightFox', avatarSrc: '../image/Avatar/头像716.png' },
+        { userName: '小满同学', avatarSrc: '../image/Avatar/头像662.png' },
+        { userName: 'Violet', avatarSrc: '../image/Avatar/头像676.png' },
+        { userName: '云端漫步', avatarSrc: '../image/Avatar/头像934.png' },
+        { userName: 'Atlas', avatarSrc: '../image/Avatar/头像911.png' },
+        { userName: '岛屿来信', avatarSrc: '../image/Avatar/头像656.png' },
+        { userName: 'Reset', avatarSrc: '../image/Avatar/头像643.png' },
+        { userName: '银河边缘', avatarSrc: '../image/Avatar/头像441.png' },
+        { userName: 'Lumen', avatarSrc: '../image/Avatar/头像496.png' },
+        { userName: '小海盐', avatarSrc: '../image/Avatar/头像480.png' },
+        { userName: 'ZeroPoint', avatarSrc: '../image/Avatar/头像655.png' },
+        { userName: '晚风来信', avatarSrc: '../image/Avatar/头像686.png' },
+        { userName: 'Aurora', avatarSrc: '../image/Avatar/头像719.png' }
+      ];
+      let gameRankingModal = null;
+
+      function buildGameRankingRows(game, currentRank, rankDelta) {
+        const baseTime = Number(game.time) || 40;
+        const topRows = gameRankingProfiles.map(function(profile, index) {
+          return {
+            rank: String(index + 1),
+            rankAsset: index < 3 ? '../image/rank/Ranking' + (index + 1) + '.png' : '',
+            avatarSrc: profile.avatarSrc,
+            userName: profile.userName,
+            playtime: (baseTime + 420 - index * 18.6).toFixed(1) + 'h'
+          };
+        });
+        const account = activeSteamAccount();
+        topRows.push({
+          rank: String(currentRank),
+          rankDelta: rankDelta,
+          avatarSrc: account.avatarSrc,
+          userName: account.userName,
+          playtime: game.time + 'h'
+        });
+        return topRows;
+      }
+
+      function closeGameRankingModal() {
+        if (!gameRankingModal) return;
+        document.removeEventListener('keydown', handleGameRankingKeydown);
+        if (gameRankingModal.scrollbar && typeof gameRankingModal.scrollbar.destroy === 'function') {
+          gameRankingModal.scrollbar.destroy();
+        }
+        const trigger = gameRankingModal.trigger;
+        gameRankingModal.remove();
+        gameRankingModal = null;
+        if (trigger && typeof trigger.focus === 'function') trigger.focus();
+      }
+
+      function handleGameRankingKeydown(event) {
+        if (event.key === 'Escape') closeGameRankingModal();
+      }
+
+      function openGameRankingModal(game, currentRank, trigger, rankDelta, rankScopes) {
+        closeGameRankingModal();
+        const titleText = game.title + ' 游戏时长排行';
+        const overlay = document.createElement('div');
+        overlay.className = 'personal-center-game-ranking-modal';
+        overlay.trigger = trigger;
+
+        const rankingContent = document.createElement('div');
+        rankingContent.className = 'personal-center-game-ranking-content';
+        const rankingToolbar = document.createElement('div');
+        rankingToolbar.className = 'personal-center-game-ranking-toolbar';
+        const rankingTabsSlot = document.createElement('div');
+        rankingTabsSlot.className = 'personal-center-game-ranking-tabs';
+        const rankingRegionSlot = document.createElement('div');
+        rankingRegionSlot.className = 'personal-center-game-ranking-region';
+        const currentCardSlot = document.createElement('div');
+        const tableSlot = document.createElement('div');
+        rankingToolbar.appendChild(rankingTabsSlot);
+        rankingToolbar.appendChild(rankingRegionSlot);
+        rankingContent.appendChild(rankingToolbar);
+        rankingContent.appendChild(currentCardSlot);
+        rankingContent.appendChild(tableSlot);
+
+        const dialog = createToast({
+          title: titleText,
+          content: rankingContent,
+          showFooter: false,
+          showClose: true,
+          className: 'personal-center-game-ranking-dialog',
+          onClose: closeGameRankingModal
+        });
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.setAttribute('aria-labelledby', 'personal-center-game-ranking-title');
+        const rankingTitle = dialog.querySelector('.nn-toast__title');
+        if (rankingTitle) {
+          rankingTitle.id = 'personal-center-game-ranking-title';
+          rankingTitle.textContent = game.title + ' 游戏时长全球排名';
+        }
+        const closeButton = dialog.querySelector('.nn-toast__close');
+        if (closeButton) closeButton.setAttribute('aria-label', '关闭' + titleText);
+
+        const state = {
+          scope: 'global',
+          provinceIndex: 0,
+          cityIndex: 0
+        };
+        const provinceDropdown = createDropdownMenu({
+          appearance: 'filled',
+          size: 'medium',
+          value: steamDashboardProvinceOptions[0].label,
+          selectedIndex: 0,
+          clearable: false,
+          items: steamDashboardProvinceOptions,
+          onChange: function(payload) {
+            state.provinceIndex = payload.selectedIndex;
+            renderRanking();
+          }
+        });
+        const cityDropdown = createDropdownMenu({
+          appearance: 'filled',
+          size: 'medium',
+          value: steamDashboardCityOptions[0].label,
+          selectedIndex: 0,
+          clearable: false,
+          items: steamDashboardCityOptions,
+          onChange: function(payload) {
+            state.cityIndex = payload.selectedIndex;
+            renderRanking();
+          }
+        });
+        function renderRegionControl() {
+          if (state.scope === 'province') {
+            rankingRegionSlot.replaceChildren(provinceDropdown);
+          } else if (state.scope === 'city') {
+            rankingRegionSlot.replaceChildren(cityDropdown);
+          } else {
+            rankingRegionSlot.replaceChildren();
+          }
+        }
+        function currentRankForScope() {
+          const scopeLabels = {
+            global: '全球排名',
+            national: '全国排名',
+            province: '湖北省排名',
+            city: '武汉市排名'
+          };
+          const rankItem = (rankScopes || []).find(function(item) {
+            return item.scope === scopeLabels[state.scope];
+          });
+          const regionIndex = state.scope === 'province'
+            ? state.provinceIndex
+            : state.scope === 'city'
+              ? state.cityIndex
+              : 0;
+          const offset = state.scope === 'province'
+            ? regionIndex * 7
+            : state.scope === 'city'
+              ? regionIndex * 3
+              : 0;
+          return String(Number(rankItem ? rankItem.value : currentRank) + offset);
+        }
+        function renderRanking() {
+          const rankingRows = buildGameRankingRows(game, currentRankForScope(), state.scope === 'global' ? rankDelta : 0);
+          const currentUserRow = rankingRows.pop();
+          const table = createTable({
+            height: 548,
+            rowHeight: 56,
+            headerHeight: 40,
+            minWidth: 480,
+            surface: 'panel',
+            stickyHeader: true,
+            columns: [
+              {
+                key: 'rank',
+                title: '排名',
+                width: 72,
+                align: 'left',
+                render: function(value, row) {
+                  if (row.rankAsset) {
+                    const badge = document.createElement('img');
+                    badge.className = 'personal-center-game-ranking-badge';
+                    badge.src = row.rankAsset;
+                    badge.alt = '第' + value + '名';
+                    return badge;
+                  }
+                  return createGameRankingNumberCell(value);
+                }
+              },
+              {
+                key: 'avatarSrc',
+                title: '用户头像',
+                width: 88,
+                align: 'center',
+                render: function(value, row) {
+                  return createAvatar({ src: value, text: row.userName, size: 32 });
+                }
+              },
+              { key: 'userName', title: '用户昵称', width: 184 },
+              {
+                key: 'playtime',
+                title: '游戏时长',
+                width: 120,
+                align: 'right',
+                render: function(value) {
+                  const metric = document.createElement('span');
+                  metric.className = 'personal-center-game-ranking-metric';
+                  metric.textContent = value;
+                  return metric;
+                }
+              }
+            ],
+            data: rankingRows
+          });
+          const tableRegion = table.querySelector('.nn-table');
+          const scopeItem = steamDashboardRankingScopes.find(function(item) {
+            return item.key === state.scope;
+          });
+          const regionLabel = state.scope === 'province'
+            ? steamDashboardProvinceOptions[state.provinceIndex].label
+            : state.scope === 'city'
+              ? steamDashboardCityOptions[state.cityIndex].label
+              : scopeItem.name.replace('榜', '');
+          if (rankingTitle) rankingTitle.textContent = game.title + ' 游戏时长' + regionLabel + '排名';
+          if (tableRegion) tableRegion.setAttribute('aria-label', game.title + '游戏时长' + regionLabel + '排名');
+          currentCardSlot.replaceChildren(createPersonalRankingCurrentCard(currentUserRow, 'playtime'));
+          tableSlot.replaceChildren(table);
+          if (overlay.isConnected) {
+            requestAnimationFrame(function() {
+              if (overlay.scrollbar && typeof overlay.scrollbar.destroy === 'function') overlay.scrollbar.destroy();
+              overlay.scrollbar = bindToastScrollbar(dialog, tableRegion, {
+                className: 'personal-center-game-ranking-scrollbar'
+              });
+            });
+          }
+        }
+        rankingTabsSlot.appendChild(createTabs({
+          type: 'secondary',
+          tabs: steamDashboardRankingScopes.map(function(scope) {
+            return { name: scope.name, key: scope.key };
+          }),
+          defaultActive: 0,
+          onChange: function(payload) {
+            state.scope = payload.tab.key;
+            renderRegionControl();
+            renderRanking();
+          }
+        }));
+        renderRegionControl();
+        renderRanking();
+        overlay.appendChild(dialog);
+        overlay.addEventListener('click', function(event) {
+          if (event.target === overlay) closeGameRankingModal();
+        });
+        framework.appendChild(overlay);
+        gameRankingModal = overlay;
+        requestAnimationFrame(function() {
+          const tableRegion = tableSlot.querySelector('.nn-table');
+          overlay.scrollbar = bindToastScrollbar(dialog, tableRegion, {
+            className: 'personal-center-game-ranking-scrollbar'
+          });
+        });
+        document.addEventListener('keydown', handleGameRankingKeydown);
+        if (closeButton) closeButton.focus();
+      }
+
+      function createGameLibraryGameCell(value, row) {
+        const gameCell = document.createElement('div');
+        gameCell.className = 'personal-center-game-library-table__game';
+        const cover = document.createElement('img');
+        cover.className = 'personal-center-game-library-table__cover';
+        cover.src = '../image/Game Store/' + row.cover;
+        cover.alt = '';
+        const copy = document.createElement('div');
+        copy.className = 'personal-center-game-library-table__game-copy';
+        const title = document.createElement('strong');
+        title.className = 'personal-center-game-library-table__game-title';
+        title.textContent = row.title;
+        const description = document.createElement('span');
+        description.className = 'personal-center-game-library-table__game-description';
+        description.textContent = row.description;
+        copy.appendChild(title);
+        copy.appendChild(description);
+        gameCell.appendChild(cover);
+        gameCell.appendChild(copy);
+        return gameCell;
+      }
+
+      function createGameLibraryPlatformIcons(value) {
+        const platformMap = {
+          steam: { label: 'Steam', iconClass: 'nicon-a-STEAM-lineSTEAM-xianxing' },
+          epic: { label: 'Epic', iconClass: 'nicon-a-Epic-lineEpic-xianxing' },
+          wg: { label: 'WeGame', iconClass: 'nicon-a-WG-lineWG-xianxing' },
+          wegame: { label: 'WeGame', iconClass: 'nicon-a-WG-lineWG-xianxing' }
+        };
+        const platforms = (Array.isArray(value) ? value : []).map(function(platform) {
+          return platformMap[String(platform).toLowerCase()] || null;
+        }).filter(Boolean);
+        const list = document.createElement('span');
+        list.className = 'personal-center-game-library-table__platforms';
+        list.setAttribute('aria-label', '游戏平台：' + platforms.map(function(platform) {
+          return platform.label;
+        }).join('、'));
+        platforms.forEach(function(platform) {
+          const item = document.createElement('span');
+          item.className = 'personal-center-game-library-table__platform';
+          item.setAttribute('aria-hidden', 'true');
+          const icon = document.createElement('i');
+          icon.className = 'nnicon ' + platform.iconClass;
+          item.appendChild(icon);
+          list.appendChild(item);
+        });
+        return list;
+      }
+
+      function createGameLibraryNumericValue(value) {
+        const metric = document.createElement('span');
+        metric.className = 'personal-center-game-ranking-metric';
+        metric.textContent = value;
+        return metric;
+      }
+
+      function createGameLibraryRankMetric(value) {
+        return applyTopRankTone(createGameLibraryNumericValue(value), value);
+      }
+
+      function createGameLibraryRankValue(value, rankDelta) {
+        const group = document.createElement('span');
+        group.className = 'personal-center-game-library-table__rank-group';
+        group.appendChild(createGameLibraryRankMetric(value));
+        const trend = createRankTrend(rankDelta);
+        if (trend) group.appendChild(trend);
+        return group;
+      }
+
+      function createGameLibraryTable() {
+        const tableRows = assetDetailGames.slice(0, 8).map(function(game, index) {
+          const timeRank = gameTimeRanks[index];
+          function rankValue(scope) {
+            const item = timeRank.ranks.find(function(rankItem) {
+              return rankItem.scope === scope;
+            });
+            return item ? String(item.value) : '-';
+          }
+          return {
+            rank: String(index + 1),
+            rankAsset: index < 3 ? '../image/rank/Ranking' + (index + 1) + '.png' : '',
+            game: game.title,
+            platforms: game.platforms,
+            title: game.title,
+            description: game.description,
+            cover: game.cover,
+            playtime: game.time + 'h',
+            globalRank: rankValue('全球排名'),
+            nationalRank: rankValue('全国排名'),
+            provinceRank: rankValue('湖北省排名'),
+            cityRank: rankValue('武汉市排名'),
+            rankDelta: timeRank.delta,
+            timeRank: timeRank,
+            sourceGame: game
+          };
+        });
+        const table = createTable({
+          height: 760,
+          rowHeight: 88,
+          headerHeight: 40,
+          minWidth: 0,
+          stickyHeader: true,
+          className: 'personal-center-game-library-table',
+          columns: [
+            {
+              key: 'rank',
+              title: '排名',
+              width: 72,
+              align: 'center',
+              render: function(value, row) {
+                if (row.rankAsset) {
+                  const badge = document.createElement('img');
+                  badge.className = 'personal-center-game-ranking-badge';
+                  badge.src = row.rankAsset;
+                  badge.alt = '第' + value + '名';
+                  return badge;
+                }
+                return createGameRankingNumberCell(value);
+              }
+            },
+            {
+              key: 'game',
+              title: '游戏',
+              width: '32%',
+              render: createGameLibraryGameCell
+            },
+            {
+              key: 'platforms',
+              title: '平台',
+              width: 80,
+              render: createGameLibraryPlatformIcons
+            },
+            {
+              key: 'playtime',
+              title: '游戏时间',
+              width: 104,
+              align: 'right',
+              render: createGameLibraryNumericValue
+            },
+            {
+              key: 'globalRank',
+              title: '全球排名',
+              width: 112,
+              render: function(value, row) {
+                return createGameLibraryRankValue(value, row.rankDelta);
+              }
+            },
+            { key: 'nationalRank', title: '全国排名', width: 112, render: createGameLibraryRankMetric },
+            { key: 'provinceRank', title: '湖北省排名', width: 132, render: createGameLibraryRankMetric },
+            { key: 'cityRank', title: '武汉市排名', width: 132, render: createGameLibraryRankMetric }
+          ],
+          data: tableRows
+        });
+        const tableRegion = table.querySelector('.nn-table');
+        if (tableRegion) tableRegion.setAttribute('aria-label', '我的游戏排行数据');
+        table.querySelectorAll('.nn-table__row').forEach(function(rowElement, index) {
+          const row = tableRows[index];
+          rowElement.tabIndex = 0;
+          rowElement.setAttribute('role', 'button');
+          rowElement.setAttribute('aria-label', row.title + '，查看游戏时间排行');
+          rowElement.addEventListener('click', function() {
+            openGameRankingModal(row.sourceGame, row.timeRank.value, rowElement, row.timeRank.delta, row.timeRank.ranks);
+          });
+          rowElement.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              rowElement.click();
+            }
+          });
+        });
+        return table;
+      }
+
+      function renderGameCollection() {
+        recommendationsSlot.replaceChildren();
+        recommendationsSlot.appendChild(createGameLibraryTable());
+      }
+
+      renderGameCollection();
+
+      if (typeof createScrollbar === 'function') {
+        contentScrollbar = createScrollbar({
+          target: content,
+          container: contentWrap,
+          hoverTarget: contentWrap,
+          variant: 'page',
+          right: 4,
+          minThumbSize: 60,
+          className: 'personal-center-scrollbar'
+        });
+      }
+    });
+  </script>
+</body>
+</html>

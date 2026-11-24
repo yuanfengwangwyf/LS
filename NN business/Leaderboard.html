@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 业务组件库 - Leaderboard 排行榜</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260606-leaderboard">
+  <style>
+    .leaderboard-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .leaderboard-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .leaderboard-section-title,
+    .leaderboard-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .leaderboard-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .leaderboard-page-demo {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space32);
+      width: 100%;
+      padding: var(--space48);
+      overflow: visible;
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .leaderboard-page-demo.leaderboard-page-with-border {
+      border: 1px solid var(--gray-8);
+    }
+
+    .leaderboard-api-section {
+      margin-top: var(--space80);
+    }
+
+    .leaderboard-api-title {
+      margin-bottom: var(--space24);
+      line-height: 26px;
+    }
+
+    .leaderboard-api-groups {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .leaderboard-api-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .leaderboard-api-group-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .leaderboard-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .leaderboard-api-table th,
+    .leaderboard-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .leaderboard-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .leaderboard-api-table td {
+      color: var(--gray-5);
+    }
+
+    .leaderboard-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=business" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/b-nav.html?v=20260612-chat" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">页面组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">排行榜</span>
+      <h1 class="section-title">Leaderboard 排行榜</h1>
+      <p class="description">用于展示社区或玩家排行信息的业务组件，支持主榜单切换、二级筛选、地区选择、排行条目和未上榜状态配置。</p>
+
+      <div class="leaderboard-content">
+        <div class="leaderboard-section">
+          <h2 class="leaderboard-section-title">全社区战力排行</h2>
+          <div class="leaderboard-page-demo leaderboard-page-with-border" data-code-preview="true">
+            <div id="leaderboard-basic-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="leaderboard-api-section">
+        <h2 class="leaderboard-api-title">API 参考</h2>
+        <div class="leaderboard-api-groups">
+          <div class="leaderboard-api-group">
+            <h3 class="leaderboard-api-group-title">战绩排行 · createLeaderboardStandings(options)</h3>
+            <table class="leaderboard-api-table">
+              <thead><tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr></thead>
+              <tbody>
+                <tr><td>mode</td><td>默认榜单；战绩页面与本示例共用此组件</td><td>string</td><td>power | wins | weapon</td><td>power</td></tr>
+                <tr><td>width / height</td><td>宽度支持 CSS 长度，高度为固定榜单区域；切换与悬浮不改变高度</td><td>number | string / number</td><td>-</td><td>280 / 506</td></tr>
+                <tr><td>rowsByMode</td><td>按榜单配置列表，超出可视区域可滚动；value 支持 0</td><td>object</td><td>{ power: [], wins: [], weapon: [] }；条目 { rank, name, city, avatar, online, value }</td><td>每榜 10 条示例</td></tr>
+                <tr><td>selfByMode</td><td>各榜单个人排名；悬浮时直接覆盖列表底部，不额外占位</td><td>object</td><td>{ power: {}, wins: {}, weapon: {} }；条目 { rank, name, avatar, online, desc, value, label }</td><td>内置示例</td></tr>
+                <tr><td>regions / weapons</td><td>地区和武器下拉选项</td><td>string[]</td><td>-</td><td>湖北等地区 / 突击步枪等类型</td></tr>
+                <tr><td>showMore / moreText / showSelf</td><td>完整榜单入口、入口文案、个人排名开关</td><td>boolean / string / boolean</td><td>-</td><td>true / 完整榜单 / true</td></tr>
+                <tr><td>onChange</td><td>筛选变化回调；也触发 leaderboard-change 事件，数据请求由使用方接入</td><td>function</td><td>({ mode, period, region, weapon })</td><td>null</td></tr>
+                <tr><td>onMore / onRowClick</td><td>完整榜单入口、玩家点击回调</td><td>function</td><td>(state) / ({ row, index, state })</td><td>null</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="leaderboard-api-group">
+            <h3 class="leaderboard-api-group-title">兼容接口 · createLeaderboard / createLeaderboardRegional / createLeaderboardRank</h3>
+            <table class="leaderboard-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>primaryTabs</td><td>顶部主榜单 Tab 文案</td><td>string[]</td><td>-</td><td>['吃鸡榜', '段位榜']</td></tr>
+                <tr><td>primaryActive</td><td>默认选中的主榜单索引</td><td>number</td><td>-</td><td>0</td></tr>
+                <tr><td>showMore</td><td>是否展示查看更多榜单入口</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+                <tr><td>moreText</td><td>查看更多榜单入口文案</td><td>string</td><td>-</td><td>查看更多榜单</td></tr>
+                <tr><td>mode</td><td>右侧数据展示模式，rank 模式会调用游戏段位组件</td><td>string</td><td>wins | rank</td><td>wins</td></tr>
+                <tr><td>height</td><td>组件默认高度</td><td>number</td><td>-</td><td>364</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="leaderboard-api-group">
+            <h3 class="leaderboard-api-group-title">列表数据</h3>
+            <table class="leaderboard-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>rows</td><td>排行条目数据</td><td>object[]</td><td>{ rank, name, city, avatar, wins, value, rankLv }</td><td>内置示例数据</td></tr>
+                <tr><td>rows[].rank</td><td>排名数字</td><td>number | string</td><td>-</td><td>按数组顺序生成</td></tr>
+                <tr><td>rows[].name</td><td>玩家昵称</td><td>string</td><td>-</td><td>-</td></tr>
+                <tr><td>rows[].city</td><td>地区标签文案</td><td>string</td><td>-</td><td>-</td></tr>
+                <tr><td>rows[].avatar</td><td>头像图片路径</td><td>string</td><td>-</td><td>内置头像资源</td></tr>
+                <tr><td>rows[].rankLv</td><td>游戏段位等级，mode 为 rank 时透传给游戏段位组件</td><td>number</td><td>1 - 10</td><td>1</td></tr>
+                <tr><td>maxRows</td><td>列表最大展示条数</td><td>number</td><td>-</td><td>12</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="leaderboard-api-group">
+            <h3 class="leaderboard-api-group-title">筛选和状态</h3>
+            <table class="leaderboard-api-table">
+              <thead>
+                <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>showSubTabs</td><td>是否展示日榜、周榜、总榜、地区榜二级筛选</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+                <tr><td>subTabs</td><td>二级筛选 Tab 文案</td><td>string[]</td><td>-</td><td>['日榜', '周榜', '总榜', '地区榜']</td></tr>
+                <tr><td>showRegion</td><td>是否展示地区下拉筛选</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+                <tr><td>region</td><td>默认地区</td><td>string</td><td>-</td><td>湖北</td></tr>
+                <tr><td>regions</td><td>地区下拉可选项</td><td>string[]</td><td>-</td><td>['湖北', '广东', '上海', '浙江']</td></tr>
+                <tr><td>showSelf</td><td>是否展示底部未上榜/我的排名区域</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+                <tr><td>self</td><td>底部我的排名数据，仅在 hover 榜单模块时浮层展示</td><td>object</td><td>{ rank, name, desc, value, avatar }</td><td>内置示例数据</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-badge"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../NN%20business%20components/leaderboard.js?v=20261119-din-balanced"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('b-nav-leaderboard');
+      document.getElementById('leaderboard-basic-demo').appendChild(createLeaderboardStandings());
+    });
+  </script>
+</body>
+</html>

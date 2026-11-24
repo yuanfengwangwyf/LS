@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面展示 - Framework 框架</title>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261030-accelerator-framework-window-controls">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 100%;
+      min-height: 100vh;
+      margin: var(--space0);
+      background: var(--gray-1);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      overflow: auto;
+    }
+
+    body.is-embed-preview {
+      overflow: hidden;
+    }
+
+    body.is-embed-preview #header-iframe,
+    body.is-embed-preview #nav-iframe {
+      display: none !important;
+    }
+
+    body.is-embed-preview .accelerator-framework-shell {
+      min-width: 1280px;
+      min-height: 800px;
+      margin: var(--space0);
+      padding: var(--space0);
+    }
+
+    body.is-embed-preview .section > .breadcrumb-part,
+    body.is-embed-preview .section > .breadcrumb-separator,
+    body.is-embed-preview .section > .section-title,
+    body.is-embed-preview .section > .description {
+      display: none;
+    }
+
+    body.is-embed-preview .accelerator-framework-stage {
+      margin-top: var(--space0);
+    }
+
+    body.is-embed-preview .code-preview-button,
+    body.is-embed-preview .code-preview-panel {
+      display: none !important;
+    }
+
+    .accelerator-framework-shell {
+      min-width: 1280px;
+      min-height: calc(100vh - 60px);
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .accelerator-framework-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1280px;
+      min-height: 800px;
+      width: 100%;
+      margin-top: var(--space24);
+    }
+
+    .accelerator-framework {
+      position: relative;
+      display: grid;
+      grid-template-rows: 50px minmax(0, 1fr);
+      width: 1280px;
+      min-width: 1280px;
+      height: 800px;
+      min-height: 800px;
+      overflow: hidden;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-1);
+      color: var(--gray-5);
+    }
+
+    .accelerator-framework.is-expanded {
+      position: fixed;
+      inset: var(--space0);
+      z-index: 2000;
+      width: auto;
+      min-width: 0;
+      height: auto;
+      min-height: 0;
+      border-radius: initial;
+    }
+
+    body.is-framework-expanded {
+      overflow: hidden;
+    }
+
+    body.is-framework-expanded #nav-iframe {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .accelerator-framework__header,
+    .accelerator-framework__sidebar-content,
+    .accelerator-framework__content-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .accelerator-framework__header {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .accelerator-framework__header-title {
+      pointer-events: none;
+    }
+
+    .accelerator-framework__window-controls.nn-header__window {
+      position: absolute;
+      top: 50%;
+      right: var(--space12);
+      padding: var(--space0);
+      transform: translateY(-50%);
+    }
+
+    .accelerator-framework__body {
+      display: grid;
+      grid-template-columns: 240px minmax(1040px, 1fr);
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .accelerator-framework__sidebar {
+      display: flex;
+      align-items: stretch;
+      min-width: 0;
+      height: 100%;
+      padding: var(--space16) var(--space8) var(--space0);
+      overflow: hidden;
+      background: var(--gray-8);
+    }
+
+    .accelerator-framework__sidebar-content {
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--gray-9);
+    }
+
+    .accelerator-framework__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 1040px;
+      min-height: 0;
+      padding: var(--space16) var(--space24) var(--space0) var(--space16);
+      overflow: hidden;
+      background: var(--gray-9);
+    }
+
+    .accelerator-framework__content-inner {
+      flex: 1 1 0;
+      width: 100%;
+      max-width: 1200px;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--gray-10);
+    }
+
+    @media (min-width: 1920px) {
+      .accelerator-framework.is-expanded .accelerator-framework__body {
+        grid-template-columns: 300px minmax(1040px, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <iframe id="header-iframe" src="public-header.html?v=20261029-accelerator-framework&amp;library=accelerator-page" title="加速器页面顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="accelerator-p-nav.html?v=20261029-my-games" title="加速器页面导航" frameborder="0"></iframe>
+
+  <main class="accelerator-framework-shell">
+    <section class="section">
+      <span class="breadcrumb-part">加速器页面</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">框架</span>
+      <h1 class="section-title">Framework 框架</h1>
+      <p class="description">定义加速器产品页面的基础布局区域和尺寸规范。默认最小尺寸为 1280 × 800px，侧边导航宽度为 240px；全屏宽度达到 1920px 及以上时，侧边导航扩展为 300px，右侧区域随窗口伸展，内容主体保持居中且最大宽度为 1200px。</p>
+
+      <div class="accelerator-framework-stage" data-code-preview="true">
+        <div class="accelerator-framework" aria-label="加速器页面框架">
+          <header class="accelerator-framework__header">
+            <span class="accelerator-framework__header-title">Header</span>
+            <div id="accelerator-framework-window-controls"></div>
+          </header>
+          <div class="accelerator-framework__body">
+            <aside class="accelerator-framework__sidebar" aria-label="侧边导航区域">
+              <div class="accelerator-framework__sidebar-content">Sidebar navigation</div>
+            </aside>
+            <div class="accelerator-framework__content" role="main">
+              <div class="accelerator-framework__content-inner">Content</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/message.js?v=20261029-accelerator-framework"></script>
+  <script src="../basic%20components/code-preview.js?v=20261029-accelerator-framework"></script>
+  <script>
+    if (new URLSearchParams(window.location.search).get('embed') === '1') {
+      document.body.classList.add('is-embed-preview');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('accelerator-p-nav-framework');
+
+      const framework = document.querySelector('.accelerator-framework');
+      const controlsSlot = document.getElementById('accelerator-framework-window-controls');
+      if (!framework || !controlsSlot) return;
+
+      function setExpanded(isExpanded) {
+        framework.classList.toggle('is-expanded', isExpanded);
+        document.body.classList.toggle('is-framework-expanded', isExpanded);
+      }
+
+      const controls = createHeaderWindowControls({
+        className: 'accelerator-framework__window-controls',
+        showClose: false,
+        minimizeLabel: '缩小框架',
+        maximizeLabel: '最大化框架',
+        onMinimize: function() {
+          setExpanded(false);
+        },
+        onMaximize: function() {
+          setExpanded(true);
+        }
+      });
+      controlsSlot.replaceWith(controls);
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && framework.classList.contains('is-expanded')) {
+          setExpanded(false);
+        }
+      });
+
+      const stage = document.querySelector('.accelerator-framework-stage');
+      if (stage) {
+        stage.dataset.codeJs = [
+          "const controls = createHeaderWindowControls({",
+          "  showClose: false,",
+          "  onMinimize: function() {},",
+          "  onMaximize: function() {}",
+          "});"
+        ].join('\n');
+      }
+    });
+  </script>
+</body>
+</html>

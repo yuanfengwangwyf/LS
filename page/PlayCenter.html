@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Play Center 陪玩中心</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261111-launch-update-icons">
+  <script src="../iconfont/iconfont.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 100%;
+      min-height: 100vh;
+      margin: var(--space0);
+      overflow: auto;
+      background: var(--gray-1);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+    }
+
+    body.is-play-center-expanded #nav-iframe {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .play-center-shell {
+      min-width: 1280px;
+      min-height: calc(100vh - 60px);
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .play-center-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-width: 1280px;
+      min-height: 900px;
+    }
+
+    .play-center-framework {
+      --play-center-max-width: 2000px;
+      --framework-menu-width: 70px;
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+      --framework-content-left: 366px;
+      --framework-voice-height: 60px;
+      --framework-motion-duration: 520ms;
+      --framework-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      width: 1280px;
+      height: 900px;
+      min-width: 1280px;
+      min-height: 900px;
+      overflow: hidden;
+      background: var(--gray-1);
+      color: var(--gray-3);
+    }
+
+    .play-center-framework::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 120;
+      box-shadow: inset 0 0 0 1px var(--gray-8);
+      pointer-events: none;
+    }
+
+    .play-center-framework.is-menu-collapsed {
+      --framework-community-left: 12px;
+      --framework-community-width: 354px;
+    }
+
+    .play-center-framework.is-menu-collapsed.is-menu-hovered {
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+    }
+
+    .play-center-framework.is-expanded {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .play-center-framework__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      width: 100%;
+      height: 50px;
+    }
+
+    .play-center-framework__header .nn-header {
+      width: 100% !important;
+      padding-right: var(--space0);
+      border-bottom-color: var(--gray-10);
+    }
+
+    .play-center-framework__menu {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: 0;
+      z-index: 25;
+      width: var(--framework-menu-width);
+      overflow: visible;
+      background: var(--gray-1);
+      transform: translateX(0);
+      transition: transform var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: transform;
+    }
+
+    .play-center-framework.is-menu-collapsed .play-center-framework__menu {
+      pointer-events: none;
+      transform: translateX(calc(-1 * var(--framework-menu-width)));
+    }
+
+    .play-center-framework.is-menu-collapsed.is-menu-hovered .play-center-framework__menu {
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .play-center-framework__menu-hover-zone {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: 0;
+      z-index: 36;
+      display: none;
+      width: 70px;
+      background: transparent;
+    }
+
+    .play-center-framework.is-menu-collapsed .play-center-framework__menu-hover-zone {
+      display: block;
+    }
+
+    .play-center-framework.is-menu-collapsed.is-menu-hovered .play-center-framework__menu-hover-zone {
+      z-index: 24;
+      width: 70px;
+    }
+
+    .play-center-framework__menu .nn-menu {
+      width: var(--framework-menu-width);
+      height: 100%;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .play-center-framework__menu .nn-menu-list {
+      transform: translateY(calc(-1 * var(--framework-menu-scroll-offset, 0px)));
+      transition: transform 120ms ease;
+      will-change: transform;
+    }
+
+    .play-center-framework__menu .nn-menu-list-wrapper,
+    .play-center-framework__menu .nn-menu-list,
+    .play-center-framework__menu .nn-menu-item {
+      overflow: visible;
+    }
+
+    .play-center-framework__menu .nn-tooltip {
+      z-index: 80;
+      pointer-events: none;
+    }
+
+    .play-center-framework__community {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: var(--framework-community-left);
+      z-index: 8;
+      width: var(--framework-community-width);
+      overflow: hidden;
+      background: var(--gray-1);
+      transition:
+        left var(--framework-motion-duration) var(--framework-motion-ease),
+        width var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: left, width;
+    }
+
+    .play-center-framework__community .nn-community-combo {
+      width: 100%;
+      min-width: 100%;
+      height: 100%;
+      max-height: none;
+      transition:
+        width var(--framework-motion-duration) var(--framework-motion-ease),
+        min-width var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .play-center-framework__community .nn-community-combo__scroller {
+      height: 100%;
+      min-width: 0;
+      max-height: none;
+      padding-bottom: var(--framework-voice-height);
+    }
+
+    .play-center-framework__content {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      bottom: 0;
+      left: var(--framework-content-left);
+      padding: var(--space0) var(--space8);
+      overflow: hidden;
+      background: var(--gray-1);
+      box-sizing: border-box;
+      transition: left var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .play-center-content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      padding: var(--space48) var(--space16) var(--space0) var(--space0);
+      overflow: hidden;
+      overscroll-behavior: contain;
+    }
+
+    .play-center-sticky-content {
+      position: relative;
+      z-index: 2;
+      flex: 0 0 auto;
+      width: var(--play-center-content-width, 100%);
+      background: var(--gray-1);
+    }
+
+    .play-center-card-scroll {
+      flex: 1 1 auto;
+      width: calc(var(--play-center-content-width, 100%) + 22px);
+      min-height: 0;
+      margin-top: var(--space16);
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .play-center-content__inner {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      margin-left: var(--space0);
+      padding-bottom: var(--space24);
+    }
+
+    .play-center-room-header {
+      position: absolute;
+      top: 0;
+      left: 8px;
+      z-index: 12;
+      width: var(--play-center-content-width, max(882px, calc(100% - 32px)));
+      height: 44px;
+      background: var(--gray-1);
+    }
+
+    .play-center-room-header .nn-header--room-header-play-with {
+      width: 100% !important;
+      min-width: 0;
+      background: var(--gray-1);
+    }
+
+    .play-center-room-header .nn-room-header-play-with {
+      height: 32px;
+    }
+
+    .play-center-games {
+      position: relative;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      width: 100%;
+      height: 52px;
+      margin-top: var(--space8);
+      overflow: hidden;
+      contain: layout paint;
+    }
+
+    .play-center-games-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .play-center-games.is-max-visible {
+      justify-content: center;
+    }
+
+    .play-center-game-tab {
+      --game-accent: var(--gray-6);
+      display: flex;
+      align-items: center;
+      gap: var(--space8);
+      width: var(--play-center-game-width, 137px);
+      min-width: 136px;
+      max-width: 160px;
+      flex: 0 0 var(--play-center-game-width, 137px);
+      height: 52px;
+      margin-right: var(--space12);
+      padding: var(--space8);
+      overflow: hidden;
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-4r);
+      background: transparent;
+      color: var(--gray-3);
+      font-size: 16px;
+      font-weight: var(--font-weight-normal);
+      line-height: 22px;
+      cursor: pointer;
+      transition:
+        width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        flex-basis 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 160ms ease,
+        background-color 160ms ease,
+        color 160ms ease;
+    }
+
+    .play-center-game-tab:last-child {
+      margin-right: var(--space0);
+    }
+
+    .play-center-game-tab--more {
+      margin-right: var(--space0);
+    }
+
+    .play-center-game-tab.is-clipped {
+      display: none;
+      pointer-events: none;
+    }
+
+    .play-center-game-tab--more .play-center-game-tab__logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--gray-9);
+      color: var(--gray-4);
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .play-center-game-panel {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: var(--play-center-game-panel-left, 0px);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space12);
+      width: var(--play-center-game-panel-width, 160px);
+      max-height: 551px;
+      padding: var(--space10);
+      overflow-x: hidden;
+      overflow-y: auto;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-2);
+      box-shadow: 0 12px 36px var(--shadow);
+      scrollbar-width: none;
+      scrollbar-color: transparent transparent;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-6px);
+      transition:
+        opacity 180ms ease,
+        transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .play-center-game-panel.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .play-center-game-panel .play-center-game-tab {
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      margin-right: var(--space0);
+      flex: 0 0 52px;
+      background: transparent;
+    }
+
+    .play-center-game-panel .play-center-game-tab__name {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+    .play-center-game-tab:hover {
+      border-color: var(--gray-9);
+      background: var(--gray-10);
+      color: var(--gray-3);
+    }
+
+    .play-center-game-tab.is-active {
+      border-color: color-mix(in srgb, var(--game-accent) 48%, transparent);
+      background: color-mix(in srgb, var(--game-accent) 24%, transparent);
+      color: var(--gray-3);
+    }
+
+    .play-center-game-tab__logo {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      border-radius: 5px;
+      object-fit: cover;
+    }
+
+    .play-center-game-tab__name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .play-center-requirement {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) var(--play-center-patch-width, 256px);
+      gap: var(--space24);
+      width: 100%;
+      height: max(124px, calc(var(--play-center-patch-height, 96px) + 28px));
+      margin-top: var(--space16);
+    }
+
+    .play-center-preference {
+      min-width: 0;
+    }
+
+    .play-center-section-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-size: 14px;
+      font-weight: var(--font-weight-medium);
+      line-height: 20px;
+    }
+
+    .play-center-preference__tabs {
+      width: 100%;
+      height: 40px;
+      margin-top: var(--space12);
+    }
+
+    .play-center-preference__tabs .nn-tabs-secondary {
+      height: 40px;
+      overflow: hidden;
+    }
+
+    .play-center-preference__button {
+      width: 200px;
+      height: 40px;
+      margin-top: var(--space12);
+    }
+
+    .play-center-preference__button .nn-btn {
+      width: 200px;
+    }
+
+    .play-center-patch {
+      position: relative;
+      align-self: end;
+      width: var(--play-center-patch-width, 256px);
+      height: var(--play-center-patch-height, 96px);
+      overflow: hidden;
+      border-radius: var(--border-radius-4r);
+      background: url("../image/Community/%E9%99%AA%E7%8E%A9%E8%B4%B4%E7%89%87.png") center / cover no-repeat;
+      color: var(--Neutral-0);
+      transition:
+        width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        height 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .play-center-patch__text {
+      display: none;
+    }
+
+    .play-center-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space16);
+      width: 100%;
+      height: 40px;
+      margin-top: var(--space24);
+      padding-right: var(--space24);
+    }
+
+    .play-center-filter-tabs,
+    .play-center-cert-tabs {
+      height: 40px;
+      flex: 0 0 auto;
+    }
+
+    .play-center-filter-tabs .nn-tabs-tertiary-box,
+    .play-center-cert-tabs .nn-tabs-tertiary-box {
+      height: 40px;
+    }
+
+    .play-center-cert-tabs .nn-tabs-tertiary-box {
+      background: transparent;
+    }
+
+    .play-center-filter-tabs .nn-tabs-tertiary-box .nn-tab,
+    .play-center-cert-tabs .nn-tabs-tertiary-box .nn-tab {
+      height: 40px;
+    }
+
+    .play-center-filter-tabs .nn-tabs-tertiary-box .nn-tab-indicator,
+    .play-center-cert-tabs .nn-tabs-tertiary-box .nn-tab-indicator {
+      height: 40px;
+    }
+
+    .play-center-cert-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space6);
+      height: 40px;
+      padding-left: var(--space4);
+      overflow: hidden;
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-10);
+      color: var(--gray-3);
+      flex: 0 0 auto;
+    }
+
+    .play-center-cert-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 69.742px;
+      height: 40px;
+      flex: 0 0 69.742px;
+      color: var(--gray-3);
+    }
+
+    .play-center-cert-badge svg {
+      display: block;
+      width: 70px;
+      height: 40px;
+      flex: 0 0 auto;
+    }
+
+    .play-center-filter-dropdown {
+      width: auto !important;
+      flex: 0 0 auto;
+      z-index: 6;
+    }
+
+    .play-center-filter-dropdown .nn-dropdown-panel {
+      min-width: 96px;
+    }
+
+    .play-center-filter-spacer {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .play-center-filter-dropdown.nn-dropdown-appearance-no-padding .nn-dropdown-text-stack {
+      padding-right: var(--space0) !important;
+      padding-left: var(--space0) !important;
+    }
+
+    .play-center-filter-dropdown.nn-dropdown-appearance-no-padding .nn-dropdown-icon-end {
+      padding-right: var(--space0) !important;
+      padding-left: var(--space0) !important;
+    }
+
+    .play-center-filter-search {
+      width: var(--play-center-filter-search-width, 240px);
+      flex: 0 0 var(--play-center-filter-search-width, 240px);
+      min-width: 180px;
+      max-width: 100%;
+      height: 40px;
+    }
+
+    .play-center-filter-search.nn-input-wrapper.nn-input-search .nn-input {
+      width: 100%;
+      height: 40px;
+      padding: var(--space10) var(--space12) var(--space10) var(--space32);
+      color: var(--gray-3);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .play-center-filter-search.nn-input-wrapper.nn-input-search .nn-input::placeholder {
+      color: color-mix(in srgb, var(--gray-6) 50%, transparent);
+      opacity: 1;
+    }
+
+    .play-center-filter-search .nn-input-icon {
+      right: auto;
+      left: 12px;
+      color: var(--gray-6);
+    }
+
+    .play-center-filter-search.nn-input-search-has-value .nn-input-clear {
+      right: 12px;
+      left: auto;
+    }
+
+    .play-center-card-grid {
+      display: grid;
+      grid-template-columns: repeat(var(--play-center-card-columns, 2), minmax(432px, 1fr));
+      gap: var(--space16);
+      width: var(--play-center-content-width, 100%);
+      margin-top: var(--space0);
+      padding-top: var(--space2);
+      padding-bottom: var(--space24);
+    }
+
+    .play-center-card-grid .nn-bring-play-card {
+      width: 100% !important;
+      min-width: 0;
+    }
+
+    .play-center-card-grid .nn-bring-play-card--s {
+      height: 156px;
+    }
+
+    .play-center-card-grid .nn-bring-play-card--m {
+      height: 180px;
+    }
+
+
+    .play-center-framework__voice {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 40;
+      display: flex;
+      align-items: flex-end;
+      overflow: visible;
+    }
+
+    .play-center-framework__voice .nn-voice-panel__top {
+      max-height: 80px;
+      opacity: 1;
+      overflow: visible;
+      transform: translateY(0);
+      transition:
+        max-height var(--framework-motion-duration) var(--framework-motion-ease),
+        opacity 180ms ease,
+        transform var(--framework-motion-duration) var(--framework-motion-ease),
+        margin var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .play-center-framework.is-voice-room-hidden .play-center-framework__voice .nn-voice-panel__top {
+      max-height: 0;
+      margin: calc(var(--space8) * -1) var(--space0) var(--space0);
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    .play-center-framework .community-framework__menu-arrow {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      z-index: 23;
+      width: 28px;
+      height: 76px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(0, -50%);
+    }
+
+    .play-center-framework.is-menu-collapsed .community-framework__menu-arrow,
+    .play-center-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow,
+    .play-center-framework.is-menu-restoring .community-framework__menu-arrow {
+      opacity: 1;
+    }
+
+    .play-center-framework .community-framework__menu-arrow-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: auto;
+      height: 76px;
+      object-fit: contain;
+      transform-origin: left center;
+      opacity: 0;
+      transform: translateX(-30px);
+      will-change: transform, opacity;
+    }
+
+    .play-center-framework .community-framework__menu-arrow-img--light-1 {
+      width: 24px;
+    }
+
+    .play-center-framework .community-framework__menu-arrow-img--light-2 {
+      width: 22px;
+    }
+
+    .play-center-framework .community-framework__menu-arrow-img--dark {
+      display: none;
+    }
+
+    body.dark-mode .play-center-framework .community-framework__menu-arrow-img--light {
+      display: none;
+    }
+
+    body.dark-mode .play-center-framework .community-framework__menu-arrow-img--dark {
+      display: block;
+    }
+
+    .play-center-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1 {
+      animation: framework-menu-arrow-light-1-first 3000ms linear both;
+    }
+
+    .play-center-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2 {
+      animation: framework-menu-arrow-light-2-first 3000ms linear both;
+    }
+
+    .play-center-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1-repeat {
+      animation: framework-menu-arrow-light-1-repeat 3000ms linear both;
+    }
+
+    .play-center-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2-repeat {
+      animation: framework-menu-arrow-light-2-repeat 3000ms linear both;
+    }
+
+    .play-center-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow-img,
+    .play-center-framework.is-menu-restoring .community-framework__menu-arrow-img {
+      animation: framework-menu-arrow-light-exit 280ms cubic-bezier(0.4, 0, 1, 1) both;
+    }
+
+    @keyframes framework-menu-arrow-light-1-first {
+      0%, 9% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      12% {
+        opacity: 0.45;
+        transform: translateX(-16px);
+      }
+      16% {
+        opacity: 0.9;
+        transform: translateX(-4px);
+      }
+      18%, 29% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.72;
+        transform: translateX(0);
+      }
+      34% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      35%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-first {
+      0%, 15% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      18% {
+        opacity: 0.42;
+        transform: translateX(-16px);
+      }
+      23% {
+        opacity: 0.92;
+        transform: translateX(-4px);
+      }
+      25%, 27% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      29% {
+        opacity: 0.7;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      32.5%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-1-repeat {
+      0%, 31.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      35.5% {
+        opacity: 0.38;
+        transform: translateX(-17px);
+      }
+      39.5% {
+        opacity: 0.9;
+        transform: translateX(-5px);
+      }
+      42.5%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-repeat {
+      0%, 37.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      41.5% {
+        opacity: 0.34;
+        transform: translateX(-17px);
+      }
+      46.5% {
+        opacity: 0.88;
+        transform: translateX(-5px);
+      }
+      49.5%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-exit {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+  </style>
+  <script>
+    (function() {
+      document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&library=page" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261029-nn-page-theme-first-paint" frameborder="0"></iframe>
+
+  <main class="play-center-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">陪玩中心</span>
+      <h1 class="section-title">Play Center 陪玩中心</h1>
+      <div class="play-center-stage" data-code-preview="true">
+        <div id="play-center-framework" class="community-framework play-center-framework" aria-label="Play Center">
+          <div id="play-center-header" class="community-framework__header play-center-framework__header"></div>
+          <div id="play-center-menu" class="community-framework__menu play-center-framework__menu"></div>
+          <div id="play-center-menu-hover-zone" class="play-center-framework__menu-hover-zone" aria-hidden="true"></div>
+          <div id="play-center-community" class="community-framework__community play-center-framework__community"></div>
+          <div class="community-framework__content play-center-framework__content">
+            <div id="play-center-room-header" class="play-center-room-header"></div>
+            <div class="play-center-content">
+              <div class="play-center-content__inner" data-nn-header-align>
+                <div class="play-center-sticky-content">
+                  <div class="play-center-games-wrap">
+                    <div id="play-center-games" class="play-center-games"></div>
+                    <div id="play-center-game-panel" class="play-center-game-panel" aria-hidden="true"></div>
+                  </div>
+                  <section class="play-center-requirement" aria-label="陪玩要求">
+                    <div class="play-center-preference">
+                      <h2 class="play-center-section-title">陪玩要求</h2>
+                      <div id="play-center-requirement-tabs" class="play-center-preference__tabs"></div>
+                      <div id="play-center-requirement-button" class="play-center-preference__button"></div>
+                    </div>
+                    <aside class="play-center-patch" aria-label="派单大厅">
+                      <div class="play-center-patch__text">
+                        <span class="play-center-patch__title">派单大厅 <i class="nnicon nicon-a-OrderDistributionCenter-Linepaidanzhongxin-xianxing"></i></span>
+                        <span class="play-center-patch__desc">Plug-in unit</span>
+                      </div>
+                    </aside>
+                  </section>
+                  <div id="play-center-filter-bar" class="play-center-filter-bar"></div>
+                </div>
+                <div class="play-center-card-scroll">
+                  <div id="play-center-card-grid" class="play-center-card-grid"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="community-framework__menu-arrow" aria-hidden="true">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-dark-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-dark-2.svg" alt="">
+          </div>
+          <div id="play-center-voice" class="community-framework__voice play-center-framework__voice"></div>
+          <div id="play-center-data-card-slot"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/radio.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/input.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/slider.js?v=20260529-wheel"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/menu.js?v=20261117-menu-avatar-size-selected-stroke"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-indicator-resize"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../NN%20business%20components/pugc.js?v=20260615-pugc-list-label-export"></script>
+  <script src="../NN%20business%20components/community-navigation.js?v=20261116-cover-id-bg80"></script>
+  <script src="../NN%20business%20components/toast-display.js?v=20260611-toast-display-scrollbar-component"></script>
+  <script src="../public/vendor/lottie.min.js?v=20260616"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-banner-responsive-nav"></script>
+  <script src="../NN%20business%20components/voice-panel.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/chat.js?v=20260613-chat-action-callback"></script>
+  <script src="../NN%20business%20components/message-sent.js?v=20260615-chat-input-send-callback"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/data-card.js?v=20261119-din-unit-shift"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-play-center');
+      window.setTimeout(function() {
+        setActiveNav('p-nav-play-center');
+      }, 120);
+
+      const framework = document.getElementById('play-center-framework');
+      const headerSlot = document.getElementById('play-center-header');
+      const menuSlot = document.getElementById('play-center-menu');
+      const menuHoverZone = document.getElementById('play-center-menu-hover-zone');
+      const communitySlot = document.getElementById('play-center-community');
+      const voiceSlot = document.getElementById('play-center-voice');
+      const playCenterContent = framework.querySelector('.play-center-content');
+      const playCenterCardScroll = framework.querySelector('.play-center-card-scroll');
+      const playCenterContentInner = framework.querySelector('.play-center-content__inner');
+      const playCenterGamePanel = document.getElementById('play-center-game-panel');
+      const cardGrid = document.getElementById('play-center-card-grid');
+      const playCenterCardScrollbar = typeof window.createScrollbar === 'function'
+        ? window.createScrollbar({
+          target: playCenterCardScroll,
+          container: playCenterContent,
+          hoverTarget: playCenterContent,
+          variant: 'page',
+          right: 4,
+          top: function() {
+            const contentRect = playCenterContent.getBoundingClientRect();
+            const scrollRect = playCenterCardScroll.getBoundingClientRect();
+            return Math.max(0, scrollRect.top - contentRect.top);
+          },
+          bottom: 0
+        })
+        : null;
+      const playCenterGamePanelScrollbar = typeof window.createScrollbar === 'function'
+        ? window.createScrollbar({
+          target: playCenterGamePanel,
+          container: playCenterGamePanel,
+          hoverTarget: playCenterGamePanel,
+          variant: 'thin',
+          right: 4,
+          top: 10,
+          bottom: 10,
+          minThumbSize: 24
+        })
+        : null;
+      let currentPlayCenterCardSize = 's';
+
+      function canNestedScrollerMove(target, deltaY) {
+        let node = target instanceof Element ? target : null;
+        while (node && node !== playCenterCardScroll) {
+          const style = window.getComputedStyle(node);
+          const canOverflow = /(auto|scroll)/.test(style.overflowY);
+          const hasScrollableContent = node.scrollHeight > node.clientHeight + 1;
+          if (canOverflow && hasScrollableContent) {
+            const canScrollUp = node.scrollTop > 0;
+            const canScrollDown = node.scrollTop + node.clientHeight < node.scrollHeight - 1;
+            if ((deltaY < 0 && canScrollUp) || (deltaY > 0 && canScrollDown)) {
+              return true;
+            }
+          }
+          node = node.parentElement;
+        }
+        return false;
+      }
+
+      framework.addEventListener('wheel', function(event) {
+        if (canNestedScrollerMove(event.target, event.deltaY)) return;
+        const maxScrollTop = Math.max(0, playCenterCardScroll.scrollHeight - playCenterCardScroll.clientHeight);
+        if (maxScrollTop <= 0) return;
+        const atTop = playCenterCardScroll.scrollTop <= 0;
+        const atBottom = playCenterCardScroll.scrollTop >= maxScrollTop - 1;
+        if ((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom)) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }, { passive: false, capture: true });
+
+      function syncPlayCenterContentWidth() {
+        if (!playCenterContentInner) return;
+        const contentWidth = Math.round(playCenterContentInner.getBoundingClientRect().width);
+        framework.style.setProperty('--play-center-content-width', `${contentWidth}px`);
+        syncPlayCenterFilterSearchWidth(contentWidth);
+        syncPlayCenterPatchLayout();
+        syncPlayCenterGameLayout();
+        syncPlayCenterCardLayout();
+        if (playCenterCardScrollbar) playCenterCardScrollbar.update();
+      }
+
+      function syncPlayCenterFilterSearchWidth() {
+        const filterBar = document.getElementById('play-center-filter-bar');
+        const searchWrapper = filterBar ? filterBar.querySelector('.play-center-filter-search') : null;
+        if (!filterBar || !searchWrapper) return;
+        const filterRect = filterBar.getBoundingClientRect();
+        const searchRect = searchWrapper.getBoundingClientRect();
+        const baseContentWidth = 882;
+        const baseRight = filterRect.left + Math.min(filterRect.width, baseContentWidth);
+        const searchWidth = Math.max(240, Math.round(baseRight - searchRect.left));
+        framework.style.setProperty('--play-center-filter-search-width', `${searchWidth}px`);
+      }
+
+      function syncPlayCenterPatchLayout() {
+        const viewportWidth = framework.classList.contains('is-expanded')
+          ? window.innerWidth
+          : Math.min(window.innerWidth, framework.getBoundingClientRect().width);
+        const startWidth = 1920;
+        const endWidth = 2560;
+        const minPatchWidth = 256;
+        const minPatchHeight = 96;
+        const maxPatchWidth = 332;
+        const maxPatchHeight = 120;
+        const progress = Math.max(0, Math.min(1, (viewportWidth - startWidth) / (endWidth - startWidth)));
+        const patchWidth = Math.round(minPatchWidth + (maxPatchWidth - minPatchWidth) * progress);
+        const patchHeight = Math.round(minPatchHeight + (maxPatchHeight - minPatchHeight) * progress);
+        framework.style.setProperty('--play-center-patch-width', `${patchWidth}px`);
+        framework.style.setProperty('--play-center-patch-height', `${patchHeight}px`);
+      }
+
+      function syncPlayCenterGameLayout() {
+        const gameTabsSlot = document.getElementById('play-center-games');
+        const gamePanel = document.getElementById('play-center-game-panel');
+        if (!gameTabsSlot) return;
+        const containerWidth = Math.floor(gameTabsSlot.getBoundingClientRect().width);
+        const gap = 12;
+        const minItemWidth = 136;
+        const maxItemWidth = 160;
+        const visibleCapacity = Math.max(6, Math.min(9, Math.floor((containerWidth + gap) / (maxItemWidth + gap))));
+        const itemWidth = Math.max(
+          minItemWidth,
+          Math.min(maxItemWidth, Math.floor((containerWidth - gap * (visibleCapacity - 1)) / visibleCapacity))
+        );
+        gameTabsSlot.style.setProperty('--play-center-game-columns', String(visibleCapacity));
+        gameTabsSlot.style.setProperty('--play-center-game-width', `${itemWidth}px`);
+        gameTabsSlot.classList.toggle('is-max-visible', visibleCapacity >= 9);
+        const moreButton = gameTabsSlot.querySelector('.play-center-game-tab--more');
+        if (moreButton) {
+          const orderedTabs = Array.from(gameTabsSlot.querySelectorAll('.play-center-game-tab:not(.play-center-game-tab--more)'));
+          const visibleGameCount = Math.max(0, visibleCapacity - 1);
+          let visibleTabs = orderedTabs.slice(0, visibleGameCount);
+          const selectedTab = orderedTabs.find(function(tab) {
+            return tab.dataset.gameName === selectedGameName;
+          });
+          if (
+            selectedTab &&
+            !visibleTabs.includes(selectedTab) &&
+            visibleTabs.length > 0
+          ) {
+            visibleTabs = visibleTabs.slice(0, visibleGameCount - 1).concat(selectedTab);
+          }
+          const visibleSet = new Set(visibleTabs);
+          visibleTabs.forEach(function(tab) {
+            gameTabsSlot.appendChild(tab);
+          });
+          gameTabsSlot.appendChild(moreButton);
+          orderedTabs.forEach(function(tab) {
+            if (!visibleSet.has(tab)) gameTabsSlot.appendChild(tab);
+          });
+        }
+        gameTabsSlot.querySelectorAll('.play-center-game-tab').forEach(function(tab, index) {
+          const isFullyVisible = index < visibleCapacity;
+          tab.classList.toggle('is-clipped', !isFullyVisible);
+          tab.setAttribute('aria-hidden', String(!isFullyVisible));
+          tab.tabIndex = isFullyVisible ? 0 : -1;
+        });
+        if (gamePanel) {
+          const moreButton = gameTabsSlot.querySelector('.play-center-game-tab--more');
+          const gamesRect = gameTabsSlot.getBoundingClientRect();
+          if (moreButton) {
+            const moreRect = moreButton.getBoundingClientRect();
+            const longestGameNameLength = gameTabs.reduce(function(maxLength, item) {
+              return Math.max(maxLength, item.name.length);
+            }, moreGameTab.name.length);
+            const contentWidth = 10 * 2 + 8 * 2 + 36 + 8 + longestGameNameLength * 16;
+            const panelWidth = Math.max(
+              Math.round(moreRect.width || itemWidth),
+              Math.min(containerWidth, contentWidth)
+            );
+            const moreRight = Math.round(moreRect.right - gamesRect.left);
+            const panelLeft = Math.max(0, Math.min(containerWidth - panelWidth, moreRight - panelWidth));
+            gamePanel.style.setProperty('--play-center-game-panel-left', `${panelLeft}px`);
+            gamePanel.style.setProperty('--play-center-game-panel-width', `${panelWidth}px`);
+          }
+        }
+        if (playCenterGamesReady && typeof syncMoreGameButtonAccent === 'function') {
+          syncMoreGameButtonAccent(selectedGameName);
+        }
+      }
+
+      function syncPlayCenterCardLayout() {
+        if (!cardGrid) return;
+        const gridWidth = Math.floor(cardGrid.getBoundingClientRect().width);
+        const minCardWidth = 432;
+        const gap = 16;
+        const columns = Math.max(2, Math.min(4, Math.floor((gridWidth + gap) / (minCardWidth + gap))));
+        const cardSize = columns >= 3 ? 'm' : 's';
+        cardGrid.style.setProperty('--play-center-card-columns', String(columns));
+
+        if (cardSize === currentPlayCenterCardSize) return;
+        currentPlayCenterCardSize = cardSize;
+        cardGrid.querySelectorAll('.nn-bring-play-card').forEach(function(card) {
+          card.dataset.size = cardSize;
+          card.classList.toggle('nn-bring-play-card--s', cardSize === 's');
+          card.classList.toggle('nn-bring-play-card--m', cardSize === 'm');
+          card.querySelectorAll('.nn-bring-play-card__actions .nn-btn').forEach(function(button) {
+            button.classList.toggle('nn-btn-small', cardSize === 's');
+            button.classList.toggle('nn-btn-default', cardSize === 'm');
+          });
+          card.querySelectorAll('.nn-bring-play-card__actions .nn-btn-icon, .nn-bring-play-card__actions .nn-btn-icon i').forEach(function(icon) {
+            icon.style.width = cardSize === 'm' ? 'var(--icon-size-x8)' : 'var(--icon-size-x7)';
+            icon.style.height = cardSize === 'm' ? 'var(--icon-size-x8)' : 'var(--icon-size-x7)';
+            icon.style.fontSize = cardSize === 'm' ? 'var(--icon-size-x8)' : 'var(--icon-size-x7)';
+          });
+        });
+        if (playCenterCardScrollbar) playCenterCardScrollbar.update();
+      }
+
+      function syncDarkMode(isDark) {
+        localStorage.setItem('dark-mode', String(isDark));
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
+        notifyIframeDarkMode(isDark);
+      }
+
+      function toggleDarkMode() {
+        syncDarkMode(!document.body.classList.contains('dark-mode'));
+      }
+
+      function toggleExpanded() {
+        const isExpanded = framework.classList.toggle('is-expanded');
+        document.body.classList.toggle('is-play-center-expanded', isExpanded);
+        requestAnimationFrame(syncPlayCenterContentWidth);
+      }
+
+      const header = createHeader({
+        width: '100%',
+        showBack: true
+      });
+      headerSlot.appendChild(header);
+
+      const windowIcons = header.querySelectorAll('.nn-header__window-icon');
+      if (windowIcons[1]) {
+        windowIcons[1].setAttribute('role', 'button');
+        windowIcons[1].setAttribute('tabindex', '0');
+        windowIcons[1].setAttribute('aria-label', '适配浏览器最大尺寸');
+        windowIcons[1].addEventListener('click', toggleExpanded);
+        windowIcons[1].addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleExpanded();
+          }
+        });
+      }
+
+      const themeButton = header.querySelector('.nn-header__icon-btn--more');
+      if (themeButton) {
+        themeButton.addEventListener('click', toggleDarkMode);
+      }
+
+      menuSlot.appendChild(createInteractiveMenu());
+
+      communitySlot.appendChild(createCommunityNavigationCombo({ communityType: 'game' }));
+
+      document.getElementById('play-center-room-header').appendChild(createHeader({
+        variant: 'room-header-play-with',
+        width: '100%',
+        playTitle: '游戏服务'
+      }));
+
+      const gameTabsSlot = document.getElementById('play-center-games');
+      const gamePanel = document.getElementById('play-center-game-panel');
+      const dataCardSlot = document.getElementById('play-center-data-card-slot');
+      const playCenterDataCard = typeof window.createDataCard === 'function' ? window.createDataCard() : null;
+      if (dataCardSlot && playCenterDataCard) dataCardSlot.appendChild(playCenterDataCard);
+      let playCenterGamesReady = false;
+      const gameTabs = [
+        { name: 'PUBG', src: '../image/Game%20logo/game1.webp', fallback: '#F5B21B' },
+        { name: 'APEX英雄', src: '../image/Game%20logo/game2.webp', fallback: '#8C35FF' },
+        { name: '永劫无间', src: '../image/Game%20logo/game3.webp', fallback: '#F05A1A' },
+        { name: '英雄联盟', src: '../image/Game%20logo/game4.webp', fallback: '#F2494F' },
+        { name: 'CS2', src: '../image/Game%20logo/game5.webp', fallback: '#D58009' },
+        { name: '无畏契约', src: '../image/Game%20logo/game7.webp', fallback: '#E94A5A' },
+        { name: '和平精英', src: '../image/Game%20logo/game8.webp', fallback: '#4B7CFF' },
+        { name: '三角洲', src: '../image/Game%20logo/game9.webp', fallback: '#29A874' },
+        { name: '穿越火线', src: '../image/Game%20logo/game10.webp', fallback: '#8A84E8' },
+        { name: '王者荣耀', src: '../image/Game%20logo/game11.webp', fallback: '#D69A27' },
+        { name: '英雄联盟', src: '../image/Game%20logo/game12.webp', fallback: '#C99C3A' },
+        { name: '和平精英', src: '../image/Game%20logo/game13.webp', fallback: '#4B7CFF' }
+      ];
+      const moreGameTab = {
+        name: '更多游戏',
+        src: '',
+        fallback: '#C03E85',
+        isMore: true
+      };
+      const playCenterGameIconAccentFallbacks = {
+        'game1.webp': 'rgb(173, 122, 9)',
+        'game2.webp': 'rgb(139, 64, 252)',
+        'game3.webp': 'rgb(107, 21, 6)',
+        'game4.webp': 'rgb(253, 39, 39)',
+        'game5.webp': 'rgb(74, 63, 35)',
+        'game7.webp': 'rgb(108, 65, 197)',
+        'game8.webp': 'rgb(76, 33, 33)',
+        'game9.webp': 'rgb(20, 93, 77)',
+        'game10.webp': 'rgb(222, 61, 75)',
+        'game11.webp': 'rgb(50, 64, 58)',
+        'game12.webp': 'rgb(117, 68, 82)',
+        'game13.webp': 'rgb(172, 65, 70)'
+      };
+      function getPlayCenterGameIconAccentFallback(src, fallback) {
+        const normalizedSrc = decodeURIComponent(String(src || '')).replace(/\\/g, '/');
+        const matchedKey = Object.keys(playCenterGameIconAccentFallbacks).find(function(key) {
+          return normalizedSrc.endsWith(key) || normalizedSrc.includes(`/${key}`);
+        });
+        return matchedKey ? playCenterGameIconAccentFallbacks[matchedKey] : fallback;
+      }
+
+      let selectedGameName = gameTabs[0].name;
+      function syncMoreGameButtonAccent(gameName) {
+        const moreButton = gameTabsSlot.querySelector('.play-center-game-tab--more');
+        if (!moreButton) return;
+        const visibleActive = gameTabsSlot.querySelector(`.play-center-game-tab:not(.play-center-game-tab--more)[data-game-name="${gameName}"]:not(.is-clipped)`);
+        moreButton.classList.toggle('is-active', !visibleActive);
+        if (visibleActive) {
+          moreButton.style.setProperty('--game-accent', moreGameTab.fallback);
+          return;
+        }
+        const selectedPanelButton = gamePanel ? gamePanel.querySelector(`.play-center-game-tab[data-game-name="${gameName}"]`) : null;
+        const accent = selectedPanelButton ? selectedPanelButton.style.getPropertyValue('--game-accent') : '';
+        moreButton.style.setProperty('--game-accent', accent || moreGameTab.fallback);
+      }
+
+      function extractImageAccent(image, fallback) {
+        try {
+          const canvas = document.createElement('canvas');
+          const size = 16;
+          canvas.width = size;
+          canvas.height = size;
+          const context = canvas.getContext('2d');
+          if (!context) return fallback;
+          context.drawImage(image, 0, 0, size, size);
+          const pixels = context.getImageData(0, 0, size, size).data;
+          let red = 0;
+          let green = 0;
+          let blue = 0;
+          let weight = 0;
+          for (let index = 0; index < pixels.length; index += 4) {
+            const alpha = pixels[index + 3] / 255;
+            if (alpha < 0.2) continue;
+            const saturationWeight = Math.max(
+              pixels[index],
+              pixels[index + 1],
+              pixels[index + 2]
+            ) - Math.min(
+              pixels[index],
+              pixels[index + 1],
+              pixels[index + 2]
+            );
+            const currentWeight = alpha * (1 + saturationWeight / 255);
+            red += pixels[index] * currentWeight;
+            green += pixels[index + 1] * currentWeight;
+            blue += pixels[index + 2] * currentWeight;
+            weight += currentWeight;
+          }
+          if (!weight) return fallback;
+          return `rgb(${Math.round(red / weight)}, ${Math.round(green / weight)}, ${Math.round(blue / weight)})`;
+        } catch (error) {
+          return fallback;
+        }
+      }
+
+      function setActiveGameButton(targetButton, gameName) {
+        selectedGameName = gameName;
+        syncPlayCenterGameLayout();
+        gameTabsSlot.querySelectorAll('.play-center-game-tab').forEach(function(tab) {
+          tab.classList.toggle('is-active', tab.dataset.gameName === gameName);
+        });
+        if (gamePanel) {
+          gamePanel.querySelectorAll('.play-center-game-tab').forEach(function(tab) {
+            tab.classList.toggle('is-active', tab.dataset.gameName === gameName);
+          });
+        }
+        syncMoreGameButtonAccent(gameName);
+        if (targetButton && targetButton.closest('#play-center-game-panel')) {
+          gamePanel.classList.remove('is-open');
+          gamePanel.setAttribute('aria-hidden', 'true');
+          const moreButton = gameTabsSlot.querySelector('.play-center-game-tab--more');
+          if (moreButton) moreButton.setAttribute('aria-expanded', 'false');
+        }
+      }
+
+      function createPlayCenterGameButton(item, index, context) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = [
+          'play-center-game-tab',
+          item.isMore ? 'play-center-game-tab--more' : '',
+          index === 0 && !item.isMore ? 'is-active' : ''
+        ].filter(Boolean).join(' ');
+        button.dataset.gameName = item.name;
+        const iconAccentFallback = getPlayCenterGameIconAccentFallback(item.src, item.fallback);
+        button.style.setProperty('--game-accent', iconAccentFallback);
+        button.innerHTML = item.isMore
+          ? `<span class="play-center-game-tab__logo" aria-hidden="true"><i class="nnicon nicon-a-add-filltianjia-mianxing"></i></span><span class="play-center-game-tab__name">${item.name}</span>`
+          : `<img class="play-center-game-tab__logo" src="${item.src}" alt=""><span class="play-center-game-tab__name">${item.name}</span>`;
+        const logoImage = button.querySelector('.play-center-game-tab__logo');
+        if (logoImage && logoImage.tagName === 'IMG') {
+          logoImage.addEventListener('load', function() {
+            button.style.setProperty('--game-accent', extractImageAccent(logoImage, iconAccentFallback));
+            if (button.closest('#play-center-game-panel') && button.dataset.gameName === selectedGameName) {
+              syncMoreGameButtonAccent(selectedGameName);
+            }
+          }, { once: true });
+          if (logoImage.complete && logoImage.naturalWidth) {
+            button.style.setProperty('--game-accent', extractImageAccent(logoImage, iconAccentFallback));
+            if (button.closest('#play-center-game-panel') && button.dataset.gameName === selectedGameName) {
+              syncMoreGameButtonAccent(selectedGameName);
+            }
+          }
+        }
+        button.addEventListener('click', function() {
+          if (button.classList.contains('is-clipped')) return;
+          if (item.isMore) {
+            const isOpen = gamePanel && gamePanel.classList.toggle('is-open');
+            if (gamePanel) gamePanel.setAttribute('aria-hidden', String(!isOpen));
+            button.setAttribute('aria-expanded', String(Boolean(isOpen)));
+            return;
+          }
+          setActiveGameButton(button, item.name);
+        });
+        if (item.isMore) {
+          button.setAttribute('aria-haspopup', 'true');
+          button.setAttribute('aria-expanded', 'false');
+        }
+        return button;
+      }
+
+      const topGameTabs = gameTabs.concat(moreGameTab);
+      topGameTabs.forEach(function(item, index) {
+        const button = createPlayCenterGameButton(item, index, 'top');
+        gameTabsSlot.appendChild(button);
+      });
+      if (gamePanel) {
+        gameTabs.forEach(function(item, index) {
+          gamePanel.appendChild(createPlayCenterGameButton(item, index, 'panel'));
+        });
+        requestAnimationFrame(function() {
+          if (playCenterGamePanelScrollbar) playCenterGamePanelScrollbar.update();
+        });
+      }
+      playCenterGamesReady = true;
+      document.addEventListener('click', function(event) {
+        if (!gamePanel || !gamePanel.classList.contains('is-open')) return;
+        if (event.target.closest('.play-center-games-wrap')) return;
+        gamePanel.classList.remove('is-open');
+        gamePanel.setAttribute('aria-hidden', 'true');
+        const moreButton = gameTabsSlot.querySelector('.play-center-game-tab--more');
+        if (moreButton) moreButton.setAttribute('aria-expanded', 'false');
+      });
+      syncPlayCenterGameLayout();
+
+
+      document.getElementById('play-center-requirement-tabs').appendChild(createTabs({
+        type: 'secondary',
+        tabs: [
+          { name: '全部' },
+          { name: '技术流' },
+          { name: '娱乐陪玩' },
+          { name: '上分车队' },
+          { name: '语音开黑' }
+        ],
+        defaultActive: 0
+      }));
+
+      document.getElementById('play-center-requirement-button').appendChild(nnButton({
+        variant: 'primary',
+        level: 'primary',
+        size: 'large',
+        text: '一键匹配',
+        icon: '<i class="nnicon nicon-a-Lightning-Lineshandian-xianxing"></i>',
+        iconPosition: 'left',
+        iconSize: 'var(--icon-size-x8)'
+      }));
+
+      const filterBar = document.getElementById('play-center-filter-bar');
+      const recommendTabs = document.createElement('div');
+      recommendTabs.className = 'play-center-filter-tabs';
+      recommendTabs.appendChild(createTabs({
+        type: 'tertiary-box',
+        tabs: [
+          { name: '推荐' },
+          { name: '女生' }
+        ],
+        defaultActive: 0
+      }));
+      filterBar.appendChild(recommendTabs);
+
+      const certGroup = document.createElement('div');
+      certGroup.className = 'play-center-cert-group';
+      const certBadge = document.createElement('span');
+      certBadge.className = 'play-center-cert-badge';
+      certBadge.setAttribute('aria-label', '大神认证');
+      certBadge.innerHTML = `<svg width="70" height="40" viewBox="0 0 70 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M65 0H34.5L16 40H43.75L65 0Z" fill="currentColor" fill-opacity="0.04"/>
+        <path d="M54 0H23.5L5 40H32.75L54 0Z" fill="currentColor" fill-opacity="0.04"/>
+        <g clip-path="url(#play-center-cert-clip)">
+          <path d="M45.2598 18.4777H47.2744L47.1268 27.1088H44.4823L44.5723 19.8153L40.9051 27.1088H38.1229L45.3191 12.7859H48.114L45.2598 18.4777ZM37.2104 24.6865H38.3335L37.688 27.0956H33.8921L36.1302 18.7428H35.0482L35.6937 16.3337H39.4486L37.2104 24.6865ZM53.5864 24.6865H54.6284L53.9829 27.0956H50.2827L52.5206 18.7437H51.3829L52.0284 16.3346H55.8243L53.5864 24.6865ZM66.911 15.2093H64.6639L63.7419 18.6504H65.7702L65.1282 21.0463H63.0999L62.1245 24.6865H64.4956L63.8501 27.0956H54.5307L55.1763 24.6865H56.0259L58.2213 16.4931H60.7017L58.5063 24.6865H59.438L61.9774 15.2093H58.0311L58.6766 12.8001H67.5565L66.911 15.2093ZM11.078 15.7375H18.2919L17.6795 18.0231H14.5476L14.7129 26.9626H11.8134L11.6746 18.0231H9.68534L4.25182 26.9994H1.48327L6.91678 18.0231H3.65409L4.26651 15.7375H8.29581L9.82703 13.2265H12.6083L11.078 15.7375ZM18.496 26.9117H16.9101L19.1009 19.705H20.6741L18.496 26.9117ZM25.2581 19.089H23.1527L21.0566 26.9117H19.0029L21.0989 19.089H19.0062L19.6216 16.7921H25.8736L25.2581 19.089ZM23.0976 26.9117H21.5117L23.1956 19.705H24.7689L23.0976 26.9117ZM31.8947 14.7452H34.5334L31.8352 24.8147H29.1966L28.6415 26.8862H26.0937L26.6487 24.8147H23.9974L26.6955 14.7452H29.3469L29.8145 13.0001H32.3623L31.8947 14.7452ZM26.9656 22.5169H27.5115L27.9622 20.835H27.4163L26.9656 22.5169ZM29.5398 22.5169H30.0857L30.5364 20.835H29.9905L29.5398 22.5169ZM27.9882 18.7004H28.5341L28.985 17.0175H28.4391L27.9882 18.7004ZM30.5625 18.7004H31.1084L31.5593 17.0175H31.0134L30.5625 18.7004ZM26.0016 15.6366H20.0875L20.7065 13.3265H26.6206L26.0016 15.6366ZM39.7003 15.3941H35.9454L36.6407 12.7992H40.3956L39.7003 15.3941ZM56.1046 15.2885H52.3087L52.9542 12.8793H56.7501L56.1046 15.2885Z" fill="currentColor" fill-opacity="0.9"/>
+        </g>
+        <defs>
+          <clipPath id="play-center-cert-clip">
+            <rect width="65.8259" height="15.1294" fill="white" transform="matrix(1 0 -0.258819 0.965926 3.91577 12.6934)"/>
+          </clipPath>
+        </defs>
+      </svg>`;
+      certGroup.appendChild(certBadge);
+      const rankTabs = document.createElement('div');
+      rankTabs.className = 'play-center-cert-tabs';
+      rankTabs.appendChild(createTabs({
+        type: 'tertiary-box',
+        tabs: [
+          { name: '王者' },
+          { name: '大师' },
+          { name: '翡翠' },
+          { name: '钻石' }
+        ],
+        defaultActive: 0
+      }));
+      certGroup.appendChild(rankTabs);
+      filterBar.appendChild(certGroup);
+
+      filterBar.appendChild(createDropdownMenu({
+        appearance: 'no-padding',
+        size: 'large',
+        value: '价格从低到高',
+        selectedIndex: 0,
+        clearable: false,
+        className: 'play-center-filter-dropdown play-center-filter-dropdown--price',
+        items: [
+          { label: '价格从低到高' },
+          { label: '价格从高到低' }
+        ]
+      }));
+
+      filterBar.appendChild(createDropdownMenu({
+        appearance: 'no-padding',
+        size: 'large',
+        value: '不限',
+        selectedIndex: 0,
+        clearable: false,
+        leadingIcon: '<i class="nnicon nicon-a-Navigation-linedingwei-xianxing1"></i>',
+        className: 'play-center-filter-dropdown play-center-filter-dropdown--region',
+        items: [
+          { label: '不限' },
+          { label: '同城' },
+          { label: '华东' },
+          { label: '华南' }
+        ]
+      }));
+
+      filterBar.appendChild(createInput({
+        placeholder: '搜索',
+        size: 'large',
+        showSearch: true,
+        className: 'play-center-filter-search-input'
+      }));
+      const searchWrapper = filterBar.lastElementChild;
+      if (searchWrapper) {
+        searchWrapper.classList.add('play-center-filter-search');
+      }
+
+      function openPlayCenterProfile(playerData) {
+        if (playCenterDataCard) playCenterDataCard.open(playerData);
+      }
+
+      const players = [
+        ['A0广告传媒-邓小鼎', '北京', '20S', '1.2', '巅峰历史2500 打野双休两个位置都call我的顺丰在C位打怪升级开来黄金时刻'],
+        ['海岛温柔狙', '上海', '18S', '2.4', '稳定在线接单，四排沟通清晰，擅长架枪和运营路线规划'],
+        ['雨林快乐车队', '广州', '15S', '1.8', '娱乐上分都可以，语音活跃，带你体验轻松开黑节奏'],
+        ['决赛圈指挥官', '成都', '23S', '3.6', '高分段指挥位，熟悉圈边推进和投掷物配合'],
+        ['港口突击手', '杭州', '12S', '2.8', '近战突破和信息沟通稳定，可陪练枪法和房区攻防'],
+        ['北坡观察员', '南京', '26S', '1.6', '新手友好陪玩，耐心教学基础设置与地图路线'],
+        ['落地不成盒', '深圳', '21S', '2.2', '娱乐局氛围担当，声音清爽，适合晚间开黑放松'],
+        ['圈边自由人', '重庆', '17S', '3.2', '冲分车队常驻，可补位狙击、架枪、自由人位置'],
+        ['沙漠领航员', '武汉', '19S', '2.6', '熟悉沙漠图节奏，擅长转点规划和决赛圈信息判断'],
+        ['高地压枪手', '西安', '14S', '2.0', '枪线稳定，适合陪练压枪、身法和中远距离对枪']
+      ];
+
+      players.forEach(function(player, index) {
+        const imageSrc = `../image/Accompany%20play/${index + 1}.png`;
+        const gameIcons = [
+          '../image/Game%20logo/game1.webp',
+          `../image/Game%20logo/game${(index % 5) + 2}.webp`,
+          `../image/Game%20logo/game${(index % 6) + 7}.webp`
+        ];
+        const playerData = {
+          imageSrc,
+          name: player[0],
+          city: player[1],
+          onlineStatus: index % 5 === 3 ? 'offline' : 'online',
+          duration: player[2],
+          voiceDuration: player[2],
+          price: player[3],
+          description: player[4],
+          nn: String(555368 + index * 137),
+          chatTitle: index % 2 === 0 ? '和你隔了几片海' : '开黑前先沟通节奏',
+          voiceAvatars: [
+            '../image/Avatar/头像480.png',
+            '../image/Avatar/头像441.png',
+            '../image/Avatar/头像496.png',
+            '../image/Avatar/头像655.png',
+            '../image/Avatar/头像686.png'
+          ],
+          services: [
+            { name: '三角洲', accent: 'rgb(15, 141, 99)', fallback: '#29A874', rank: { lv: 6, text: '翡翠' } },
+            { name: '和平精英', accent: 'rgb(91, 31, 30)', fallback: '#4B7CFF', rank: { lv: 10, text: '王者' } },
+            { name: '无畏契约', accent: 'rgb(106, 60, 197)', fallback: '#E94A5A', rank: { lv: 6, text: '翡翠' } },
+            { name: '穿越火线', accent: 'rgb(242, 67, 81)', fallback: '#8A84E8' }
+          ],
+          items: [
+            { name: '双陪监狱', price: player[3], accent: '#E79F4D' },
+            { name: '双陪大坝', price: player[3], accent: '#E79F4D' },
+            { name: '单陪监狱', price: player[3], accent: '#E79F4D' },
+            { name: '单陪大坝', price: player[3], accent: '#E79F4D' }
+          ],
+          photos: [
+            '../image/Accompany%20play/1.png',
+            '../image/Accompany%20play/2.png',
+            '../image/Accompany%20play/3.png',
+            '../image/Accompany%20play/4.png',
+            '../image/Accompany%20play/5.png',
+            '../image/Accompany%20play/6.png',
+            '../image/Accompany%20play/7.png',
+            '../image/Accompany%20play/8.png'
+          ]
+        };
+        const card = createBringPlayCard({
+          size: currentPlayCenterCardSize,
+          imageSrc: playerData.imageSrc,
+          name: player[0],
+          onlineStatus: playerData.onlineStatus,
+          duration: player[2],
+          price: player[3],
+          rank: { lv: Math.max(3, 10 - index), size: 'small' },
+          labels: [
+            { text: index % 2 === 0 ? '技术' : '娱乐' },
+            { text: index % 3 === 0 ? '高分' : '陪练' },
+            { text: '服务保障', customColor: '#e79f4d' }
+          ],
+          description: player[4],
+          gameIcons
+        });
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `查看${playerData.name}的Play Data Card 陪玩资料卡`);
+        card.addEventListener('click', function(event) {
+          if (event.target.closest('button, a, input, textarea, select')) return;
+          openPlayCenterProfile(playerData);
+        });
+        card.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openPlayCenterProfile(playerData);
+          }
+        });
+        cardGrid.appendChild(card);
+      });
+      syncPlayCenterCardLayout();
+      if (playCenterCardScrollbar) playCenterCardScrollbar.update();
+
+      const voicePanel = createVoicePanel({
+        launchState: 'idle',
+        avatars: [
+          '../image/Avatar/头像480.png',
+          '../image/Avatar/头像441.png',
+          '../image/Avatar/头像496.png',
+          '../image/Avatar/头像655.png',
+          '../image/Avatar/头像686.png'
+        ],
+        speakerAvatar: '../image/Avatar/头像480.png'
+      });
+      voiceSlot.appendChild(voicePanel);
+
+      const communityScroller = communitySlot.querySelector('.nn-community-combo__scroller');
+      const menuList = menuSlot.querySelector('.nn-menu-list');
+      const menuListWrapper = menuSlot.querySelector('.nn-menu-list-wrapper');
+      let frameworkMenuScrollOffset = 0;
+      let frameworkMenuMaxScroll = 0;
+
+      function syncFrameworkVoiceHeight() {
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        framework.style.setProperty('--framework-voice-height', `${voiceHeight}px`);
+        syncFrameworkMenuScroll();
+      }
+
+      function syncFrameworkMenuScroll() {
+        if (!menuList || !menuListWrapper) return;
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        const wrapperHeight = menuListWrapper.clientHeight;
+        const contentHeight = menuList.scrollHeight;
+        const contentBottom = menuList.offsetTop + contentHeight;
+        const visibleHeightBeforeVoice = Math.max(0, wrapperHeight - voiceHeight);
+        frameworkMenuMaxScroll = Math.max(0, contentBottom - visibleHeightBeforeVoice);
+        frameworkMenuScrollOffset = Math.min(frameworkMenuScrollOffset, frameworkMenuMaxScroll);
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+      }
+
+      function scrollFrameworkMenu(deltaY) {
+        syncFrameworkMenuScroll();
+        if (frameworkMenuMaxScroll <= 0) return false;
+        const nextOffset = Math.max(0, Math.min(frameworkMenuMaxScroll, frameworkMenuScrollOffset + deltaY));
+        if (nextOffset === frameworkMenuScrollOffset) return false;
+        frameworkMenuScrollOffset = nextOffset;
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+        return true;
+      }
+
+      function hideVoiceRoomInfo() {
+        framework.classList.add('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      function showVoiceRoomInfo() {
+        framework.classList.remove('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      if (window.ResizeObserver) {
+        const voiceResizeObserver = new ResizeObserver(syncFrameworkVoiceHeight);
+        voiceResizeObserver.observe(voiceSlot);
+        voiceResizeObserver.observe(voicePanel);
+        if (menuList) voiceResizeObserver.observe(menuList);
+        if (menuListWrapper) voiceResizeObserver.observe(menuListWrapper);
+
+        const contentResizeObserver = new ResizeObserver(syncPlayCenterContentWidth);
+        contentResizeObserver.observe(framework);
+        if (playCenterContentInner) contentResizeObserver.observe(playCenterContentInner);
+        if (cardGrid) contentResizeObserver.observe(cardGrid);
+      }
+
+      window.addEventListener('resize', syncPlayCenterContentWidth);
+      window.addEventListener('resize', syncPlayCenterGameLayout);
+      window.addEventListener('resize', syncPlayCenterCardLayout);
+      syncPlayCenterContentWidth();
+      syncPlayCenterGameLayout();
+      syncPlayCenterCardLayout();
+      syncFrameworkVoiceHeight();
+
+      const leaveVoiceButton = voicePanel.querySelector('.nn-voice-panel__leave');
+      if (leaveVoiceButton) {
+        leaveVoiceButton.addEventListener('click', hideVoiceRoomInfo);
+      }
+
+      const firstVoiceRoom = communitySlot.querySelector('.nn-community-room');
+      if (firstVoiceRoom) {
+        firstVoiceRoom.addEventListener('click', showVoiceRoomInfo);
+      }
+
+      if (menuListWrapper) {
+        menuListWrapper.addEventListener('wheel', function(event) {
+          if (scrollFrameworkMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+        }, { passive: false });
+      }
+
+      voiceSlot.addEventListener('wheel', function(event) {
+        if (event.target.closest('.nn-slider, input, textarea, select, [contenteditable="true"], .nn-voice-mode__settings-popover')) return;
+        const menuRect = menuSlot.getBoundingClientRect();
+        const communityRect = communitySlot.getBoundingClientRect();
+
+        if (event.clientX >= menuRect.left && event.clientX <= menuRect.right) {
+          if (scrollFrameworkMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+          return;
+        }
+
+        if (!communityScroller) return;
+        if (event.clientX < communityRect.left || event.clientX > communityRect.right) return;
+
+        const previousScrollTop = communityScroller.scrollTop;
+        communityScroller.scrollTop += event.deltaY;
+        if (communityScroller.scrollTop !== previousScrollTop) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      const voiceBack = voicePanel.querySelector('.nn-voice-panel__back');
+      let restoreMenuTimer = null;
+      let restoreEndTimer = null;
+      let menuHoverTimer = null;
+      let isMenuPointerInside = false;
+
+      function clearMenuRestoreTimers() {
+        if (restoreMenuTimer) {
+          window.clearTimeout(restoreMenuTimer);
+          restoreMenuTimer = null;
+        }
+        if (restoreEndTimer) {
+          window.clearTimeout(restoreEndTimer);
+          restoreEndTimer = null;
+        }
+      }
+
+      function clearMenuHoverTimer() {
+        if (menuHoverTimer) {
+          window.clearTimeout(menuHoverTimer);
+          menuHoverTimer = null;
+        }
+      }
+
+      function showCollapsedMenuPreview() {
+        if (!framework.classList.contains('is-menu-collapsed')) return;
+        clearMenuHoverTimer();
+        framework.classList.remove('is-menu-hovered');
+        void framework.offsetWidth;
+        framework.classList.add('is-menu-hovered');
+      }
+
+      function scheduleCollapsedMenuHide() {
+        clearMenuHoverTimer();
+        menuHoverTimer = window.setTimeout(function() {
+          if (!isMenuPointerInside) {
+            framework.classList.remove('is-menu-hovered');
+          }
+          menuHoverTimer = null;
+        }, 80);
+      }
+
+      if (menuHoverZone) {
+        menuHoverZone.addEventListener('mouseenter', showCollapsedMenuPreview);
+        menuHoverZone.addEventListener('mouseleave', scheduleCollapsedMenuHide);
+      }
+
+      document.addEventListener('mousemove', function(event) {
+        if (!framework.classList.contains('is-menu-collapsed') || !framework.classList.contains('is-menu-hovered')) return;
+        const frameworkRect = framework.getBoundingClientRect();
+        const isInsideVerticalRange = event.clientY >= frameworkRect.top + 50 && event.clientY <= frameworkRect.bottom;
+        const isInsideLeaveZone = event.clientX >= frameworkRect.left && event.clientX <= frameworkRect.left + 70;
+        if (!isInsideVerticalRange || !isInsideLeaveZone) {
+          isMenuPointerInside = false;
+          framework.classList.remove('is-menu-hovered');
+        }
+      });
+
+      menuSlot.addEventListener('mouseenter', function() {
+        isMenuPointerInside = true;
+        showCollapsedMenuPreview();
+      });
+
+      menuSlot.addEventListener('mouseleave', function() {
+        isMenuPointerInside = false;
+        scheduleCollapsedMenuHide();
+      });
+
+      if (voiceBack) {
+        voiceBack.addEventListener('click', function() {
+          if (framework.classList.contains('is-menu-collapsed')) {
+            clearMenuRestoreTimers();
+            clearMenuHoverTimer();
+            framework.classList.remove('is-menu-hovered');
+            framework.classList.add('is-menu-restoring');
+
+            restoreMenuTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-collapsed');
+              restoreMenuTimer = null;
+            }, 80);
+
+            restoreEndTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-restoring');
+              restoreEndTimer = null;
+            }, 360);
+            return;
+          }
+
+          clearMenuRestoreTimers();
+          clearMenuHoverTimer();
+          framework.classList.remove('is-menu-restoring');
+          framework.classList.remove('is-menu-hovered');
+          framework.classList.add('is-menu-collapsed');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Tabs 标签页</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-basic" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">通用</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">标签页</span>
+      <h1 class="section-title">Tabs 标签页</h1>
+      <p class="description">Tabs级别分为三个等级：Primary（一级）、Secondary（二级）、Tertiary（三级），用于在页面中切换不同的内容视图。</p>
+
+      <div class="tabs-content">
+        <div class="tabs-section">
+          <h2 class="tabs-section-title">Primary Tabs</h2>
+          <p class="tabs-section-desc">用于主要的分类场景，具有强调当前选中状态的下划线指示器。</p>
+          <div class="tabs-page-demo tabs-page-with-border">
+            <div class="tabs-row" id="primary-tabs"></div>
+          </div>
+        </div>
+
+        <div class="tabs-section">
+          <h2 class="tabs-section-title">Secondary Tabs</h2>
+          <p class="tabs-section-desc">用于次要的分类场景，具有带边框的标签样式。</p>
+          <div class="tabs-page-demo tabs-page-with-border">
+            <div class="tabs-row" id="secondary-tabs"></div>
+          </div>
+        </div>
+
+        <div class="tabs-section">
+          <h2 class="tabs-section-title">Tertiary Tabs</h2>
+          <p class="tabs-section-desc">需要包含在一个容器内使用，用于更细分的场景。</p>
+          <div class="tabs-page-demo tabs-page-with-border">
+            <div class="tabs-row" id="tertiary-tabs"></div>
+          </div>
+        </div>
+
+        <div class="tabs-section">
+          <h2 class="tabs-section-title">带图标的 Primary Tabs</h2>
+          <p class="tabs-section-desc">Tabs 可以嵌入图标使用，通过 iconLeft 和 iconRight 参数控制图标位置。</p>
+          <div class="tabs-page-demo tabs-page-with-border">
+            <div class="tabs-row" id="primary-tabs-with-icons"></div>
+          </div>
+        </div>
+
+        <div class="tabs-section">
+          <h2 class="tabs-section-title">带图标的 Secondary Tabs</h2>
+          <p class="tabs-section-desc">二级 Tabs 也可以嵌入图标。</p>
+          <div class="tabs-page-demo tabs-page-with-border">
+            <div class="tabs-row" id="secondary-tabs-with-icons"></div>
+          </div>
+        </div>
+
+        <div class="tabs-section">
+          <h2 class="tabs-section-title">带图标的 Tertiary Tabs</h2>
+          <p class="tabs-section-desc">三级 Tabs 可以嵌入图标，左侧和右侧都可以添加。</p>
+          <div class="tabs-page-demo tabs-page-with-border">
+            <div class="tabs-row" id="tertiary-tabs-with-icons"></div>
+          </div>
+        </div>
+
+        <div class="tabs-section">
+          <h2 class="tabs-section-title">带徽标的 Primary Tabs</h2>
+          <p class="tabs-section-desc">一级 Tabs 支持配置数字徽标和红点徽标，用于展示未读数量或状态提醒。</p>
+          <div class="tabs-page-demo tabs-page-with-border">
+            <div class="tabs-row" id="primary-tabs-with-badges"></div>
+          </div>
+        </div>
+
+        <div class="tabs-section">
+          <h2 class="tabs-section-title">带徽标的 Secondary Tabs</h2>
+          <p class="tabs-section-desc">二级 Tabs 支持配置数字徽标和红点徽标，徽标浮在标签右上角，不占用布局宽度。</p>
+          <div class="tabs-page-demo tabs-page-with-border">
+            <div class="tabs-row" id="secondary-tabs-with-badges"></div>
+          </div>
+        </div>
+
+        <div class="tabs-section">
+          <h2 class="tabs-section-title">页面组合示例</h2>
+          <p class="tabs-section-desc">常规情况下，设计中只涉及【一级】和【二级】同时存在 或【二级】【三级】同时存在的情况，极少数情况下在多层级分类会同时出现【一】【二】【三】级。</p>
+          <div class="tabs-page-demo-group">
+            <div class="tabs-page-demo tabs-page-with-border tabs-page-vertical" id="page-demo-tabs"></div>
+            <div class="tabs-page-demo tabs-page-with-border tabs-page-horizontal" id="page-demo-tabs2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs-api-section">
+        <h2 class="tabs-api-title">API 参考</h2>
+        <table class="tabs-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>type</td>
+              <td>Tabs 类型</td>
+              <td>string</td>
+              <td>'primary' | 'secondary' | 'tertiary' | 'tertiary-box'</td>
+              <td>'primary'</td>
+            </tr>
+            <tr>
+              <td>tabs</td>
+              <td>标签配置数组</td>
+              <td>array</td>
+              <td>-</td>
+              <td>[]</td>
+            </tr>
+            <tr>
+              <td>tabs[].name</td>
+              <td>标签名称</td>
+              <td>string</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>tabs[].iconLeft</td>
+              <td>左侧图标类名</td>
+              <td>string</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>tabs[].iconRight</td>
+              <td>右侧图标类名</td>
+              <td>string</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>tabs[].badge</td>
+              <td>徽标配置，一级和二级支持数字徽标和红点徽标</td>
+              <td>string | number | object</td>
+              <td>{ text: '12' } | { dot: true }</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>tabs[].disabled</td>
+              <td>是否禁用</td>
+              <td>boolean</td>
+              <td>true | false</td>
+              <td>false</td>
+            </tr>
+            <tr>
+              <td>defaultActive</td>
+              <td>默认选中的标签索引</td>
+              <td>number</td>
+              <td>-</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>onChange</td>
+              <td>切换标签时的回调函数</td>
+              <td>function</td>
+              <td>-</td>
+              <td>null</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-badge-center-anchor"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-tabs');
+
+      const primaryTabs = createTabs({
+        type: 'primary',
+        tabs: [
+          { name: '游戏道具' },
+          { name: 'CDLKEY' },
+          { name: '礼物商城' }
+        ],
+        defaultActive: 0,
+        onChange: ({ index }) => console.log('Primary tab changed:', index)
+      });
+      document.getElementById('primary-tabs').appendChild(primaryTabs);
+
+      const secondaryTabs = createTabs({
+        type: 'secondary',
+        tabs: [
+          { name: '游戏道具' },
+          { name: 'CDLKEY' },
+          { name: '礼物商城' }
+        ],
+        defaultActive: 0,
+        onChange: ({ index }) => console.log('Secondary tab changed:', index)
+      });
+      document.getElementById('secondary-tabs').appendChild(secondaryTabs);
+
+      const tertiaryTabs = createTabs({
+        type: 'tertiary-box',
+        tabs: [
+          { name: '游戏道具' },
+          { name: 'CDLKEY' },
+          { name: '礼物商城' }
+        ],
+        defaultActive: 0,
+        onChange: ({ index }) => console.log('Tertiary tab changed:', index)
+      });
+      document.getElementById('tertiary-tabs').appendChild(tertiaryTabs);
+
+      const primaryWithIcons = createTabs({
+        type: 'primary',
+        tabs: [
+          { name: '游戏道具', iconLeft: 'nicon-a-Nickname-Lineyouxinicheng-xianxing' },
+          { name: 'CDLKEY', iconLeft: 'nicon-a-KeyVerificationCode-linemiyueyanzhengma-xianxing' },
+          { name: '礼物商城', iconLeft: 'nicon-a-gift-lineliwudashang-xianxing' }
+        ],
+        defaultActive: 0,
+        onChange: ({ index }) => console.log('Primary icon tab changed:', index)
+      });
+      document.getElementById('primary-tabs-with-icons').appendChild(primaryWithIcons);
+
+      const secondaryWithIcons = createTabs({
+        type: 'secondary',
+        tabs: [
+          { name: '游戏道具', iconLeft: 'nicon-a-Nickname-Lineyouxinicheng-xianxing', iconRight: 'nicon-a-Arrow-down-linejiantouxia-xianxing' },
+          { name: 'CDLKEY', iconLeft: 'nicon-a-KeyVerificationCode-linemiyueyanzhengma-xianxing', iconRight: 'nicon-a-Arrow-down-linejiantouxia-xianxing' },
+          { name: '礼物商城', iconLeft: 'nicon-a-gift-lineliwudashang-xianxing', iconRight: 'nicon-a-Arrow-down-linejiantouxia-xianxing' }
+        ],
+        defaultActive: 0,
+        onChange: ({ index }) => console.log('Secondary icon tab changed:', index)
+      });
+      document.getElementById('secondary-tabs-with-icons').appendChild(secondaryWithIcons);
+
+      const primaryWithBadges = createTabs({
+        type: 'primary',
+        tabs: [
+          { name: '消息', badge: '6' },
+          { name: '@ 我', badge: { text: '12' } },
+          { name: '动态', badge: { text: '99+' } },
+          { name: '提醒', badge: { dot: true } }
+        ],
+        defaultActive: 1,
+        onChange: ({ index }) => console.log('Primary badge tab changed:', index)
+      });
+      document.getElementById('primary-tabs-with-badges').appendChild(primaryWithBadges);
+
+      const secondaryWithBadges = createTabs({
+        type: 'secondary',
+        tabs: [
+          { name: '全部', badge: '6' },
+          { name: '@我', badge: { text: '12' } },
+          { name: '动态', badge: { dot: true } }
+        ],
+        defaultActive: 0,
+        onChange: ({ index }) => console.log('Secondary badge tab changed:', index)
+      });
+      document.getElementById('secondary-tabs-with-badges').appendChild(secondaryWithBadges);
+
+      const tertiaryWithIcons = createTabs({
+        type: 'tertiary-box',
+        tabs: [
+          { name: '游戏道具', iconLeft: 'nicon-a-Nickname-Lineyouxinicheng-xianxing', iconRight: 'nicon-a-Arrow-down-linejiantouxia-xianxing' },
+          { name: 'CDLKEY', iconLeft: 'nicon-a-KeyVerificationCode-linemiyueyanzhengma-xianxing', iconRight: 'nicon-a-Arrow-down-linejiantouxia-xianxing' },
+          { name: '礼物商城', iconLeft: 'nicon-a-gift-lineliwudashang-xianxing', iconRight: 'nicon-a-Arrow-down-linejiantouxia-xianxing' }
+        ],
+        defaultActive: 0,
+        onChange: ({ index }) => console.log('Tertiary icon tab changed:', index)
+      });
+      document.getElementById('tertiary-tabs-with-icons').appendChild(tertiaryWithIcons);
+
+      const pageDemoContainer = document.getElementById('page-demo-tabs');
+
+      const primaryRow = createTabs({
+        type: 'primary',
+        tabs: [
+          { name: '游戏道具' },
+          { name: 'CDLKEY' },
+          { name: '礼物商城' }
+        ],
+        defaultActive: 0
+      });
+      pageDemoContainer.appendChild(primaryRow);
+
+      const secondaryRow = createTabs({
+        type: 'secondary',
+        tabs: [
+          { name: '枪械皮肤' },
+          { name: '哈夫币' },
+          { name: '保险箱' }
+        ],
+        defaultActive: 0
+      });
+      pageDemoContainer.appendChild(secondaryRow);
+
+      const secondaryRow2 = createTabs({
+        type: 'secondary',
+        tabs: [
+          { name: '湖北榜', iconRight: 'iconfont icon-arrow-down' },
+          { name: '全国榜' },
+          { name: '全球榜' }
+        ],
+        defaultActive: 0
+      });
+      document.getElementById('page-demo-tabs2').appendChild(secondaryRow2);
+
+      const tertiaryRow2 = createTabs({
+        type: 'tertiary-box',
+        tabs: [
+          { name: '日' },
+          { name: '周' },
+          { name: '月' }
+        ],
+        defaultActive: 0
+      });
+      document.getElementById('page-demo-tabs2').appendChild(tertiaryRow2);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器业务组件库 - Image Carousel 图片轮播</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    .accelerator-image-carousel-content,
+    .accelerator-image-carousel-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .accelerator-image-carousel-content {
+      gap: var(--space48);
+    }
+
+    .accelerator-image-carousel-section {
+      gap: var(--space16);
+    }
+
+    .accelerator-image-carousel-section-title,
+    .accelerator-image-carousel-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-title);
+    }
+
+    .accelerator-image-carousel-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .accelerator-image-carousel-demo {
+      display: flex;
+      width: 100%;
+      padding: var(--space48);
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .accelerator-image-carousel-demo-frame {
+      width: 100%;
+      max-width: 928px;
+    }
+
+    .accelerator-image-carousel-demo-frame--banner {
+      max-width: 1000px;
+    }
+
+    .accelerator-image-carousel-api-section {
+      margin-top: var(--space80);
+    }
+
+    .accelerator-image-carousel-api-title {
+      margin-bottom: var(--space24);
+    }
+
+    .accelerator-image-carousel-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-body);
+    }
+
+    .accelerator-image-carousel-api-table th,
+    .accelerator-image-carousel-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .accelerator-image-carousel-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .accelerator-image-carousel-api-table td {
+      color: var(--gray-5);
+    }
+
+    .accelerator-image-carousel-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261028-accelerator-library&library=accelerator-business" title="加速器业务组件顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-b-nav.html?v=20261028-image-carousel" title="加速器业务组件导航" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">加速器业务组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">图片轮播</span>
+      <h1 class="section-title">Image Carousel 图片轮播</h1>
+      <p class="description">用于加速器首页广告内容展示，支持自动轮播、导航切换和副文本展示。</p>
+
+      <div class="accelerator-image-carousel-content">
+        <div class="accelerator-image-carousel-section">
+          <h2 class="accelerator-image-carousel-section-title">首页广告轮播</h2>
+          <p class="accelerator-image-carousel-section-desc">始终保持一个选中项并展示副文本；鼠标移入其他右侧导航后，切换图片和选中状态。</p>
+          <div class="accelerator-image-carousel-demo" data-code-preview="true" id="accelerator-image-carousel-preview">
+            <div class="accelerator-image-carousel-demo-frame" id="accelerator-image-carousel-demo"></div>
+          </div>
+        </div>
+
+        <div class="accelerator-image-carousel-section">
+          <h2 class="accelerator-image-carousel-section-title">横幅轮播</h2>
+          <p class="accelerator-image-carousel-section-desc">展示完整横幅图片，支持自动轮播、右侧导航切换和选中项副文本。</p>
+          <div class="accelerator-image-carousel-demo" data-code-preview="true" id="accelerator-banner-carousel-preview">
+            <div class="accelerator-image-carousel-demo-frame accelerator-image-carousel-demo-frame--banner" id="accelerator-banner-carousel-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accelerator-image-carousel-api-section">
+        <h2 class="accelerator-image-carousel-api-title">API</h2>
+        <table class="accelerator-image-carousel-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>variant</td><td>轮播展示样式</td><td>string</td><td>home | banner</td><td>home</td></tr>
+            <tr><td>items</td><td>轮播图、标题和选中项副文本数据</td><td>object[]</td><td>{ title, subtitle, imageSrc }</td><td>内置 3 项示例</td></tr>
+            <tr><td>defaultActive</td><td>默认展示的图片索引</td><td>number</td><td>-</td><td>0</td></tr>
+            <tr><td>autoplay</td><td>是否自动轮播</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>autoplayDuration</td><td>自动切换间隔</td><td>number</td><td>毫秒</td><td>5000</td></tr>
+            <tr><td>ariaLabel</td><td>轮播区域辅助说明</td><td>string</td><td>-</td><td>加速器图片轮播</td></tr>
+            <tr><td>onChange</td><td>图片切换回调</td><td>function</td><td>-</td><td>null</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20261028-accelerator-library"></script>
+  <script src="../basic%20components/button.js?v=20261114-accelerator-state-sync"></script>
+  <script src="../basic%20components/message.js?v=20261029-accelerator-code-preview"></script>
+  <script src="../basic%20components/code-preview.js?v=20261029-accelerator-code-preview"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-search-resource-library"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('accelerator-b-nav-image-carousel');
+      document.getElementById('accelerator-image-carousel-demo').appendChild(createAcceleratorImageCarousel());
+      document.getElementById('accelerator-image-carousel-preview').dataset.codeJs = [
+        "const carousel = createAcceleratorImageCarousel({",
+        "  defaultActive: 0,",
+        "  autoplay: true,",
+        "  autoplayDuration: 5000,",
+        "  onChange: function(index, item) {",
+        "    console.log(index, item);",
+        "  }",
+        "});",
+        "document.getElementById('container').appendChild(carousel);"
+      ].join('\n');
+
+      document.getElementById('accelerator-banner-carousel-demo').appendChild(createAcceleratorImageCarousel({
+        variant: 'banner'
+      }));
+      document.getElementById('accelerator-banner-carousel-preview').dataset.codeJs = [
+        "const bannerCarousel = createAcceleratorImageCarousel({",
+        "  variant: 'banner',",
+        "  defaultActive: 0,",
+        "  autoplay: true,",
+        "  autoplayDuration: 5000",
+        "});",
+        "document.getElementById('container').appendChild(bannerCarousel);"
+      ].join('\n');
+    });
+  </script>
+</body>
+</html>
+

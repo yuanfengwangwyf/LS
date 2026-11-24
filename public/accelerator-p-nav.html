@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器页面导航</title>
+  <script>
+    document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+  </script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <style>
+    body {
+      margin: var(--space0);
+      padding: var(--space0);
+      background: var(--gray-2);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <div class="nav-title">加速器页面</div>
+      <div class="nav-section">
+        <div class="nav-section-title">页面展示</div>
+        <ul class="nav-list">
+          <li><a href="AcceleratorFramework.html" id="accelerator-p-nav-framework" target="_parent"><span class="nav-link-label">Framework 框架</span></a></li>
+          <li><a href="../Accelerator%20page/Home.html" id="accelerator-p-nav-home" target="_parent"><span class="nav-link-label">Home 首页</span></a></li>
+          <li><a href="../Accelerator%20page/Ranking.html" id="accelerator-p-nav-ranking" target="_parent"><span class="nav-link-label">Ranking 排行榜</span></a></li>
+          <li><a href="../Accelerator%20page/Tools.html" id="accelerator-p-nav-tools" target="_parent"><span class="nav-link-label">Computer tools电脑工具</span></a></li>
+          <li><a href="../Accelerator%20page/GameAccelerator.html" id="accelerator-p-nav-game-accelerator" target="_parent"><span class="nav-link-label">Accelerate加速详情</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    function applyInit(data) {
+      document.documentElement.classList.toggle('dark-mode', Boolean(data.darkMode));
+      document.body.classList.toggle('dark-mode', Boolean(data.darkMode));
+
+      if (data.activeNavId) {
+        document.querySelectorAll('.nav-list a.active').forEach(function(link) {
+          link.classList.remove('active');
+        });
+
+        var activeLink = document.getElementById(data.activeNavId);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    }
+
+    function updateNavFadeState() {
+      var nav = document.querySelector('.nav');
+      var content = document.querySelector('.nav-content');
+      if (!nav || !content) return;
+
+      var maxScrollTop = Math.max(0, content.scrollHeight - content.clientHeight);
+      nav.classList.toggle('is-scroll-top', content.scrollTop > 0);
+      nav.classList.toggle('is-scroll-bottom', content.scrollTop < maxScrollTop - 1);
+    }
+
+    function restoreScrollPosition() {
+      var content = document.querySelector('.nav-content');
+      if (!content) return;
+      var savedPosition = sessionStorage.getItem('accelerator-p-nav-scrollTop');
+      if (savedPosition !== null) content.scrollTop = parseInt(savedPosition, 10);
+      updateNavFadeState();
+    }
+
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'init') {
+        applyInit(event.data);
+        restoreScrollPosition();
+      } else if (event.data && event.data.type === 'dark-mode') {
+        document.documentElement.classList.toggle('dark-mode', Boolean(event.data.value));
+        document.body.classList.toggle('dark-mode', Boolean(event.data.value));
+      }
+    });
+
+    (function() {
+      var isDarkMode = localStorage.getItem('dark-mode') === 'true';
+      document.documentElement.classList.toggle('dark-mode', isDarkMode);
+      document.body.classList.toggle('dark-mode', isDarkMode);
+      restoreScrollPosition();
+      var content = document.querySelector('.nav-content');
+      if (content) content.addEventListener('scroll', updateNavFadeState, { passive: true });
+      window.addEventListener('resize', updateNavFadeState);
+    })();
+
+    window.addEventListener('beforeunload', function() {
+      var content = document.querySelector('.nav-content');
+      if (content) sessionStorage.setItem('accelerator-p-nav-scrollTop', content.scrollTop);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速器业务组件库 - Heatmap 热力图</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261029-accelerator-heatmap">
+  <style>
+    .accelerator-heatmap-content,
+    .accelerator-heatmap-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .accelerator-heatmap-content {
+      gap: var(--space48);
+    }
+
+    .accelerator-heatmap-section {
+      gap: var(--space16);
+    }
+
+    .accelerator-heatmap-section-title,
+    .accelerator-heatmap-api-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-title);
+    }
+
+    .accelerator-heatmap-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .accelerator-heatmap-demo {
+      display: flex;
+      width: 100%;
+      min-height: 360px;
+      align-items: center;
+      justify-content: flex-start;
+      padding: var(--space48);
+      overflow-x: auto;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .accelerator-heatmap-demo-frame {
+      width: 1000px;
+      min-width: 1000px;
+    }
+
+    .accelerator-heatmap-api-section {
+      margin-top: var(--space80);
+    }
+
+    .accelerator-heatmap-api-title {
+      margin-bottom: var(--space24);
+    }
+
+    .accelerator-heatmap-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: var(--font-size-body);
+    }
+
+    .accelerator-heatmap-api-table th,
+    .accelerator-heatmap-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .accelerator-heatmap-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .accelerator-heatmap-api-table td {
+      color: var(--gray-5);
+    }
+
+    .accelerator-heatmap-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-accelerator-heatmap&amp;library=accelerator-business" title="加速器业务组件顶部导航" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/accelerator-b-nav.html?v=20261029-accelerator-heatmap" title="加速器业务组件导航" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">加速器业务组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">热力图</span>
+      <h1 class="section-title">Heatmap 热力图</h1>
+      <p class="description">展示年度游戏时长分布与每日游戏明细。</p>
+
+      <div class="accelerator-heatmap-content">
+        <div class="accelerator-heatmap-section">
+          <h2 class="accelerator-heatmap-section-title">年度游戏时长</h2>
+          <p class="accelerator-heatmap-section-desc">移入或聚焦日期单元格，可查看当天总时长和游戏明细。</p>
+          <div class="accelerator-heatmap-demo" data-code-preview="true" id="accelerator-heatmap-preview">
+            <div class="accelerator-heatmap-demo-frame" id="accelerator-heatmap-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accelerator-heatmap-api-section">
+        <h2 class="accelerator-heatmap-api-title">API</h2>
+        <table class="accelerator-heatmap-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>width</td><td>热力图宽度</td><td>number | string</td><td>CSS 长度</td><td>1000</td></tr>
+            <tr><td>columns</td><td>横向日期列数</td><td>number</td><td>1 及以上</td><td>60</td></tr>
+            <tr><td>rows</td><td>纵向日期行数</td><td>number</td><td>1 及以上</td><td>7</td></tr>
+            <tr><td>startDate</td><td>首个日期</td><td>string | Date</td><td>有效日期</td><td>2025-11-01</td></tr>
+            <tr><td>months</td><td>顶部月份标签</td><td>string[]</td><td>-</td><td>11月至10月</td></tr>
+            <tr><td>data</td><td>日期热度与明细数据</td><td>object[]</td><td>{ date, level, hours, games }</td><td>示例数据</td></tr>
+            <tr><td>games</td><td>默认游戏明细</td><td>object[]</td><td>{ name, logoSrc }</td><td>3 款游戏</td></tr>
+            <tr><td>seed</td><td>示例热度随机种子</td><td>number</td><td>-</td><td>188849</td></tr>
+            <tr><td>ariaLabel</td><td>组件辅助说明</td><td>string</td><td>-</td><td>年度游戏时长热力图</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20261029-accelerator-heatmap"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20261029-accelerator-heatmap"></script>
+  <script src="../basic%20components/code-preview.js?v=20261029-accelerator-heatmap"></script>
+  <script src="../Accelerator%20business%20components/heatmap.js?v=20261119-din-unit-shift"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('accelerator-b-nav-heatmap');
+      document.getElementById('accelerator-heatmap-demo').appendChild(createAcceleratorHeatmap());
+      document.getElementById('accelerator-heatmap-preview').dataset.codeJs = [
+        "const heatmap = createAcceleratorHeatmap({",
+        "  width: 1000,",
+        "  startDate: '2025-11-01',",
+        "  data: heatmapData",
+        "});",
+        "document.getElementById('container').appendChild(heatmap);"
+      ].join('\n');
+    });
+  </script>
+</body>
+</html>

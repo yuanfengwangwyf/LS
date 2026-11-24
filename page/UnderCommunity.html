@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Under community 旗下社区</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261111-launch-update-icons">
+  <script src="../iconfont/iconfont.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 100%;
+      min-height: 100vh;
+      margin: var(--space0);
+      overflow: auto;
+      background: var(--gray-1);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+    }
+
+    body.is-under-expanded #nav-iframe {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .under-shell {
+      min-width: 1280px;
+      min-height: calc(100vh - 60px);
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .under-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-width: 1280px;
+      min-height: 900px;
+    }
+
+    .under-framework {
+      --framework-menu-width: 70px;
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+      --framework-content-left: 366px;
+      --framework-voice-height: 60px;
+      --framework-motion-duration: 520ms;
+      --framework-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      width: 1280px;
+      height: 900px;
+      min-width: 1280px;
+      min-height: 900px;
+      overflow: hidden;
+      background: var(--gray-1);
+      color: var(--gray-3);
+    }
+
+    .under-framework::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 120;
+      box-shadow: inset 0 0 0 1px var(--gray-8);
+      pointer-events: none;
+    }
+
+    .under-framework.is-menu-collapsed {
+      --framework-community-left: 12px;
+      --framework-community-width: 354px;
+    }
+
+    .under-framework.is-menu-collapsed.is-menu-hovered {
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+    }
+
+    .under-framework.is-expanded {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .under-framework__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      width: 100%;
+      height: 50px;
+    }
+
+    .under-framework__header .nn-header {
+      width: 100% !important;
+      padding-right: var(--space0);
+      border-bottom-color: var(--gray-10);
+    }
+
+    .under-framework__menu {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: 0;
+      z-index: 25;
+      width: var(--framework-menu-width);
+      overflow: visible;
+      background: var(--gray-1);
+      transform: translateX(0);
+      transition: transform var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: transform;
+    }
+
+    .under-framework.is-menu-collapsed .under-framework__menu {
+      pointer-events: none;
+      transform: translateX(calc(-1 * var(--framework-menu-width)));
+    }
+
+    .under-framework.is-menu-collapsed.is-menu-hovered .under-framework__menu {
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .under-framework__menu-hover-zone {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: 0;
+      z-index: 36;
+      display: none;
+      width: 70px;
+      background: transparent;
+    }
+
+    .under-framework.is-menu-collapsed .under-framework__menu-hover-zone {
+      display: block;
+    }
+
+    .under-framework.is-menu-collapsed.is-menu-hovered .under-framework__menu-hover-zone {
+      z-index: 24;
+      width: 70px;
+    }
+
+    .under-framework__menu .nn-menu {
+      width: var(--framework-menu-width);
+      height: 100%;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .under-framework__menu .nn-menu-list {
+      transform: translateY(calc(-1 * var(--framework-menu-scroll-offset, 0px)));
+      transition: transform 120ms ease;
+      will-change: transform;
+    }
+
+    .under-framework__menu .nn-menu-list-wrapper,
+    .under-framework__menu .nn-menu-list,
+    .under-framework__menu .nn-menu-item {
+      overflow: visible;
+    }
+
+    .under-framework__menu .nn-tooltip {
+      z-index: 80;
+      pointer-events: none;
+    }
+
+    .under-framework__community {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: var(--framework-community-left);
+      z-index: 8;
+      width: var(--framework-community-width);
+      overflow: hidden;
+      background: var(--gray-1);
+      transition:
+        left var(--framework-motion-duration) var(--framework-motion-ease),
+        width var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: left, width;
+    }
+
+    .under-framework__community .nn-community-combo {
+      width: 100%;
+      min-width: 100%;
+      height: 100%;
+      max-height: none;
+      transition:
+        width var(--framework-motion-duration) var(--framework-motion-ease),
+        min-width var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .under-framework__community .nn-community-combo__scroller {
+      height: 100%;
+      min-width: 0;
+      max-height: none;
+      padding-bottom: var(--framework-voice-height);
+    }
+
+    .under-framework__content {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      bottom: 0;
+      left: var(--framework-content-left);
+      padding: var(--space0) var(--space8);
+      overflow: hidden;
+      background: var(--gray-1);
+      box-sizing: border-box;
+      transition: left var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .under-framework__content > .nn-header--room-header-under-community {
+      position: absolute;
+      top: 0;
+      left: 8px;
+      z-index: 12;
+      width: calc(100% - 32px) !important;
+      min-width: 0;
+      background: var(--gray-1);
+    }
+
+    .under-framework__content > .nn-header--room-header-under-community .nn-room-header-under-community {
+      height: 44px;
+    }
+
+    .under-content {
+      width: 100%;
+      height: 100%;
+      padding: var(--space48) var(--space16) var(--space0) var(--space0);
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .under-content__inner {
+      width: 100%;
+      min-height: 100%;
+      margin-right: auto;
+      margin-left: var(--space0);
+    }
+
+    .under-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(264px, 1fr));
+      align-items: start;
+      justify-content: start;
+      row-gap: var(--space32);
+      column-gap: var(--space24);
+      width: 100%;
+      padding-top: var(--space2);
+      padding-bottom: var(--space24);
+    }
+
+    .under-card-grid .nn-player-community-card {
+      min-width: 0;
+    }
+
+    .under-framework__voice {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 40;
+      display: flex;
+      align-items: flex-end;
+      overflow: visible;
+    }
+
+    .under-framework__voice .nn-voice-panel__top {
+      max-height: 80px;
+      opacity: 1;
+      overflow: visible;
+      transform: translateY(0);
+      transition:
+        max-height var(--framework-motion-duration) var(--framework-motion-ease),
+        opacity 180ms ease,
+        transform var(--framework-motion-duration) var(--framework-motion-ease),
+        margin var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .under-framework.is-voice-room-hidden .under-framework__voice .nn-voice-panel__top {
+      max-height: 0;
+      margin: calc(var(--space8) * -1) var(--space0) var(--space0);
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    .under-framework .community-framework__menu-arrow {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      z-index: 23;
+      width: 28px;
+      height: 76px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(0, -50%);
+    }
+
+    .under-framework.is-menu-collapsed .community-framework__menu-arrow,
+    .under-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow,
+    .under-framework.is-menu-restoring .community-framework__menu-arrow {
+      opacity: 1;
+    }
+
+    .under-framework .community-framework__menu-arrow-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: auto;
+      height: 76px;
+      object-fit: contain;
+      transform-origin: left center;
+      opacity: 0;
+      transform: translateX(-30px);
+      will-change: transform, opacity;
+    }
+
+    .under-framework .community-framework__menu-arrow-img--light-1 {
+      width: 24px;
+    }
+
+    .under-framework .community-framework__menu-arrow-img--light-2 {
+      width: 22px;
+    }
+
+    .under-framework .community-framework__menu-arrow-img--dark {
+      display: none;
+    }
+
+    body.dark-mode .under-framework .community-framework__menu-arrow-img--light {
+      display: none;
+    }
+
+    body.dark-mode .under-framework .community-framework__menu-arrow-img--dark {
+      display: block;
+    }
+
+    .under-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1 {
+      animation: framework-menu-arrow-light-1-first 3000ms linear both;
+    }
+
+    .under-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2 {
+      animation: framework-menu-arrow-light-2-first 3000ms linear both;
+    }
+
+    .under-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1-repeat {
+      animation: framework-menu-arrow-light-1-repeat 3000ms linear both;
+    }
+
+    .under-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2-repeat {
+      animation: framework-menu-arrow-light-2-repeat 3000ms linear both;
+    }
+
+    .under-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow-img,
+    .under-framework.is-menu-restoring .community-framework__menu-arrow-img {
+      animation: framework-menu-arrow-light-exit 280ms cubic-bezier(0.4, 0, 1, 1) both;
+    }
+
+    @keyframes framework-menu-arrow-light-1-first {
+      0%, 9% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      12% {
+        opacity: 0.45;
+        transform: translateX(-16px);
+      }
+      16% {
+        opacity: 0.9;
+        transform: translateX(-4px);
+      }
+      18%, 29% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.72;
+        transform: translateX(0);
+      }
+      34% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      35%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-first {
+      0%, 15% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      18% {
+        opacity: 0.42;
+        transform: translateX(-16px);
+      }
+      23% {
+        opacity: 0.92;
+        transform: translateX(-4px);
+      }
+      25%, 27% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      29% {
+        opacity: 0.7;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      32.5%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-1-repeat {
+      0%, 31.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      35.5% {
+        opacity: 0.38;
+        transform: translateX(-17px);
+      }
+      39.5% {
+        opacity: 0.9;
+        transform: translateX(-5px);
+      }
+      42.5%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-repeat {
+      0%, 37.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      41.5% {
+        opacity: 0.34;
+        transform: translateX(-17px);
+      }
+      46.5% {
+        opacity: 0.88;
+        transform: translateX(-5px);
+      }
+      49.5%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-exit {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+  </style>
+  <script>
+    (function() {
+      document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&library=page" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261029-nn-page-theme-first-paint" frameborder="0"></iframe>
+
+  <main class="under-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">旗下社区</span>
+      <h1 class="section-title">Under community 旗下社区</h1>
+      <div class="under-stage" data-code-preview="true">
+        <div id="under-framework" class="community-framework under-framework" aria-label="Under community">
+          <div id="under-header" class="community-framework__header under-framework__header"></div>
+          <div id="under-menu" class="community-framework__menu under-framework__menu"></div>
+          <div id="under-menu-hover-zone" class="under-framework__menu-hover-zone" aria-hidden="true"></div>
+          <div id="under-community" class="community-framework__community under-framework__community"></div>
+          <div class="community-framework__content under-framework__content">
+            <div class="under-content">
+              <div class="under-content__inner" data-nn-header-align>
+                <div id="under-card-grid" class="under-card-grid"></div>
+              </div>
+            </div>
+          </div>
+          <div class="community-framework__menu-arrow" aria-hidden="true">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-dark-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-dark-2.svg" alt="">
+          </div>
+          <div id="under-voice" class="community-framework__voice under-framework__voice"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/radio.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/input.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/slider.js?v=20260529-wheel"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/menu.js?v=20261117-menu-avatar-size-selected-stroke"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-indicator-resize"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../NN%20business%20components/pugc.js?v=20260615-pugc-list-label-export"></script>
+  <script src="../NN%20business%20components/community-navigation.js?v=20261116-cover-id-bg80"></script>
+  <script src="../NN%20business%20components/toast-display.js?v=20260611-toast-display-scrollbar-component"></script>
+  <script src="../public/vendor/lottie.min.js?v=20260616"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-banner-responsive-nav"></script>
+  <script src="../NN%20business%20components/voice-panel.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-under-community');
+      window.setTimeout(function() {
+        setActiveNav('p-nav-under-community');
+      }, 120);
+
+      const framework = document.getElementById('under-framework');
+      const headerSlot = document.getElementById('under-header');
+      const menuSlot = document.getElementById('under-menu');
+      const menuHoverZone = document.getElementById('under-menu-hover-zone');
+      const communitySlot = document.getElementById('under-community');
+      const voiceSlot = document.getElementById('under-voice');
+      const contentPanel = framework.querySelector('.under-framework__content');
+      const underContent = framework.querySelector('.under-content');
+      const underContentInner = framework.querySelector('.under-content__inner');
+      const cardGrid = document.getElementById('under-card-grid');
+      const underContentScrollbar = typeof window.createScrollbar === 'function'
+        ? window.createScrollbar({
+          target: underContent,
+          container: contentPanel,
+          hoverTarget: contentPanel,
+          variant: 'page',
+          right: 4,
+          top: 52,
+          bottom: 0
+        })
+        : null;
+
+      function canNestedScrollerMove(target, deltaY) {
+        let node = target instanceof Element ? target : null;
+        while (node && node !== underContent) {
+          const style = window.getComputedStyle(node);
+          const canOverflow = /(auto|scroll)/.test(style.overflowY);
+          const hasScrollableContent = node.scrollHeight > node.clientHeight + 1;
+          if (canOverflow && hasScrollableContent) {
+            const canScrollUp = node.scrollTop > 0;
+            const canScrollDown = node.scrollTop + node.clientHeight < node.scrollHeight - 1;
+            if ((deltaY < 0 && canScrollUp) || (deltaY > 0 && canScrollDown)) {
+              return true;
+            }
+          }
+          node = node.parentElement;
+        }
+        return false;
+      }
+
+      framework.addEventListener('wheel', function(event) {
+        if (canNestedScrollerMove(event.target, event.deltaY)) return;
+        const maxScrollTop = Math.max(0, underContent.scrollHeight - underContent.clientHeight);
+        if (maxScrollTop <= 0) return;
+        const atTop = underContent.scrollTop <= 0;
+        const atBottom = underContent.scrollTop >= maxScrollTop - 1;
+        if ((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom)) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }, { passive: false, capture: true });
+
+      function syncDarkMode(isDark) {
+        localStorage.setItem('dark-mode', String(isDark));
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
+        notifyIframeDarkMode(isDark);
+      }
+
+      function toggleDarkMode() {
+        syncDarkMode(!document.body.classList.contains('dark-mode'));
+      }
+
+      function toggleExpanded() {
+        const isExpanded = framework.classList.toggle('is-expanded');
+        document.body.classList.toggle('is-under-expanded', isExpanded);
+        requestAnimationFrame(function() {
+          if (underContentScrollbar) underContentScrollbar.update();
+        });
+      }
+
+      const header = createHeader({
+        width: '100%',
+        showBack: true
+      });
+      headerSlot.appendChild(header);
+
+      const windowIcons = header.querySelectorAll('.nn-header__window-icon');
+      if (windowIcons[1]) {
+        windowIcons[1].setAttribute('role', 'button');
+        windowIcons[1].setAttribute('tabindex', '0');
+        windowIcons[1].setAttribute('aria-label', '适配浏览器最大尺寸');
+        windowIcons[1].addEventListener('click', toggleExpanded);
+        windowIcons[1].addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleExpanded();
+          }
+        });
+      }
+
+      const themeButton = header.querySelector('.nn-header__icon-btn--more');
+      if (themeButton) {
+        themeButton.addEventListener('click', toggleDarkMode);
+      }
+
+      contentPanel.insertBefore(createHeader({
+        variant: 'room-header-under-community',
+        width: '100%',
+        underTitle: '旗下社区',
+        actions: [
+          {
+            text: '创建战队社区',
+            variant: 'system',
+            level: 'primary',
+            size: 'default',
+            icon: '<i class="nnicon nicon-a-add-linetianjia-xianxing"></i>',
+            iconPosition: 'left'
+          }
+        ]
+      }), underContent);
+
+      menuSlot.appendChild(createInteractiveMenu());
+
+      communitySlot.appendChild(createCommunityNavigationCombo({ communityType: 'game' }));
+
+      const voicePanel = createVoicePanel({
+        launchState: 'idle',
+        avatars: [
+          '../image/Avatar/头像480.png',
+          '../image/Avatar/头像441.png',
+          '../image/Avatar/头像496.png',
+          '../image/Avatar/头像655.png',
+          '../image/Avatar/头像686.png'
+        ],
+        speakerAvatar: '../image/Avatar/头像480.png'
+      });
+      voiceSlot.appendChild(voicePanel);
+
+      const communityNames = [
+        'Nova Elite',
+        'Storm Hunters',
+        'Aurora Team',
+        'Blue Wolves',
+        'Night Raid',
+        'Peak Union',
+        'Echo Squad',
+        'Iron Wings',
+        'Wildfire',
+        'Crown Line',
+        'Zero Point',
+        'Shadow Crew',
+        'Galaxy Force',
+        'Raven Club',
+        'Thunder Core',
+        'Silver Fox',
+        'Crimson Star',
+        'Polar Light',
+        'Dragon Nest',
+        'Skyline'
+      ];
+      const descriptions = [
+        ['旗下主力战队社区招募中，长期招募突击位、架枪位和自由人', '训练赛、复盘资料、赛事报名和队内活动会在这里同步更新'],
+        ['每晚固定开黑冲分', '欢迎战术位与指挥位加入'],
+        ['赛事复盘和精彩集锦持续更新，包含经典残局和运营路线拆解', '分享当前活动预告内容，方便队员快速了解本周重点安排'],
+        ['新人训练与固定队伍', '轻松交流快速组队'],
+        ['高分段玩家集中社区', '战绩榜单实时更新'],
+        ['周末娱乐赛报名开放，适合休闲队伍、主播车队和新人玩家参与', '当前活动预览介绍，奖励规则和房间安排会提前公布'],
+        ['语音活跃队伍推荐', '战术路线与攻略沉淀'],
+        ['社区认证战队入驻，成员资料、历史战绩和招募要求统一展示', '官方活动优先通知，重要赛程会同步到社区公告和语音房'],
+        ['多人训练房常驻开放', '欢迎加入旗下战队'],
+        ['比赛资讯与队员招募', '精彩战报每日更新'],
+        ['固定四排车队社区，覆盖晚间冲分、周末训练和临时补位需求', '战术沟通和复盘交流，队长会定期整理地图点位与拉枪路线'],
+        ['人气队伍集合大厅', '社区活动持续开放'],
+        ['明星战队粉丝聚集地，收录选手动态、赛事话题和高光片段', '赛事资讯实时同步，开赛提醒、比分战报和赛后复盘都会更新'],
+        ['战队训练营开放报名', '队内活动持续更新'],
+        ['高活跃语音开黑社区', '战术交流快速响应'],
+        ['休闲娱乐与排位兼顾，适合想稳定找队友又不想压力过高的玩家', '固定队伍招募中，支持按时间段、位置偏好和游戏目标匹配'],
+        ['红色认证战队入驻', '活动奖励优先发放'],
+        ['新人友好训练社区，从基础报点、身法练习到团队协作都有教程', '上分经验每日分享，老队员会整理常见失误和改进建议'],
+        ['周赛报名和战绩复盘', '战队成员持续扩充'],
+        ['社区大厅人气推荐，聚合活跃战队、热门语音房和近期活动入口', '精彩内容持续开放，欢迎队员发布攻略、招募帖和精彩战报']
+      ];
+
+      function pickRandomIndexes(total, count) {
+        const indexes = Array.from({ length: total }, function(_, index) {
+          return index;
+        });
+        for (let index = indexes.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1));
+          const current = indexes[index];
+          indexes[index] = indexes[swapIndex];
+          indexes[swapIndex] = current;
+        }
+        return new Set(indexes.slice(0, count));
+      }
+
+      function randomIdNumber() {
+        return String(Math.floor(10000 + Math.random() * 90000));
+      }
+
+      const redCertificationIndexes = pickRandomIndexes(communityNames.length, Math.floor(Math.random() * 2) + 1);
+      const premiumIdIndexes = pickRandomIndexes(communityNames.length, Math.floor(Math.random() * 2) + 1);
+      const underCardData = communityNames.map(function(title, index) {
+        const assetIndex = (index % 20) + 1;
+        return {
+          title,
+          coverSrc: `../image/Game logo/game${assetIndex}-cover.webp`,
+          showOfficial: redCertificationIndexes.has(index),
+          communityLevel: Math.floor(Math.random() * 10) + 1,
+          idText: randomIdNumber(),
+          isPremiumId: premiumIdIndexes.has(index),
+          description: descriptions[index][0],
+          onlineText: `${(18 + index * 8).toLocaleString()},${(320 + index * 17).toLocaleString()}`
+        };
+      });
+
+      function renderUnderCards() {
+        if (!cardGrid) return;
+        cardGrid.innerHTML = '';
+        underCardData.forEach(function(card) {
+          cardGrid.appendChild(createPlayerCommunityCard({
+            fluid: true,
+            title: card.title,
+            coverSrc: card.coverSrc,
+            description: card.description,
+            certification: card.showOfficial ? {
+              officialSrc: '../image/Community Level/Corporate Certification.svg',
+              officialCertColor: 'red',
+              officialTooltip: '企业认证'
+            } : false,
+            communityLevel: {
+              lv: card.communityLevel,
+              size: 'small'
+            },
+            id: {
+              text: card.idText,
+              size: 'small',
+              variant: card.isPremiumId ? 'premium' : 'normal'
+            },
+            onlineText: card.onlineText
+          }));
+        });
+        requestAnimationFrame(function() {
+          if (underContentScrollbar) underContentScrollbar.update();
+        });
+      }
+
+      renderUnderCards();
+
+      const communityScroller = communitySlot.querySelector('.nn-community-combo__scroller');
+      const menuList = menuSlot.querySelector('.nn-menu-list');
+      const menuListWrapper = menuSlot.querySelector('.nn-menu-list-wrapper');
+      let frameworkMenuScrollOffset = 0;
+      let frameworkMenuMaxScroll = 0;
+
+      function syncFrameworkVoiceHeight() {
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        framework.style.setProperty('--framework-voice-height', `${voiceHeight}px`);
+        syncFrameworkMenuScroll();
+      }
+
+      function syncFrameworkMenuScroll() {
+        if (!menuList || !menuListWrapper) return;
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        const wrapperHeight = menuListWrapper.clientHeight;
+        const contentHeight = menuList.scrollHeight;
+        const contentBottom = menuList.offsetTop + contentHeight;
+        const visibleHeightBeforeVoice = Math.max(0, wrapperHeight - voiceHeight);
+        frameworkMenuMaxScroll = Math.max(0, contentBottom - visibleHeightBeforeVoice);
+        frameworkMenuScrollOffset = Math.min(frameworkMenuScrollOffset, frameworkMenuMaxScroll);
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+      }
+
+      function scrollFrameworkMenu(deltaY) {
+        syncFrameworkMenuScroll();
+        if (frameworkMenuMaxScroll <= 0) return false;
+        const nextOffset = Math.max(0, Math.min(frameworkMenuMaxScroll, frameworkMenuScrollOffset + deltaY));
+        if (nextOffset === frameworkMenuScrollOffset) return false;
+        frameworkMenuScrollOffset = nextOffset;
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+        return true;
+      }
+
+      function hideVoiceRoomInfo() {
+        framework.classList.add('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      function showVoiceRoomInfo() {
+        framework.classList.remove('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      if (window.ResizeObserver) {
+        const voiceResizeObserver = new ResizeObserver(syncFrameworkVoiceHeight);
+        voiceResizeObserver.observe(voiceSlot);
+        voiceResizeObserver.observe(voicePanel);
+        if (menuList) voiceResizeObserver.observe(menuList);
+        if (menuListWrapper) voiceResizeObserver.observe(menuListWrapper);
+
+      }
+
+      window.addEventListener('resize', function() {
+        syncFrameworkVoiceHeight();
+        if (underContentScrollbar) underContentScrollbar.update();
+      });
+      syncFrameworkVoiceHeight();
+
+      const leaveVoiceButton = voicePanel.querySelector('.nn-voice-panel__leave');
+      if (leaveVoiceButton) {
+        leaveVoiceButton.addEventListener('click', hideVoiceRoomInfo);
+      }
+
+      const firstVoiceRoom = communitySlot.querySelector('.nn-community-room');
+      if (firstVoiceRoom) {
+        firstVoiceRoom.addEventListener('click', showVoiceRoomInfo);
+      }
+
+      if (menuListWrapper) {
+        menuListWrapper.addEventListener('wheel', function(event) {
+          if (scrollFrameworkMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+        }, { passive: false });
+      }
+
+      voiceSlot.addEventListener('wheel', function(event) {
+        if (event.target.closest('.nn-slider, input, textarea, select, [contenteditable="true"], .nn-voice-mode__settings-popover')) return;
+        const menuRect = menuSlot.getBoundingClientRect();
+        const communityRect = communitySlot.getBoundingClientRect();
+
+        if (event.clientX >= menuRect.left && event.clientX <= menuRect.right) {
+          if (scrollFrameworkMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+          return;
+        }
+
+        if (!communityScroller) return;
+        if (event.clientX < communityRect.left || event.clientX > communityRect.right) return;
+
+        const previousScrollTop = communityScroller.scrollTop;
+        communityScroller.scrollTop += event.deltaY;
+        if (communityScroller.scrollTop !== previousScrollTop) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      const voiceBack = voicePanel.querySelector('.nn-voice-panel__back');
+      let restoreMenuTimer = null;
+      let restoreEndTimer = null;
+      let menuHoverTimer = null;
+      let isMenuPointerInside = false;
+
+      function clearMenuRestoreTimers() {
+        if (restoreMenuTimer) {
+          window.clearTimeout(restoreMenuTimer);
+          restoreMenuTimer = null;
+        }
+        if (restoreEndTimer) {
+          window.clearTimeout(restoreEndTimer);
+          restoreEndTimer = null;
+        }
+      }
+
+      function clearMenuHoverTimer() {
+        if (menuHoverTimer) {
+          window.clearTimeout(menuHoverTimer);
+          menuHoverTimer = null;
+        }
+      }
+
+      function showCollapsedMenuPreview() {
+        if (!framework.classList.contains('is-menu-collapsed')) return;
+        clearMenuHoverTimer();
+        framework.classList.remove('is-menu-hovered');
+        void framework.offsetWidth;
+        framework.classList.add('is-menu-hovered');
+      }
+
+      function scheduleCollapsedMenuHide() {
+        clearMenuHoverTimer();
+        menuHoverTimer = window.setTimeout(function() {
+          if (!isMenuPointerInside) {
+            framework.classList.remove('is-menu-hovered');
+          }
+          menuHoverTimer = null;
+        }, 80);
+      }
+
+      if (menuHoverZone) {
+        menuHoverZone.addEventListener('mouseenter', showCollapsedMenuPreview);
+        menuHoverZone.addEventListener('mouseleave', scheduleCollapsedMenuHide);
+      }
+
+      document.addEventListener('mousemove', function(event) {
+        if (!framework.classList.contains('is-menu-collapsed') || !framework.classList.contains('is-menu-hovered')) return;
+        const frameworkRect = framework.getBoundingClientRect();
+        const isInsideVerticalRange = event.clientY >= frameworkRect.top + 50 && event.clientY <= frameworkRect.bottom;
+        const isInsideLeaveZone = event.clientX >= frameworkRect.left && event.clientX <= frameworkRect.left + 70;
+        if (!isInsideVerticalRange || !isInsideLeaveZone) {
+          isMenuPointerInside = false;
+          framework.classList.remove('is-menu-hovered');
+        }
+      });
+
+      menuSlot.addEventListener('mouseenter', function() {
+        isMenuPointerInside = true;
+        showCollapsedMenuPreview();
+      });
+
+      menuSlot.addEventListener('mouseleave', function() {
+        isMenuPointerInside = false;
+        scheduleCollapsedMenuHide();
+      });
+
+      if (voiceBack) {
+        voiceBack.addEventListener('click', function() {
+          if (framework.classList.contains('is-menu-collapsed')) {
+            clearMenuRestoreTimers();
+            clearMenuHoverTimer();
+            framework.classList.remove('is-menu-hovered');
+            framework.classList.add('is-menu-restoring');
+
+            restoreMenuTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-collapsed');
+              restoreMenuTimer = null;
+            }, 80);
+
+            restoreEndTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-restoring');
+              restoreEndTimer = null;
+            }, 360);
+            return;
+          }
+
+          clearMenuRestoreTimers();
+          clearMenuHoverTimer();
+          framework.classList.remove('is-menu-restoring');
+          framework.classList.remove('is-menu-hovered');
+          framework.classList.add('is-menu-collapsed');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

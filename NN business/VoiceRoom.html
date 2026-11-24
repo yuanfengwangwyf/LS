@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 业务组件库 - Voice room 语音房</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20260529-arrow2left">
+  <style>
+    .voice-room-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space48);
+    }
+
+    .voice-room-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .voice-room-section-title {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 24px;
+    }
+
+    .voice-room-section-desc {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .voice-room-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+      width: 100%;
+      overflow: visible;
+    }
+
+    .voice-room-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--space16);
+      width: 100%;
+    }
+
+    .voice-room-queue-control {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space8);
+      color: var(--gray-5);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      font-weight: var(--font-weight-medium);
+      line-height: 20px;
+      white-space: nowrap;
+    }
+
+    #voice-room-queue-switch-wrap {
+      display: inline-flex;
+      align-items: center;
+      height: 20px;
+    }
+
+    .voice-room-page-demo {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+      width: 100%;
+      min-height: 520px;
+      padding: var(--space0);
+      overflow: visible;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .voice-room-demo-pane {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-width: 0;
+      min-height: 520px;
+      padding: var(--space48);
+      box-sizing: border-box;
+    }
+
+    .voice-room-demo-pane__title {
+      position: absolute;
+      top: var(--space16);
+      left: var(--space16);
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 16px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 22px;
+    }
+
+    .voice-room-demo-pane + .voice-room-demo-pane {
+      border-left: 1px solid var(--gray-8);
+    }
+
+    .voice-room-modal-layer {
+      position: absolute;
+      inset: var(--space0);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space24);
+      background: var(--mask);
+      box-sizing: border-box;
+    }
+
+    .voice-room-modal-layer.is-open {
+      display: flex;
+    }
+
+    .voice-room-page-demo.is-modal-open .nn-voice-room-mic-popover,
+    .voice-room-page-demo.is-modal-open .nn-voice-room-mic__hover-zone {
+      display: none !important;
+    }
+
+    .voice-room-card-page-demo {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space24);
+      width: 100%;
+      padding: var(--space24);
+      overflow: visible;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .voice-room-card-demo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space12);
+      min-width: 0;
+    }
+
+    .voice-room-card-demo-label {
+      margin: var(--space0);
+      color: var(--gray-6);
+      font-family: var(--font-family-main);
+      font-size: 14px;
+      font-weight: var(--font-weight-normal);
+      line-height: 20px;
+      text-align: center;
+    }
+
+    .voice-room-live-demo {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space24);
+      width: 100%;
+      padding: var(--space24);
+      overflow: visible;
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      box-sizing: border-box;
+    }
+
+    .voice-room-live-demo__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space12);
+      min-width: 0;
+    }
+
+    .voice-room-live-demo__frame {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .voice-room-api-section {
+      margin-top: var(--space80);
+    }
+
+    .voice-room-api-title {
+      margin: var(--space0) var(--space0) var(--space24) var(--space0);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 18px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 26px;
+    }
+
+    .voice-room-api-subtitle {
+      margin: var(--space0) var(--space0) var(--space16);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+      font-size: 16px;
+      font-weight: var(--font-weight-semibold);
+      line-height: 22px;
+    }
+
+    .voice-room-api-table + .voice-room-api-subtitle {
+      margin-top: var(--space32);
+    }
+
+    .voice-room-api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family-main);
+      font-size: 14px;
+    }
+
+    .voice-room-api-table th,
+    .voice-room-api-table td {
+      padding: var(--space12) var(--space16);
+      border: 1px solid var(--gray-8);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .voice-room-api-table th {
+      color: var(--gray-3);
+      background: var(--gray-2);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .voice-room-api-table td {
+      color: var(--gray-5);
+    }
+
+    .voice-room-api-table tbody tr:hover {
+      background: var(--gray-9);
+    }
+  </style>
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-basic&library=business" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/b-nav.html?v=20260722-voice-room" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">页面组件</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">语音房</span>
+      <h1 class="section-title">Voice room 语音房</h1>
+      <p class="description">用于语音房页面的业务组件集合，当前展示功能按钮组和连麦按钮的排队交互。</p>
+
+      <div class="voice-room-content">
+        <div class="voice-room-section">
+          <h2 class="voice-room-section-title">功能按钮组</h2>
+          <p class="voice-room-section-desc">用户视角与主播视角同屏展示，队列开启后上麦按钮展示数字徽标，并在 Hover 时展开麦序队列。</p>
+          <div class="voice-room-demo">
+            <div class="voice-room-toolbar">
+              <div class="voice-room-queue-control">
+                <span>开启队列</span>
+                <span id="voice-room-queue-switch-wrap"></span>
+              </div>
+            </div>
+            <div class="voice-room-page-demo">
+              <div class="voice-room-demo-pane">
+                <h3 class="voice-room-demo-pane__title">用户</h3>
+                <div id="voice-room-user-action-demo"></div>
+              </div>
+              <div class="voice-room-demo-pane">
+                <h3 class="voice-room-demo-pane__title">主播</h3>
+                <div id="voice-room-host-action-demo"></div>
+              </div>
+              <div id="voice-room-confirm-layer" class="voice-room-modal-layer" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="voice-room-section">
+          <h2 class="voice-room-section-title">语音卡片</h2>
+          <p class="voice-room-section-desc">语音房麦位卡片，头像区域等比缩放，底部昵称/状态区域固定 74px。</p>
+          <div class="voice-room-card-page-demo" data-code-preview="true">
+            <div class="voice-room-card-demo-item">
+              <div id="voice-room-card-no-permission-demo"></div>
+              <p class="voice-room-card-demo-label">无人上麦（无权限）</p>
+            </div>
+            <div class="voice-room-card-demo-item">
+              <div id="voice-room-card-permission-demo"></div>
+              <p class="voice-room-card-demo-label">无人上麦（有权限）</p>
+            </div>
+            <div class="voice-room-card-demo-item">
+              <div id="voice-room-card-guest-demo"></div>
+              <p class="voice-room-card-demo-label">互动嘉宾麦</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="voice-room-section">
+          <h2 class="voice-room-section-title">直播窗口</h2>
+          <p class="voice-room-section-desc">直播窗口保持 16:9 比例，随容器宽度自适应伸缩；状态、提示与底部控制栏随窗口宽度排布。</p>
+          <div class="voice-room-live-demo" data-code-preview="true">
+            <div class="voice-room-live-demo__item">
+              <div id="voice-room-live-broadcast-demo" class="voice-room-live-demo__frame"></div>
+              <p class="voice-room-card-demo-label">常规</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="voice-room-api-section">
+        <h2 class="voice-room-api-title">API 参考</h2>
+        <h3 class="voice-room-api-subtitle">功能按钮组</h3>
+        <table class="voice-room-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>perspective</td><td>按钮组演示视角</td><td>string</td><td>user | host</td><td>user</td></tr>
+            <tr><td>micState</td><td>连麦按钮状态</td><td>string</td><td>idle | waiting | host | speaking</td><td>idle</td></tr>
+            <tr><td>micOpen</td><td>是否默认展开麦序队列；实际交互通过 Hover 展开</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>queueEnabled</td><td>是否有队列；开启后展示数字徽标和队列列表，关闭时 Hover 展示空状态</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>queueCount</td><td>连麦排队数量</td><td>number</td><td>-</td><td>9</td></tr>
+            <tr><td>queue</td><td>麦序队列数据；为空时展示空队列弹层；队列项支持 inviteStatus: pending 展示邀请等待状态</td><td>array</td><td>-</td><td>默认队列</td></tr>
+            <tr><td>inviteCountdownDuration</td><td>邀请用户上麦提示的倒计时秒数</td><td>number</td><td>-</td><td>30</td></tr>
+            <tr><td>inviteRequest</td><td>用户侧邀请提示配置，包含 inviter 与 duration</td><td>object</td><td>-</td><td>null</td></tr>
+            <tr><td>onMicAction</td><td>连麦按钮点击回调，用于接管上麦、下麦、取消排队状态</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>onInviteAccept</td><td>用户同意主播邀请回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>onInviteReject</td><td>用户拒绝主播邀请回调</td><td>function</td><td>-</td><td>null</td></tr>
+            <tr><td>showPointsMall</td><td>是否展示积分商城按钮</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>pointsMallImage</td><td>积分商城按钮常规图片</td><td>string</td><td>-</td><td>../image/Animation/Points Mall.png</td></tr>
+            <tr><td>pointsMallHoverImage</td><td>积分商城按钮 Hover 图片</td><td>string</td><td>-</td><td>../image/Animation/Points Mall.webp</td></tr>
+            <tr><td>showGift</td><td>是否展示礼物按钮</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>giftImage</td><td>礼物按钮常规图片</td><td>string</td><td>-</td><td>../image/Animation/gift.png</td></tr>
+            <tr><td>giftHoverImage</td><td>礼物按钮 Hover 图片</td><td>string</td><td>-</td><td>../image/Animation/gift.webp</td></tr>
+          </tbody>
+        </table>
+        <h3 class="voice-room-api-subtitle">直播窗口</h3>
+        <table class="voice-room-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>width</td><td>直播窗口外框宽度；高度始终按 16:9 比例随宽度自适应。</td><td>number | string</td><td>-</td><td>500</td></tr>
+            <tr><td>image</td><td>直播画面资源；业务调用时按需传入，未传入时展示黑屏。</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>mediaStream</td><td>浏览器屏幕分享等实时媒体流；传入后优先展示视频流。</td><td>MediaStream</td><td>-</td><td>null</td></tr>
+            <tr><td>user</td><td>直播发起者信息，包含 name、levelImage、levelAlt。</td><td>object</td><td>-</td><td>ArtMagic / ULVN14</td></tr>
+            <tr><td>hover</td><td>是否强制展示带手势动效的 hover 提示；鼠标悬停时同样展示。</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>hoverHint</td><td>悬停时显示的双击提示文本。</td><td>string</td><td>-</td><td>双击缩小屏幕</td></tr>
+            <tr><td>compactPreview</td><td>用于麦位内的直播缩略预览，只展示画面与 Hover 提示。</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>paused</td><td>是否以暂停状态初始化实时媒体流。</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>onReplace / onFullscreen / onEnd / onDoubleClick</td><td>更换窗口、全屏、结束直播与双击窗口的交互回调。</td><td>function</td><td>-</td><td>null</td></tr>
+          </tbody>
+        </table>
+        <h3 class="voice-room-api-subtitle">直播小窗口</h3>
+        <table class="voice-room-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>width</td><td>直播小窗口外框宽度；高度始终按 16:9 比例随宽度自适应。</td><td>number | string</td><td>-</td><td>232</td></tr>
+            <tr><td>image / mediaStream</td><td>直播画面资源或实时媒体流；传入媒体流时优先展示视频流。</td><td>string | MediaStream</td><td>-</td><td>'' / null</td></tr>
+            <tr><td>user</td><td>直播发起者信息，悬停时展示“昵称-屏幕分享”。</td><td>object</td><td>-</td><td>ArtMagic</td></tr>
+            <tr><td>paused</td><td>是否以暂停状态展示；悬停时展示对应播放或暂停按钮。</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>onTogglePlayback</td><td>点击播放控制按钮后的回调，返回下一播放状态和媒体元素。</td><td>function</td><td>-</td><td>null</td></tr>
+          </tbody>
+        </table>
+        <h3 class="voice-room-api-subtitle">语音卡片</h3>
+        <table class="voice-room-api-table">
+          <thead>
+            <tr><th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>state</td><td>语音卡片状态</td><td>string</td><td>empty | guest | speaking</td><td>empty</td></tr>
+            <tr><td>permission</td><td>空麦状态是否有上麦权限；有权限时卡片可点击</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>hover</td><td>是否展示语音卡片 Hover 预览态</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>index</td><td>默认无人上麦卡片左上角序号</td><td>string | number</td><td>-</td><td>1</td></tr>
+            <tr><td>showIndex</td><td>默认无人上麦卡片是否展示左上角序号</td><td>boolean</td><td>true | false</td><td>true</td></tr>
+            <tr><td>screenSharing</td><td>是否在昵称右侧展示屏幕分享图标。</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>screenShareCollapsed</td><td>屏幕分享缩小时，将卡片设为可恢复直播窗口的交互态。</td><td>boolean</td><td>true | false</td><td>false</td></tr>
+            <tr><td>screenShareMediaStream</td><td>收起态屏幕分享的实时媒体流，会展示在分享者麦位的图片区域。</td><td>MediaStream</td><td>-</td><td>-</td></tr>
+            <tr><td>width</td><td>语音卡片展示宽度，组件内限制最小 140px、最大 400px；互动嘉宾麦实际卡片宽度小于 250px 时，连麦按钮使用 default 尺寸，250px 及以上使用 large 尺寸</td><td>number | string</td><td>-</td><td>300</td></tr>
+            <tr><td>cornerType</td><td>卡片左上角展示类型；上麦后可同步原空麦序号或嘉宾麦连麦图标</td><td>string</td><td>index | mic | none</td><td>自动判断</td></tr>
+            <tr><td>seatImage</td><td>无人上麦状态麦位 SVG</td><td>string</td><td>-</td><td>../image/Community/chair.svg</td></tr>
+            <tr><td>user</td><td>已上麦用户信息，包含 name、avatar、badges；badges 可配置展示各类权益徽章</td><td>object</td><td>-</td><td>默认用户等级</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/switch.js?v=20260530-switch-variable-space"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/empty.js?v=20260611-empty-scrollbar-component"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../NN%20business%20components/voice-room.js?v=20260909-floating-live-player-icon"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('b-nav-voice-room');
+
+      const userStage = document.getElementById('voice-room-user-action-demo');
+      const hostStage = document.getElementById('voice-room-host-action-demo');
+      const cardNoPermissionDemo = document.getElementById('voice-room-card-no-permission-demo');
+      const cardPermissionDemo = document.getElementById('voice-room-card-permission-demo');
+      const cardGuestDemo = document.getElementById('voice-room-card-guest-demo');
+      const liveBroadcastDemo = document.getElementById('voice-room-live-broadcast-demo');
+      const pageDemo = userStage.closest('.voice-room-page-demo');
+      const queueSwitchWrap = document.getElementById('voice-room-queue-switch-wrap');
+      const modalLayer = document.getElementById('voice-room-confirm-layer');
+      const baseQueue = (window.VoiceRoomDefaultQueue || []).map(function(item) {
+        return Object.assign({}, item);
+      });
+      const demoUser = {
+        name: '邪恶萨摩耶',
+        avatar: '../image/Avatar/头像619.png',
+        isSelf: true,
+        tag: '排队中'
+      };
+      const hostUser = {
+        name: '娜娜莉',
+        avatar: '../image/Avatar/头像624.png'
+      };
+      const cardUser = {
+        name: 'ArtMagic',
+        avatar: '../image/Avatar/头像619.png',
+        badges: [{ src: '../image/User Level/Digital badge/ULVN20.svg', alt: '用户等级' }]
+      };
+      let hostTipTimer = null;
+      let hostTipRemoveTimer = null;
+      let userTipTimer = null;
+      let userTipRemoveTimer = null;
+      let inviteTimer = null;
+      const viewState = {
+        queueEnabled: false,
+        userMicState: 'idle',
+        demoQueue: baseQueue.slice(),
+        inviteTargetKey: null,
+        inviteTargetUser: null,
+        inviteCountdownDuration: 30,
+        userInviteVisible: false,
+        hostTipVisible: false,
+        hostTipLeaving: false,
+        hostTipText: '加入了队列',
+        hostTipUser: demoUser,
+        userTipVisible: false,
+        userTipLeaving: false,
+        userTipText: '',
+        hostMicOpen: false,
+        suppressHostPopoverAnimation: false,
+        permissionCardState: 'empty',
+        guestCardState: 'guest'
+      };
+
+      function closeVoiceRoomDialog() {
+        pageDemo.classList.remove('is-modal-open');
+        modalLayer.classList.remove('is-open');
+        modalLayer.setAttribute('aria-hidden', 'true');
+        modalLayer.innerHTML = '';
+      }
+
+      function openVoiceRoomDialog(options) {
+        const {
+          title,
+          description,
+          actions = []
+        } = options;
+
+        modalLayer.innerHTML = '';
+        pageDemo.classList.add('is-modal-open');
+        modalLayer.classList.add('is-open');
+        modalLayer.setAttribute('aria-hidden', 'false');
+
+        const dialog = createToast({
+          title,
+          content: description,
+          showClose: true,
+          onClose: closeVoiceRoomDialog,
+          footer: {
+            layout: actions.length > 1 ? 'double-horizontal' : 'single-vertical',
+            buttons: actions.map(function(action) {
+              return Object.assign({
+                variant: 'system',
+                size: 'large'
+              }, action);
+            })
+          }
+        });
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.setAttribute('aria-label', title);
+
+        modalLayer.appendChild(dialog);
+      }
+
+      function confirmEndMic() {
+        openVoiceRoomDialog({
+          title: '结束连麦?',
+          description: '是否离开当前连麦位',
+          actions: [
+            {
+              text: '确定',
+              level: 'primary',
+              onClick: function() {
+                closeVoiceRoomDialog();
+                viewState.userMicState = 'idle';
+                removeDemoUserFromQueue();
+                renderCurrentDemo();
+              }
+            },
+            {
+              text: '取消',
+              level: 'secondary',
+              onClick: closeVoiceRoomDialog
+            }
+          ]
+        });
+      }
+
+      function confirmLeaveQueue() {
+        openVoiceRoomDialog({
+          title: '结束连麦排队',
+          description: '是否离开队列，再次连麦需要重新排队',
+          actions: [
+            {
+              text: '确认',
+              level: 'primary',
+              onClick: function() {
+                closeVoiceRoomDialog();
+                viewState.userMicState = 'idle';
+                clearInviteRequest();
+                removeDemoUserFromQueue();
+                showHostQueueTip('退出了队列');
+                renderCurrentDemo();
+              }
+            },
+            {
+              text: '取消',
+              level: 'secondary',
+              onClick: closeVoiceRoomDialog
+            }
+          ]
+        });
+      }
+
+      function resetDemoQueue() {
+        hideHostQueueTip();
+        hideUserQueueTip();
+        clearInviteRequest();
+        viewState.hostMicOpen = false;
+        viewState.demoQueue = baseQueue.slice();
+      }
+
+      function clearHostQueueTipTimer() {
+        if (hostTipTimer) {
+          window.clearTimeout(hostTipTimer);
+          hostTipTimer = null;
+        }
+        if (hostTipRemoveTimer) {
+          window.clearTimeout(hostTipRemoveTimer);
+          hostTipRemoveTimer = null;
+        }
+      }
+
+      function showHostQueueTip(text) {
+        clearHostQueueTipTimer();
+        viewState.hostTipText = text || '加入了队列';
+        viewState.hostTipUser = viewState.hostTipUser || demoUser;
+        viewState.hostTipVisible = true;
+        viewState.hostTipLeaving = false;
+        hostTipTimer = window.setTimeout(function() {
+          hostTipTimer = null;
+          viewState.hostTipLeaving = true;
+          renderCurrentDemo();
+          hostTipRemoveTimer = window.setTimeout(function() {
+            hostTipRemoveTimer = null;
+            viewState.hostTipVisible = false;
+            viewState.hostTipLeaving = false;
+            renderCurrentDemo();
+          }, 180);
+        }, 5000);
+      }
+
+      function hideHostQueueTip() {
+        clearHostQueueTipTimer();
+        viewState.hostTipVisible = false;
+        viewState.hostTipLeaving = false;
+      }
+
+      function showHostQueueUserTip(user, text) {
+        viewState.hostTipUser = user || demoUser;
+        showHostQueueTip(text);
+      }
+
+      function clearUserQueueTipTimer() {
+        if (userTipTimer) {
+          window.clearTimeout(userTipTimer);
+          userTipTimer = null;
+        }
+        if (userTipRemoveTimer) {
+          window.clearTimeout(userTipRemoveTimer);
+          userTipRemoveTimer = null;
+        }
+      }
+
+      function showUserQueueTip(text) {
+        clearUserQueueTipTimer();
+        viewState.userTipText = text || '';
+        viewState.userTipVisible = true;
+        viewState.userTipLeaving = false;
+        userTipTimer = window.setTimeout(function() {
+          userTipTimer = null;
+          viewState.userTipLeaving = true;
+          renderCurrentDemo();
+          userTipRemoveTimer = window.setTimeout(function() {
+            userTipRemoveTimer = null;
+            viewState.userTipVisible = false;
+            viewState.userTipLeaving = false;
+            renderCurrentDemo();
+          }, 180);
+        }, 5000);
+      }
+
+      function hideUserQueueTip() {
+        clearUserQueueTipTimer();
+        viewState.userTipVisible = false;
+        viewState.userTipLeaving = false;
+      }
+
+      function removeDemoUserFromQueue() {
+        viewState.demoQueue = viewState.demoQueue.filter(function(item) {
+          return !item.isSelf;
+        });
+      }
+
+      function appendDemoUserToQueue() {
+        hideHostQueueTip();
+        hideUserQueueTip();
+        clearInviteRequest();
+        removeDemoUserFromQueue();
+        viewState.demoQueue.push(Object.assign({}, demoUser));
+      }
+
+      function clearInviteTimer() {
+        if (inviteTimer) {
+          window.clearTimeout(inviteTimer);
+          inviteTimer = null;
+        }
+      }
+
+      function getQueueItemKey(item) {
+        return item && item.isSelf ? 'demo-user' : item && item.name ? item.name : '';
+      }
+
+      function clearQueueInviteStatus() {
+        viewState.demoQueue = viewState.demoQueue.map(function(item) {
+          if (!item.inviteStatus) return item;
+          const nextItem = Object.assign({}, item);
+          delete nextItem.inviteStatus;
+          return nextItem;
+        });
+      }
+
+      function clearInviteRequest() {
+        clearInviteTimer();
+        viewState.inviteTargetKey = null;
+        viewState.inviteTargetUser = null;
+        viewState.userInviteVisible = false;
+        clearQueueInviteStatus();
+      }
+
+      function setInvitePending(item) {
+        const targetKey = getQueueItemKey(item);
+        clearInviteTimer();
+        viewState.inviteTargetKey = targetKey;
+        viewState.inviteTargetUser = Object.assign({}, item);
+        viewState.userInviteVisible = Boolean(item && item.isSelf);
+        viewState.demoQueue = viewState.demoQueue.map(function(queueItem) {
+          const nextItem = Object.assign({}, queueItem);
+          delete nextItem.inviteStatus;
+          if (getQueueItemKey(queueItem) === targetKey) {
+            nextItem.inviteStatus = 'pending';
+          }
+          return nextItem;
+        });
+        inviteTimer = window.setTimeout(function() {
+          clearInviteRequest();
+          renderCurrentDemo();
+        }, viewState.inviteCountdownDuration * 1000);
+      }
+
+      function removeQueueItemAt(index) {
+        const removed = viewState.demoQueue[index];
+        viewState.demoQueue = viewState.demoQueue.filter(function(item, itemIndex) {
+          return itemIndex !== index;
+        });
+        return removed;
+      }
+
+      function handleHostQueueReorder(event) {
+        const fromIndex = event.fromIndex;
+        const toIndex = event.toIndex;
+        if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
+        const nextQueue = viewState.demoQueue.slice();
+        const movedItems = nextQueue.splice(fromIndex, 1);
+        if (!movedItems.length) return;
+        nextQueue.splice(toIndex, 0, movedItems[0]);
+        viewState.demoQueue = nextQueue;
+        viewState.hostMicOpen = true;
+        viewState.suppressHostPopoverAnimation = true;
+        renderCurrentDemo();
+      }
+
+      function handleHostQueueInvite(item, index) {
+        viewState.hostMicOpen = false;
+        hideHostQueueTip();
+        hideUserQueueTip();
+        setInvitePending(item);
+        renderCurrentDemo();
+      }
+
+      function handleHostQueueRemove(item, index) {
+        viewState.hostMicOpen = false;
+        const removed = removeQueueItemAt(index);
+        if (removed && getQueueItemKey(removed) === viewState.inviteTargetKey) {
+          clearInviteRequest();
+        }
+        if (removed && removed.isSelf) {
+          viewState.userMicState = 'idle';
+          hideHostQueueTip();
+          showUserQueueTip('你已被主播移除连麦队列');
+        }
+        renderCurrentDemo();
+      }
+
+      function handleInviteAccept() {
+        const targetKey = viewState.inviteTargetKey;
+        if (!targetKey) return;
+        viewState.demoQueue = viewState.demoQueue.filter(function(item) {
+          return getQueueItemKey(item) !== targetKey;
+        });
+        if (viewState.inviteTargetUser && viewState.inviteTargetUser.isSelf) {
+          viewState.userMicState = 'speaking';
+        }
+        clearInviteRequest();
+        viewState.hostMicOpen = false;
+        renderCurrentDemo();
+      }
+
+      function handleInviteReject() {
+        const rejectedUser = viewState.inviteTargetUser || demoUser;
+        clearInviteRequest();
+        viewState.hostMicOpen = false;
+        showHostQueueUserTip(rejectedUser, '已拒绝上麦');
+        renderCurrentDemo();
+      }
+
+      function handleHostMicStateChange(event) {
+        if (!event || event.open) return;
+        viewState.hostMicOpen = false;
+      }
+
+      function handleMicAction(event) {
+        if (event.state === 'speaking') {
+          confirmEndMic();
+          return;
+        }
+
+        if (event.state === 'waiting') {
+          confirmLeaveQueue();
+          return;
+        }
+
+        if (viewState.queueEnabled) {
+          viewState.userMicState = 'waiting';
+          appendDemoUserToQueue();
+          showHostQueueTip('加入了队列');
+        } else {
+          viewState.userMicState = 'speaking';
+        }
+        renderCurrentDemo();
+      }
+
+      function renderCurrentDemo() {
+        const activeQueue = viewState.queueEnabled ? viewState.demoQueue : [];
+        const activeQueueCount = activeQueue.length;
+
+        renderVoiceRoomActionGroup(userStage, {
+          perspective: 'user',
+          micState: viewState.userMicState,
+          micOpen: false,
+          queueEnabled: viewState.queueEnabled,
+          queueCount: activeQueueCount,
+          queue: activeQueue,
+          emptyDescription: '申请后可直接上麦',
+          micTipUser: viewState.userTipVisible ? { showIdentity: false } : null,
+          micTipText: viewState.userTipText,
+          micTipLeaving: viewState.userTipLeaving,
+          inviteRequest: viewState.userInviteVisible ? {
+            inviter: hostUser,
+            duration: viewState.inviteCountdownDuration
+          } : null,
+          inviteCountdownDuration: viewState.inviteCountdownDuration,
+          onInviteAccept: handleInviteAccept,
+          onInviteReject: handleInviteReject,
+          onMicAction: handleMicAction
+        });
+
+        renderVoiceRoomActionGroup(hostStage, {
+          perspective: 'host',
+          micState: 'host',
+          micOpen: viewState.hostMicOpen,
+          queueEnabled: viewState.queueEnabled,
+          queueCount: activeQueueCount,
+          queue: activeQueue,
+          emptyDescription: '用户申请后可直接上麦',
+          micTipUser: viewState.hostTipVisible ? viewState.hostTipUser : null,
+          micTipText: viewState.hostTipText,
+          micTipLeaving: viewState.hostTipLeaving,
+          queueEditable: true,
+          showQueueTag: false,
+          showInviteStatus: true,
+          popoverAnimated: !viewState.suppressHostPopoverAnimation,
+          onQueueReorder: handleHostQueueReorder,
+          onQueueInvite: handleHostQueueInvite,
+          onQueueRemove: handleHostQueueRemove,
+          onStateChange: handleHostMicStateChange,
+          onMicAction: null
+        });
+
+        viewState.suppressHostPopoverAnimation = false;
+      }
+
+      function renderMicCardDemos() {
+        renderVoiceRoomMicCard(cardNoPermissionDemo, {
+          state: 'empty',
+          index: '1',
+          showIndex: true,
+          width: 220
+        });
+        renderVoiceRoomMicCard(cardPermissionDemo, {
+          state: viewState.permissionCardState,
+          index: '2',
+          showIndex: viewState.permissionCardState === 'empty',
+          cornerType: 'index',
+          permission: true,
+          width: 220,
+          user: cardUser,
+          onClick: function() {
+            viewState.permissionCardState = 'speaking';
+            renderMicCardDemos();
+          }
+        });
+        renderVoiceRoomMicCard(cardGuestDemo, {
+          state: viewState.guestCardState,
+          showIndex: false,
+          cornerType: 'mic',
+          width: 220,
+          user: cardUser,
+          onClick: function() {
+            viewState.guestCardState = 'speaking';
+            renderMicCardDemos();
+          }
+        });
+      }
+
+      function renderLiveBroadcastDemos() {
+        if (!liveBroadcastDemo) return;
+        liveBroadcastDemo.replaceChildren(createVoiceRoomLiveBroadcast({ width: '100%' }));
+      }
+
+      renderMicCardDemos();
+      renderLiveBroadcastDemos();
+      renderCurrentDemo();
+
+      queueSwitchWrap.appendChild(createSwitch({
+        id: 'voice-room-queue-switch',
+        checked: false,
+        size: 'default',
+        onChange: function(checked) {
+          viewState.queueEnabled = checked;
+          if (viewState.userMicState === 'waiting' && !checked) {
+            viewState.userMicState = 'idle';
+          }
+          resetDemoQueue();
+          renderCurrentDemo();
+        }
+      }));
+    });
+  </script>
+</body>
+</html>

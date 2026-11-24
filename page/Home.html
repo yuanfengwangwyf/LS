@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 页面展示 - Community Home 社区首页</title>
+  <script src="../preview-mode-bootstrap.js?v=20261030-preview-persist"></script>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <link rel="stylesheet" href="../iconfont/iconfont.css?v=20261111-launch-update-icons">
+  <script src="../iconfont/iconfont.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 100%;
+      min-height: 100vh;
+      margin: var(--space0);
+      overflow: auto;
+      background: var(--gray-1);
+      color: var(--gray-3);
+      font-family: var(--font-family-main);
+    }
+
+    body.is-home-expanded #nav-iframe {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .home-shell {
+      min-width: 1280px;
+      min-height: calc(100vh - 60px);
+      margin: var(--space60) var(--space0) var(--space0) 260px;
+      padding: var(--space40) var(--space60);
+    }
+
+    .home-preview-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--space8);
+      width: 100%;
+      min-width: 1280px;
+      margin-bottom: var(--space16);
+      color: var(--gray-4);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+
+    .home-preview-controls__label {
+      white-space: nowrap;
+    }
+
+    #home-record-switch {
+      position: relative;
+      top: var(--space2);
+    }
+
+    .home-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-width: 1280px;
+      min-height: 900px;
+    }
+
+    .home-framework {
+      --framework-menu-width: 70px;
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+      --framework-content-left: 366px;
+      --framework-voice-height: 60px;
+      --framework-motion-duration: 520ms;
+      --framework-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      width: 1280px;
+      height: 900px;
+      min-width: 1280px;
+      min-height: 900px;
+      overflow: hidden;
+      background: var(--gray-1);
+      color: var(--gray-3);
+    }
+
+    .home-framework::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 120;
+      box-shadow: inset 0 0 0 1px var(--gray-8);
+      pointer-events: none;
+    }
+
+    .home-framework.is-menu-collapsed {
+      --framework-community-left: 12px;
+      --framework-community-width: 354px;
+    }
+
+    .home-framework.is-menu-collapsed.is-menu-hovered {
+      --framework-community-left: 70px;
+      --framework-community-width: 296px;
+    }
+
+    .home-framework.is-expanded {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .home-framework__header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      width: 100%;
+      height: 50px;
+    }
+
+    .home-framework__header .nn-header {
+      width: 100% !important;
+      padding-right: var(--space0);
+      border-bottom-color: var(--gray-10);
+    }
+
+    .home-framework__menu {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: 0;
+      z-index: 25;
+      width: var(--framework-menu-width);
+      overflow: visible;
+      background: var(--gray-1);
+      transform: translateX(0);
+      transition: transform var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: transform;
+    }
+
+    .home-framework.is-menu-collapsed .home-framework__menu {
+      pointer-events: none;
+      transform: translateX(calc(-1 * var(--framework-menu-width)));
+    }
+
+    .home-framework.is-menu-collapsed.is-menu-hovered .home-framework__menu {
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .home-framework__menu-hover-zone {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: 0;
+      z-index: 36;
+      display: none;
+      width: 70px;
+      background: transparent;
+    }
+
+    .home-framework.is-menu-collapsed .home-framework__menu-hover-zone {
+      display: block;
+    }
+
+    .home-framework.is-menu-collapsed.is-menu-hovered .home-framework__menu-hover-zone {
+      z-index: 24;
+      width: 70px;
+    }
+
+    .home-framework__menu .nn-menu {
+      width: var(--framework-menu-width);
+      height: 100%;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .home-framework__menu .nn-menu-list {
+      transform: translateY(calc(-1 * var(--framework-menu-scroll-offset, 0px)));
+      transition: transform 120ms ease;
+      will-change: transform;
+    }
+
+    .home-framework__menu .nn-menu-list-wrapper,
+    .home-framework__menu .nn-menu-list,
+    .home-framework__menu .nn-menu-item {
+      overflow: visible;
+    }
+
+    .home-framework__menu .nn-tooltip {
+      z-index: 80;
+      pointer-events: none;
+    }
+
+    .home-framework__community {
+      position: absolute;
+      top: 50px;
+      bottom: 0;
+      left: var(--framework-community-left);
+      z-index: 8;
+      width: var(--framework-community-width);
+      overflow: hidden;
+      background: var(--gray-1);
+      transition:
+        left var(--framework-motion-duration) var(--framework-motion-ease),
+        width var(--framework-motion-duration) var(--framework-motion-ease);
+      will-change: left, width;
+    }
+
+    .home-framework__community .nn-community-combo {
+      width: 100%;
+      min-width: 100%;
+      height: 100%;
+      max-height: none;
+      transition:
+        width var(--framework-motion-duration) var(--framework-motion-ease),
+        min-width var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .home-framework__community .nn-community-combo__scroller {
+      height: 100%;
+      min-width: 0;
+      max-height: none;
+      padding-bottom: var(--framework-voice-height);
+    }
+
+    .home-framework__content {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      bottom: 0;
+      left: var(--framework-content-left);
+      padding: var(--space0) var(--space8);
+      overflow: hidden;
+      background: var(--gray-1);
+      box-sizing: border-box;
+      transition: left var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .home-content {
+      width: 100%;
+      height: 100%;
+      padding: var(--space0) var(--space16) var(--space0) var(--space0);
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .home-content__inner {
+      width: min(100%, 1200px);
+      max-width: 1200px;
+      min-height: 100%;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .home-hero {
+      position: relative;
+      width: 100%;
+      height: 218px;
+    }
+
+    .home-hero__banner {
+      width: 100%;
+      height: 218px;
+      overflow: hidden;
+      border-radius: var(--border-radius-4r);
+      background: var(--gray-9);
+    }
+
+    .home-hero__banner img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .home-community-description {
+      width: 100%;
+      margin: var(--space16) var(--space0) var(--space0);
+      color: var(--gray-5);
+      font-size: 15px;
+      font-weight: var(--font-weight-normal);
+      line-height: 24px;
+    }
+
+    .home-community-description p {
+      display: block;
+      margin: var(--space0);
+    }
+
+    .home-main {
+      width: 100%;
+      padding-top: var(--space16);
+      padding-bottom: var(--space0);
+    }
+
+    .home-board__content {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space16);
+      align-items: start;
+      width: 100%;
+    }
+
+    .home-framework.is-record-visible:not(.is-detail-tab) .home-board__content {
+      grid-template-columns: minmax(0, 1fr) 288px;
+    }
+
+    .home-framework.is-detail-tab .home-board__content {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .home-feed {
+      width: 100%;
+      min-width: 0;
+      overflow: visible;
+    }
+
+    .home-feed__toolbar {
+      position: sticky;
+      top: var(--space0);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: var(--space32);
+      width: 100%;
+      min-height: 38px;
+      padding-bottom: var(--space16);
+      overflow: hidden;
+      background: var(--gray-1);
+    }
+
+    .home-feed__tabs {
+      min-width: 0;
+      flex: 0 1 auto;
+      height: 38px;
+      overflow: visible;
+    }
+
+    .home-feed__tabs .nn-tabs-primary {
+      width: max-content;
+      max-width: 100%;
+      column-gap: var(--space32);
+    }
+
+    .home-feed__tabs .nn-tabs-primary .nn-tab {
+      height: 38px;
+      padding-top: var(--space10);
+      padding-bottom: var(--space10);
+    }
+
+    .home-feed__actions {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space16);
+      flex: 0 0 auto;
+      height: 24px;
+      margin-left: auto;
+    }
+
+    .home-feed__clear {
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      min-height: 18px;
+      padding: var(--space0);
+      background: transparent;
+      color: var(--gray-5);
+      box-shadow: none;
+    }
+
+    .home-feed__clear:hover {
+      background: transparent;
+      color: var(--gray-5);
+      box-shadow: none;
+    }
+
+    .home-feed__list {
+      width: 100%;
+    }
+
+    .home-overview,
+    .home-detail-feed {
+      width: 100%;
+    }
+
+    .home-overview[hidden],
+    .home-detail-feed[hidden] {
+      display: none;
+    }
+
+    .home-overview__section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space8);
+      width: 100%;
+    }
+
+    .home-overview__section + .home-overview__section {
+      margin-top: var(--space16);
+    }
+
+    .home-overview__section--community {
+      gap: var(--space16);
+    }
+
+    .home-overview__heading {
+      margin: var(--space0);
+      color: var(--gray-3);
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-title);
+    }
+
+    .home-community-info {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 242px;
+      overflow: visible;
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-4r);
+      box-sizing: border-box;
+    }
+
+    .home-community-info__row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: 100%;
+      height: 80px;
+      min-height: 80px;
+    }
+
+    .home-community-info__row:not(:last-child) {
+      border-bottom: 1px solid var(--gray-9);
+    }
+
+    .home-community-info__cell {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: var(--space2);
+      min-width: 0;
+      min-height: 0;
+      padding: var(--space10) var(--space12);
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .home-community-info__cell > .home-community-info__label {
+      height: 16px;
+      min-height: 16px;
+      flex: 0 0 16px;
+    }
+
+    .home-community-info__cell > .home-community-info__value,
+    .home-community-info__cell > .home-community-info__value-row {
+      display: flex;
+      align-items: center;
+      height: 24px;
+      min-height: 24px;
+      flex: 0 0 24px;
+    }
+
+    .home-community-info__cell > .home-community-info__meta,
+    .home-community-info__cell > .home-community-info__meta-row {
+      height: 16px;
+      min-height: 16px;
+      flex: 0 0 16px;
+    }
+
+    .home-community-info__cell:not(:last-child) {
+      border-right: 1px solid var(--gray-9);
+    }
+
+    .home-community-info__cell--interactive {
+      cursor: pointer;
+      transition: background-color 160ms ease;
+    }
+
+    .home-community-info__cell--interactive:hover {
+      background: var(--gray-10);
+    }
+
+    .home-community-info__cell--interactive:focus-visible {
+      outline: 2px solid var(--Esports-Blue-LD);
+      outline-offset: -2px;
+    }
+
+    .home-community-info__label,
+    .home-community-info__meta {
+      overflow: hidden;
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      font-weight: var(--font-weight-normal);
+      line-height: var(--line-height-caption);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .home-community-info__value-row,
+    .home-community-info__meta-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space4);
+      min-width: 0;
+    }
+
+    .home-community-info__certification {
+      display: block;
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+    }
+
+    .home-community-info__value {
+      overflow: hidden;
+      color: var(--gray-5);
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-subtitle);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .home-community-info__meta strong {
+      color: var(--gray-4);
+      font-weight: var(--font-weight-normal);
+    }
+
+    .home-community-info__meta-row .nnicon {
+      color: var(--gray-6);
+      font-size: var(--icon-size-x8);
+    }
+
+    .home-community-info__progress-row {
+      display: flex;
+      flex: 1 1 auto;
+      align-items: center;
+      gap: var(--space8);
+      min-width: 0;
+    }
+
+    .home-community-info__progress {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 6px;
+      overflow: hidden;
+      border-radius: var(--border-radius-r);
+      background: var(--gray-9);
+    }
+
+    .home-community-info__progress-fill {
+      display: block;
+      width: 78%;
+      height: 100%;
+      background: var(--Purple);
+    }
+
+    .home-community-info__group {
+      padding-top: var(--space16);
+      padding-bottom: var(--space16);
+    }
+
+    .home-community-info__row--groups {
+      position: relative;
+      display: block;
+      overflow: hidden;
+    }
+
+    .home-community-info__groups-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 180ms ease;
+      will-change: transform;
+    }
+
+    .home-community-info__row--groups .home-community-info__cell {
+      width: 25%;
+      height: 100%;
+      flex: 0 0 25%;
+    }
+
+    .home-community-info__avatars {
+      display: flex;
+      align-items: center;
+      height: 30px;
+      opacity: 0.8;
+    }
+
+    .home-community-info__avatars .nn-avatar {
+      margin-left: -2px;
+      outline: 1px solid var(--gray-1);
+      outline-offset: -1px;
+    }
+
+    .home-community-info__avatars .nn-avatar:first-child {
+      margin-left: var(--space0);
+    }
+
+    .home-community-info__group-control.nn-btn {
+      position: absolute;
+      bottom: 15px;
+      z-index: 2;
+      width: 24px;
+      min-width: 24px;
+      height: 50px;
+      min-height: 50px;
+      padding: var(--space0);
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-2r);
+      background: var(--gray-2);
+      color: var(--gray-5);
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .home-community-info__group-control--prev.nn-btn {
+      left: var(--space0);
+    }
+
+    .home-community-info__group-control--next.nn-btn {
+      right: -13px;
+    }
+
+    .home-community-info__group-control.nn-btn[hidden] {
+      display: none;
+    }
+
+    .home-community-info__group-control.nn-btn:hover {
+      background: var(--gray-2);
+      color: var(--gray-3);
+      box-shadow: none;
+    }
+
+    .home-community-info__group-control.nn-btn .nnicon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 160ms ease, transform 160ms ease;
+      transform: scale(1);
+      transform-origin: center;
+    }
+
+    .home-community-info__group-control.nn-btn:hover .nnicon {
+      transform: scale(1.12);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .home-community-info__groups-track {
+        transition: none;
+      }
+
+      .home-community-info__group-control.nn-btn .nnicon {
+        transition: none;
+      }
+    }
+
+    .home-chat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space10);
+      width: 100%;
+    }
+
+    .home-chat-create.nn-btn {
+      gap: var(--space4);
+      width: 100%;
+      height: 92px;
+      padding: var(--space16);
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-8r);
+      background: var(--gray-1);
+      color: var(--gray-5);
+      box-shadow: none;
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-normal);
+      line-height: var(--line-height-title);
+    }
+
+    .home-chat-create.nn-btn:hover {
+      background: var(--gray-10);
+      box-shadow: none;
+    }
+
+    .home-game-recommendations {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: var(--space32) calc(var(--space24) + var(--space2));
+      width: 100%;
+    }
+
+    .home-game-recommendations > .nn-game-release-card {
+      grid-column: span 2;
+    }
+
+    .home-game-recommendations > .nn-game-release-card:nth-child(n + 7) {
+      grid-column: span 3;
+    }
+
+    .home-modal-layer {
+      position: absolute;
+      inset: var(--space0);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space24);
+      background: var(--Black-A80);
+    }
+
+    .home-modal-layer.is-open {
+      display: flex;
+    }
+
+    .home-dialog.nn-toast {
+      width: 456px;
+      max-width: 100%;
+      max-height: calc(100% - var(--space48));
+      box-shadow: var(--shadow-lg);
+    }
+
+    .home-dialog .nn-toast__content {
+      color: var(--gray-4);
+    }
+
+    .home-game-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space8);
+      width: 100%;
+    }
+
+    .home-game-option.nn-btn {
+      justify-content: flex-start;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .home-game-option .nn-btn-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--border-radius-2r);
+      object-fit: cover;
+    }
+
+    .home-member-list-wrap {
+      position: relative;
+      width: 100%;
+      max-height: 320px;
+      overflow: hidden;
+    }
+
+    .home-member-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space2);
+      max-height: 320px;
+      padding-right: var(--space8);
+      overflow-y: auto;
+    }
+
+    .home-member-list__item {
+      display: flex;
+      align-items: center;
+      gap: var(--space10);
+      min-height: 52px;
+      padding: var(--space8);
+      border-radius: var(--border-radius-2r);
+    }
+
+    .home-member-list__item:hover {
+      background: var(--gray-10);
+    }
+
+    .home-member-list__avatar {
+      display: inline-flex;
+      flex: 0 0 auto;
+    }
+
+    .home-member-list__copy {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: var(--space2);
+      min-width: 0;
+    }
+
+    .home-member-list__name {
+      overflow: hidden;
+      color: var(--gray-4);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-body);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .home-member-list__meta {
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      font-weight: var(--font-weight-normal);
+      line-height: var(--line-height-caption);
+    }
+
+    .home-feed__list > [class^="nn-pugc-"] {
+      width: 100%;
+    }
+
+    .home-section-heading {
+      margin: var(--space16) var(--space0) var(--space8);
+      color: var(--gray-4);
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-subtitle);
+    }
+
+    .home-aside {
+      display: none;
+      flex-direction: column;
+      width: 288px;
+      min-width: 0;
+    }
+
+    .home-framework.is-record-visible:not(.is-detail-tab) .home-aside {
+      display: flex;
+    }
+
+    .home-framework.is-detail-tab .home-aside {
+      display: none;
+    }
+
+    .home-aside__record {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space16);
+    }
+
+    .home-chat-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space16);
+      width: 100%;
+      min-height: 92px;
+      padding: var(--space16);
+      border: 1px solid var(--gray-9);
+      border-radius: var(--border-radius-8r);
+      background: var(--gray-1);
+    }
+
+    .home-chat-card:hover {
+      background: var(--gray-10);
+    }
+
+    .home-chat-card__cover {
+      display: inline-flex;
+      flex: 0 0 auto;
+      width: 60px;
+      height: 60px;
+      overflow: hidden;
+      border-radius: calc(var(--border-radius-14r) + var(--border-radius-1r));
+    }
+
+    .home-chat-card__cover img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .home-chat-card__copy {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: var(--space4);
+      min-width: 0;
+    }
+
+    .home-chat-card__name {
+      overflow: hidden;
+      color: var(--gray-3);
+      font-size: var(--font-size-subtitle);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-subtitle);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .home-chat-card__id {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space2);
+      width: max-content;
+      padding: var(--space2) var(--space4);
+      border: 1px solid var(--gray-8);
+      border-radius: var(--border-radius-r);
+      background: transparent;
+      color: var(--gray-6);
+      font-size: var(--font-size-caption);
+      font-weight: var(--font-weight-medium);
+      line-height: 12px;
+    }
+
+    .home-chat-card__id .nnicon {
+      font-size: 12px;
+    }
+
+    .home-chat-card__join {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      min-height: 24px;
+      padding: var(--space0);
+      background: transparent;
+      color: var(--gray-6);
+      box-shadow: none;
+    }
+
+    .home-chat-card__join:hover {
+      background: var(--gray-9);
+      color: var(--gray-4);
+      box-shadow: none;
+    }
+
+    #home-leaderboard {
+      position: sticky;
+      top: 0;
+      z-index: 18;
+    }
+
+    .home-aside .nn-record-power-profile,
+    .home-aside .nn-leaderboard {
+      width: 100%;
+    }
+
+    .home-framework__voice {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 40;
+      display: flex;
+      align-items: flex-end;
+      overflow: visible;
+    }
+
+    .home-framework__voice .nn-voice-panel__top {
+      max-height: 80px;
+      opacity: 1;
+      overflow: visible;
+      transform: translateY(0);
+      transition:
+        max-height var(--framework-motion-duration) var(--framework-motion-ease),
+        opacity 180ms ease,
+        transform var(--framework-motion-duration) var(--framework-motion-ease),
+        margin var(--framework-motion-duration) var(--framework-motion-ease);
+    }
+
+    .home-framework.is-voice-room-hidden .home-framework__voice .nn-voice-panel__top {
+      max-height: 0;
+      margin: calc(var(--space8) * -1) var(--space0) var(--space0);
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    .home-framework .community-framework__menu-arrow {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      z-index: 23;
+      width: 28px;
+      height: 76px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(0, -50%);
+    }
+
+    .home-framework.is-menu-collapsed .community-framework__menu-arrow {
+      opacity: 1;
+    }
+
+    .home-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow,
+    .home-framework.is-menu-restoring .community-framework__menu-arrow {
+      opacity: 1;
+    }
+
+    .home-framework .community-framework__menu-arrow-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: auto;
+      height: 76px;
+      object-fit: contain;
+      transform-origin: left center;
+      opacity: 0;
+      transform: translateX(-30px);
+      will-change: transform, opacity;
+    }
+
+    .home-framework .community-framework__menu-arrow-img--light-1 {
+      width: 24px;
+    }
+
+    .home-framework .community-framework__menu-arrow-img--light-2 {
+      width: 22px;
+    }
+
+    .home-framework .community-framework__menu-arrow-img--dark {
+      display: none;
+    }
+
+    body.dark-mode .home-framework .community-framework__menu-arrow-img--light {
+      display: none;
+    }
+
+    body.dark-mode .home-framework .community-framework__menu-arrow-img--dark {
+      display: block;
+    }
+
+    .home-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1 {
+      animation: framework-menu-arrow-light-1-first 3000ms linear both;
+    }
+
+    .home-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2 {
+      animation: framework-menu-arrow-light-2-first 3000ms linear both;
+    }
+
+    .home-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-1-repeat {
+      animation: framework-menu-arrow-light-1-repeat 3000ms linear both;
+    }
+
+    .home-framework.is-menu-collapsed .community-framework__menu-arrow-img--light-2-repeat {
+      animation: framework-menu-arrow-light-2-repeat 3000ms linear both;
+    }
+
+    .home-framework.is-menu-collapsed.is-menu-hovered .community-framework__menu-arrow-img,
+    .home-framework.is-menu-restoring .community-framework__menu-arrow-img {
+      animation: framework-menu-arrow-light-exit 280ms cubic-bezier(0.4, 0, 1, 1) both;
+    }
+
+    @keyframes framework-menu-arrow-light-1-first {
+      0%, 9% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      12% {
+        opacity: 0.45;
+        transform: translateX(-16px);
+      }
+      16% {
+        opacity: 0.9;
+        transform: translateX(-4px);
+      }
+      18%, 29% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.72;
+        transform: translateX(0);
+      }
+      34% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      35%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-first {
+      0%, 15% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      18% {
+        opacity: 0.42;
+        transform: translateX(-16px);
+      }
+      23% {
+        opacity: 0.92;
+        transform: translateX(-4px);
+      }
+      25%, 27% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      29% {
+        opacity: 0.7;
+        transform: translateX(0);
+      }
+      31.5% {
+        opacity: 0.18;
+        transform: translateX(0);
+      }
+      32.5%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-1-repeat {
+      0%, 31.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      35.5% {
+        opacity: 0.38;
+        transform: translateX(-17px);
+      }
+      39.5% {
+        opacity: 0.9;
+        transform: translateX(-5px);
+      }
+      42.5%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-2-repeat {
+      0%, 37.5% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      41.5% {
+        opacity: 0.34;
+        transform: translateX(-17px);
+      }
+      46.5% {
+        opacity: 0.88;
+        transform: translateX(-5px);
+      }
+      49.5%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes framework-menu-arrow-light-exit {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+    }
+  </style>
+  <script>
+    (function() {
+      document.documentElement.classList.toggle('dark-mode', localStorage.getItem('dark-mode') === 'true');
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20261029-nn-page-theme-first-paint&library=page" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/p-nav.html?v=20261112-community-game-home-labels" frameborder="0"></iframe>
+
+  <main class="home-shell">
+    <section class="section">
+      <span class="breadcrumb-part">页面展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">社区首页</span>
+      <h1 class="section-title">Community Home 社区首页</h1>
+      <div class="home-preview-controls" aria-label="页面配置">
+        <span class="home-preview-controls__label">展示战绩组件</span>
+        <div id="home-record-switch"></div>
+      </div>
+      <div class="home-stage" data-code-preview="true">
+        <div id="home-framework" class="community-framework home-framework" aria-label="Home">
+          <div id="home-header" class="community-framework__header home-framework__header"></div>
+          <div id="home-menu" class="community-framework__menu home-framework__menu"></div>
+          <div id="home-menu-hover-zone" class="home-framework__menu-hover-zone" aria-hidden="true"></div>
+          <div id="home-community" class="community-framework__community home-framework__community"></div>
+          <div class="community-framework__content home-framework__content">
+            <div class="home-content">
+              <div class="home-content__inner" data-nn-header-align>
+                <div class="home-feed__toolbar">
+                  <div id="home-feed-tabs" class="home-feed__tabs"></div>
+                  <div id="home-feed-actions" class="home-feed__actions"></div>
+                </div>
+                <section class="home-hero" aria-label="社区信息">
+                  <div class="home-hero__banner">
+                    <img src="../image/Community/banner.png" alt="社区横幅">
+                  </div>
+                </section>
+                <section class="home-community-description" aria-label="社区简介">
+                  <p>我们做的事很具体：组队开黑有固定车队和固定时段，不用你在野队里被挂机队友浪费掉一整晚；版本更新、配装思路、手感数据由社区里的老玩家拆开讲清楚，不搞 “自己悟” 那一套；每周有固定的内战、复盘和带新局，刚进来的人不会被晾在一边。做内容的玩家也有位置 —— 精彩片段、剪辑、整活、长篇攻略都欢迎，做得好的内容会被推到社区首页。</p>
+                </section>
+                <div class="home-main">
+                  <div class="home-board__content">
+                    <div>
+                      <div id="home-overview" class="home-overview">
+                        <section class="home-overview__section home-overview__section--community" aria-labelledby="home-community-info-heading">
+                          <h2 id="home-community-info-heading" class="home-overview__heading">社区信息</h2>
+                          <div class="home-community-info">
+                            <div class="home-community-info__row">
+                              <div id="home-bound-game-card" class="home-community-info__cell home-community-info__cell--interactive" role="button" tabindex="0" aria-haspopup="dialog" aria-label="切换关联游戏，当前为绝地求生">
+                                <span class="home-community-info__label">社区名称</span>
+                                <span class="home-community-info__value-row">
+                                  <img class="home-community-info__certification" src="../image/Community Level/Corporate Certification.svg" alt="企业认证">
+                                  <strong class="home-community-info__value">BEST-S战队</strong>
+                                </span>
+                                <span class="home-community-info__meta-row">
+                                  <span class="home-community-info__meta">关联游戏：<strong id="home-bound-game-name">绝地求生</strong></span>
+                                  <i class="nnicon nicon-a-Toggle-lineqiehuan-xianxing" aria-hidden="true"></i>
+                                </span>
+                              </div>
+                              <div class="home-community-info__cell">
+                                <span class="home-community-info__label">社区ID</span>
+                                <strong class="home-community-info__value">90231</strong>
+                                <span class="home-community-info__meta">创建于2023年</span>
+                              </div>
+                              <div class="home-community-info__cell">
+                                <span class="home-community-info__label">社区等级</span>
+                                <span class="home-community-info__value-row">
+                                  <strong class="home-community-info__value">LV6</strong>
+                                  <span class="home-community-info__progress-row">
+                                    <span class="home-community-info__progress"><span class="home-community-info__progress-fill"></span></span>
+                                    <span class="home-community-info__meta">100/1000</span>
+                                  </span>
+                                </span>
+                                <span class="home-community-info__meta-row"><span class="home-community-info__meta">社区等级排名：<strong>16</strong></span><i class="nnicon nicon-a-Arrowright-linejiantouyou-xianxing" aria-hidden="true"></i></span>
+                              </div>
+                              <div id="home-community-members-card" class="home-community-info__cell home-community-info__cell--interactive" role="button" tabindex="0" aria-haspopup="dialog" aria-label="查看社区成员列表，共128人">
+                                <span class="home-community-info__label">成员人数</span>
+                                <strong class="home-community-info__value">128</strong>
+                                <span class="home-community-info__meta-row"><span class="home-community-info__meta">社区人数排名：<strong>82</strong></span><i class="nnicon nicon-a-Arrowright-linejiantouyou-xianxing" aria-hidden="true"></i></span>
+                              </div>
+                            </div>
+                            <div class="home-community-info__row">
+                              <div class="home-community-info__cell">
+                                <span class="home-community-info__label">社区战力</span>
+                                <strong class="home-community-info__value">8367</strong>
+                                <span class="home-community-info__meta-row"><span class="home-community-info__meta">社区战力排名：<strong>15</strong></span><i class="nnicon nicon-a-Arrowright-linejiantouyou-xianxing" aria-hidden="true"></i></span>
+                              </div>
+                              <div class="home-community-info__cell">
+                                <span class="home-community-info__label">我的等级</span>
+                                <strong class="home-community-info__value">LV43</strong>
+                                <span class="home-community-info__meta-row"><span class="home-community-info__meta">个人社区等级排名：<strong>834</strong></span><i class="nnicon nicon-a-Arrowright-linejiantouyou-xianxing" aria-hidden="true"></i></span>
+                              </div>
+                              <div class="home-community-info__cell" aria-hidden="true"></div>
+                              <div class="home-community-info__cell" aria-hidden="true"></div>
+                            </div>
+                            <div class="home-community-info__row home-community-info__row--groups">
+                              <div id="home-community-groups-track" class="home-community-info__groups-track">
+                                <div class="home-community-info__cell home-community-info__group"><span class="home-community-info__label">超级管理员分组</span><span id="home-admin-group-super" class="home-community-info__avatars"></span></div>
+                                <div class="home-community-info__cell home-community-info__group"><span class="home-community-info__label">高级管理员分组</span><span id="home-admin-group-senior" class="home-community-info__avatars"></span></div>
+                                <div class="home-community-info__cell home-community-info__group"><span class="home-community-info__label">管理员分组A</span><span id="home-admin-group-a" class="home-community-info__avatars"></span></div>
+                                <div class="home-community-info__cell home-community-info__group"><span class="home-community-info__label">管理员分组B</span><span id="home-admin-group-b" class="home-community-info__avatars"></span></div>
+                                <div class="home-community-info__cell home-community-info__group"><span class="home-community-info__label">管理员分组C</span><span id="home-admin-group-c" class="home-community-info__avatars"></span></div>
+                                <div class="home-community-info__cell home-community-info__group"><span class="home-community-info__label">管理员分组D</span><span id="home-admin-group-d" class="home-community-info__avatars"></span></div>
+                              </div>
+                            </div>
+                            <span id="home-community-info-prev"></span>
+                            <span id="home-community-info-next"></span>
+                          </div>
+                        </section>
+                        <section class="home-overview__section" aria-labelledby="home-chat-heading">
+                          <h2 id="home-chat-heading" class="home-overview__heading">群聊</h2>
+                          <div class="home-chat-grid">
+                            <div id="home-chat-create"></div>
+                            <div id="home-chat-groups"></div>
+                          </div>
+                        </section>
+                        <section class="home-overview__section" aria-labelledby="home-recommendations-heading">
+                          <h2 id="home-recommendations-heading" class="home-overview__heading">为你推荐</h2>
+                          <div id="home-game-recommendations" class="home-game-recommendations"></div>
+                        </section>
+                      </div>
+                      <section id="home-detail-feed" class="home-detail-feed home-feed" aria-label="社区内容列表" hidden>
+                        <div id="home-feed-list" class="home-feed__list"></div>
+                      </section>
+                    </div>
+                    <aside class="home-aside" aria-label="战绩组件">
+                      <div class="home-aside__record">
+                        <div id="home-record"></div>
+                        <div id="home-leaderboard"></div>
+                      </div>
+                    </aside>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="home-modal-layer" class="home-modal-layer" aria-hidden="true"></div>
+          <div class="community-framework__menu-arrow" aria-hidden="true">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-light-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--light community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-light-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2" src="../image/Community/arrow-dark-2.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-1 community-framework__menu-arrow-img--light-1-repeat" src="../image/Community/arrow-dark-1.svg" alt="">
+            <img class="community-framework__menu-arrow-img community-framework__menu-arrow-img--dark community-framework__menu-arrow-img--light-2 community-framework__menu-arrow-img--light-2-repeat" src="../image/Community/arrow-dark-2.svg" alt="">
+          </div>
+          <div id="home-voice" class="community-framework__voice home-framework__voice"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../main.js?v=20261112-unified-page-preview"></script>
+  <script src="../basic%20components/switch.js?v=20261030-page-preview-mode"></script>
+  <script src="../basic%20components/button.js?v=20261113-button-cleanup"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/avatar.js?v=20261117-offline-opacity"></script>
+  <script src="../basic%20components/badge.js?v=20261112-esports-blue"></script>
+  <script src="../basic%20components/radio.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/input.js?v=20260529-community-framework-voice-settings"></script>
+  <script src="../basic%20components/slider.js?v=20260529-wheel"></script>
+  <script src="../basic%20components/scrollbar.js?v=20260611-scrollbar-horizontal"></script>
+  <script src="../basic%20components/toast.js?v=20261117-toast-scrollbar-container-binding"></script>
+  <script src="../basic%20components/tooltips.js?v=20260605-certification-label-reuse"></script>
+  <script src="../basic%20components/menu.js?v=20261117-menu-avatar-size-selected-stroke"></script>
+  <script src="../basic%20components/header.js?v=20261118-search-star-smooth-radius-global-search-content18"></script>
+  <script src="../basic%20components/label.js?v=20261112-label-normal-weight"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script src="../basic%20components/tabs.js?v=20260606-tabs-indicator-resize"></script>
+  <script src="../basic%20components/dropdown-menu.js?v=20260611-dropdown-scrollbar-component"></script>
+  <script src="../NN%20business%20components/community-navigation.js?v=20261116-cover-id-bg80"></script>
+  <script src="../NN%20business%20components/toast-display.js?v=20260611-toast-display-scrollbar-component"></script>
+  <script src="../public/vendor/lottie.min.js?v=20260616"></script>
+  <script src="../Accelerator%20business%20components/image-carousel.js?v=20261114-banner-responsive-nav"></script>
+  <script src="../NN%20business%20components/voice-panel.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/card.js?v=20261119-din-unit-shift"></script>
+  <script src="../NN%20business%20components/pugc.js?v=20260606-pugc-components"></script>
+  <script src="../NN%20business%20components/record.js?v=20261119-din-balanced"></script>
+  <script src="../NN%20business%20components/leaderboard.js?v=20261119-din-balanced"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('p-nav-home');
+
+      const framework = document.getElementById('home-framework');
+      const headerSlot = document.getElementById('home-header');
+      const menuSlot = document.getElementById('home-menu');
+      const menuHoverZone = document.getElementById('home-menu-hover-zone');
+      const communitySlot = document.getElementById('home-community');
+      const voiceSlot = document.getElementById('home-voice');
+      const feedListSlot = document.getElementById('home-feed-list');
+      const feedActionsSlot = document.getElementById('home-feed-actions');
+      const overviewSlot = document.getElementById('home-overview');
+      const detailFeedSlot = document.getElementById('home-detail-feed');
+      const gameRecommendationsSlot = document.getElementById('home-game-recommendations');
+      const homeModalLayer = document.getElementById('home-modal-layer');
+      const boundGameCard = document.getElementById('home-bound-game-card');
+      const membersCard = document.getElementById('home-community-members-card');
+      const homeContent = framework.querySelector('.home-content');
+      const homeContentWrap = framework.querySelector('.home-framework__content');
+      let homeAside = framework.querySelector('.home-aside');
+      let activeHomeDialogTrigger = null;
+      let activeHomeDialogScrollbar = null;
+      let selectedCommunityGame = {
+        name: '绝地求生',
+        src: '../image/Game logo/game1.webp'
+      };
+      const homePageScrollbar = typeof window.createScrollbar === 'function'
+        ? window.createScrollbar({
+          target: homeContent,
+          container: homeContentWrap,
+          hoverTarget: homeContentWrap,
+          variant: 'page',
+          right: 4,
+          minThumbSize: 60,
+          className: 'home-content__scrollbar'
+        })
+        : null;
+
+      function canNestedScrollerMove(target, deltaY) {
+        let node = target instanceof Element ? target : null;
+        while (node && node !== homeContent) {
+          const style = window.getComputedStyle(node);
+          const canOverflow = /(auto|scroll)/.test(style.overflowY);
+          const hasScrollableContent = node.scrollHeight > node.clientHeight + 1;
+          if (canOverflow && hasScrollableContent) {
+            const canScrollUp = node.scrollTop > 0;
+            const canScrollDown = node.scrollTop + node.clientHeight < node.scrollHeight - 1;
+            if ((deltaY < 0 && canScrollUp) || (deltaY > 0 && canScrollDown)) {
+              return true;
+            }
+          }
+          node = node.parentElement;
+        }
+        return false;
+      }
+
+      function getHomeScrollMax(node) {
+        if (!node) return 0;
+        return Math.max(0, node.scrollHeight - node.clientHeight);
+      }
+
+      function scrollHomeElement(node, deltaY) {
+        if (!node) return false;
+        const maxScrollTop = getHomeScrollMax(node);
+        if (maxScrollTop <= 0) return false;
+        const currentScrollTop = node.scrollTop;
+        const nextScrollTop = Math.max(0, Math.min(maxScrollTop, currentScrollTop + deltaY));
+        if (Math.abs(nextScrollTop - currentScrollTop) < 0.5) return false;
+        node.scrollTop = nextScrollTop;
+        return true;
+      }
+
+      function isHomeContentWheel(event) {
+        const rect = homeContentWrap.getBoundingClientRect();
+        return event.clientX >= rect.left
+          && event.clientX <= rect.right
+          && event.clientY >= rect.top
+          && event.clientY <= rect.bottom;
+      }
+
+      function getHomeLeaderboardScroller() {
+        return homeAside && homeAside.querySelector('.nn-leaderboard__list');
+      }
+
+      function bindHomeContentScrollBoundary() {
+        framework.addEventListener('wheel', function(event) {
+          if (canNestedScrollerMove(event.target, event.deltaY)) return;
+          if (isHomeContentWheel(event)) {
+            const contentMoved = scrollHomeElement(homeContent, event.deltaY);
+            const leaderboardMoved = contentMoved
+              ? false
+              : scrollHomeElement(getHomeLeaderboardScroller(), event.deltaY);
+            if (contentMoved || leaderboardMoved) {
+              event.preventDefault();
+              event.stopPropagation();
+              return;
+            }
+          }
+          const maxScrollTop = getHomeScrollMax(homeContent);
+          if (maxScrollTop <= 0) return;
+          const atTop = homeContent.scrollTop <= 0;
+          const atBottom = homeContent.scrollTop >= maxScrollTop - 1;
+          if ((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom)) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }, { passive: false, capture: true });
+      }
+
+      bindHomeContentScrollBoundary();
+
+      function syncHomeLeaderboardHeight() {
+        const leaderboard = homeAside && homeAside.querySelector('.nn-leaderboard');
+        if (!leaderboard) return;
+        leaderboard.style.setProperty('--nn-leaderboard-height', '378px');
+      }
+
+      function syncHomeLayout() {
+        syncHomeLeaderboardHeight();
+        if (homePageScrollbar) homePageScrollbar.update();
+      }
+
+      function scheduleHomeLayoutSync() {
+        syncHomeLayout();
+        requestAnimationFrame(syncHomeLayout);
+        window.setTimeout(syncHomeLayout, 80);
+        window.setTimeout(syncHomeLayout, 240);
+        window.setTimeout(syncHomeLayout, 560);
+      }
+
+      function syncDarkMode(isDark) {
+        localStorage.setItem('dark-mode', String(isDark));
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
+        notifyIframeDarkMode(isDark);
+      }
+
+      function toggleDarkMode() {
+        syncDarkMode(!document.body.classList.contains('dark-mode'));
+      }
+
+      function toggleExpanded() {
+        const isExpanded = framework.classList.toggle('is-expanded');
+        document.body.classList.toggle('is-home-expanded', isExpanded);
+        scheduleHomeLayoutSync();
+      }
+
+      const header = createHeader({
+        width: '100%',
+        showBack: true
+      });
+      headerSlot.appendChild(header);
+
+      const windowIcons = header.querySelectorAll('.nn-header__window-icon');
+      if (windowIcons[1]) {
+        windowIcons[1].setAttribute('role', 'button');
+        windowIcons[1].setAttribute('tabindex', '0');
+        windowIcons[1].setAttribute('aria-label', '适配浏览器最大尺寸');
+        windowIcons[1].addEventListener('click', toggleExpanded);
+        windowIcons[1].addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleExpanded();
+          }
+        });
+      }
+
+      const themeButton = header.querySelector('.nn-header__icon-btn--more');
+      if (themeButton) {
+        themeButton.addEventListener('click', toggleDarkMode);
+      }
+
+      menuSlot.appendChild(createInteractiveMenu({
+        selectedItemIndex: 0,
+        lockItemSelection: true
+      }));
+
+      communitySlot.appendChild(createCommunityNavigationCombo({
+        communityType: 'player',
+        level: {
+          userLevel: { lv: 48 }
+        }
+      }));
+
+      const adminAvatarFiles = ['头像556.png', '头像558.png', '头像559.png', '头像562.png'];
+      [
+        { id: 'home-admin-group-super', files: adminAvatarFiles.slice(0, 1) },
+        { id: 'home-admin-group-senior', files: adminAvatarFiles },
+        { id: 'home-admin-group-a', files: adminAvatarFiles },
+        { id: 'home-admin-group-b', files: adminAvatarFiles },
+        { id: 'home-admin-group-c', files: adminAvatarFiles.slice().reverse() },
+        { id: 'home-admin-group-d', files: adminAvatarFiles.slice(1).concat(adminAvatarFiles[0]) }
+      ].forEach(function(group) {
+        const slot = document.getElementById(group.id);
+        group.files.forEach(function(fileName) {
+          slot.appendChild(createAvatar({
+            src: `../image/Avatar/${fileName}`,
+            text: '管理员',
+            size: 20
+          }));
+        });
+      });
+
+      function closeHomeDialog() {
+        if (!homeModalLayer.classList.contains('is-open')) return;
+        if (activeHomeDialogScrollbar) {
+          activeHomeDialogScrollbar.destroy();
+          activeHomeDialogScrollbar = null;
+        }
+        homeModalLayer.classList.remove('is-open');
+        homeModalLayer.setAttribute('aria-hidden', 'true');
+        homeModalLayer.replaceChildren();
+        if (activeHomeDialogTrigger) {
+          activeHomeDialogTrigger.focus();
+          activeHomeDialogTrigger = null;
+        }
+      }
+
+      function openHomeDialog(options) {
+        activeHomeDialogTrigger = options.trigger || document.activeElement;
+        homeModalLayer.replaceChildren();
+        const dialog = createToast({
+          title: options.title,
+          subtitle: options.subtitle || '',
+          content: options.content,
+          showClose: true,
+          showFooter: false,
+          className: ['home-dialog', options.className || ''].filter(Boolean).join(' '),
+          onClose: closeHomeDialog
+        });
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.setAttribute('tabindex', '-1');
+        const dialogTitle = dialog.querySelector('.nn-toast__title');
+        if (dialogTitle) {
+          dialogTitle.id = 'home-dialog-title';
+          dialog.setAttribute('aria-labelledby', dialogTitle.id);
+        }
+        homeModalLayer.appendChild(dialog);
+        homeModalLayer.classList.add('is-open');
+        homeModalLayer.setAttribute('aria-hidden', 'false');
+        requestAnimationFrame(function() {
+          const closeButton = dialog.querySelector('.nn-toast__close');
+          if (closeButton) closeButton.focus();
+        });
+        return dialog;
+      }
+
+      function openGameDialog() {
+        const gameOptions = document.createElement('div');
+        gameOptions.className = 'home-game-options';
+        [
+          { name: '绝地求生', src: '../image/Game logo/game1.webp' },
+          { name: '堡垒之夜', src: '../image/Game logo/game2.webp' },
+          { name: '魔兽世界', src: '../image/Game logo/game3.webp' },
+          { name: 'APEX英雄', src: '../image/Game logo/game4.webp' },
+          { name: '炉石传说', src: '../image/Game logo/game5.webp' },
+          { name: '绝区零', src: '../image/Game logo/game6.webp' }
+        ].forEach(function(game) {
+          const isSelected = game.name === selectedCommunityGame.name;
+          const button = createButton({
+            text: game.name,
+            variant: 'system',
+            level: 'secondary',
+            size: 'large',
+            icon: `<img src="${game.src}" alt="">`,
+            iconSize: 32,
+            className: 'home-game-option',
+            dataState: isSelected ? 'active' : null,
+            onClick: function() {
+              selectedCommunityGame = game;
+              const gameImage = document.getElementById('home-bound-game-image');
+              const gameName = document.getElementById('home-bound-game-name');
+              if (gameImage) {
+                gameImage.src = game.src;
+                gameImage.alt = game.name;
+              }
+              gameName.textContent = game.name;
+              boundGameCard.setAttribute('aria-label', `切换关联游戏，当前为${game.name}`);
+              closeHomeDialog();
+            }
+          });
+          button.setAttribute('aria-pressed', String(isSelected));
+          gameOptions.appendChild(button);
+        });
+        openHomeDialog({
+          trigger: boundGameCard,
+          title: '切换游戏',
+          subtitle: '选择社区绑定的游戏',
+          content: gameOptions,
+          className: 'home-game-dialog'
+        });
+      }
+
+      function openMembersDialog() {
+        const memberListWrap = document.createElement('div');
+        memberListWrap.className = 'home-member-list-wrap';
+        const memberList = document.createElement('div');
+        memberList.className = 'home-member-list';
+        [
+          { name: '邪恶萨摩耶', avatar: '头像706.png', role: '创建人', status: 'on', statusText: '在线' },
+          { name: '星河漫游者', avatar: '头像480.png', role: '管理员', status: 'on', statusText: '在线' },
+          { name: 'Mahail', avatar: '头像441.png', role: '社区成员', status: 'on', statusText: '在线' },
+          { name: '拖鞋也能赢', avatar: '头像496.png', role: '社区成员', status: 'on', statusText: '在线' },
+          { name: '今晚不落地', avatar: '头像655.png', role: '社区成员', status: 'gray', statusText: '离线' },
+          { name: '雨林收割机', avatar: '头像686.png', role: '社区成员', status: 'on', statusText: '在线' },
+          { name: '南栀Echo', avatar: '头像1095.png', role: '社区成员', status: 'gray', statusText: '离线' },
+          { name: '普莱士袋熊', avatar: '头像748.png', role: '社区成员', status: 'on', statusText: '在线' },
+          { name: '黑夜巡游', avatar: '头像562.png', role: '社区成员', status: 'gray', statusText: '离线' },
+          { name: '一枪一个梦', avatar: '头像827.png', role: '社区成员', status: 'on', statusText: '在线' }
+        ].forEach(function(member) {
+          const item = document.createElement('div');
+          item.className = 'home-member-list__item';
+          const avatar = document.createElement('span');
+          avatar.className = 'home-member-list__avatar';
+          avatar.appendChild(createAvatar({
+            src: `../image/Avatar/${member.avatar}`,
+            text: member.name,
+            size: 40,
+            status: member.status
+          }));
+          const copy = document.createElement('span');
+          copy.className = 'home-member-list__copy';
+          const name = document.createElement('strong');
+          name.className = 'home-member-list__name';
+          name.textContent = member.name;
+          const meta = document.createElement('span');
+          meta.className = 'home-member-list__meta';
+          meta.textContent = `${member.role} · ${member.statusText}`;
+          copy.append(name, meta);
+          item.append(avatar, copy);
+          memberList.appendChild(item);
+        });
+        memberListWrap.appendChild(memberList);
+        openHomeDialog({
+          trigger: membersCard,
+          title: '社区成员',
+          subtitle: '共 128 人',
+          content: memberListWrap,
+          className: 'home-members-dialog'
+        });
+        requestAnimationFrame(function() {
+          activeHomeDialogScrollbar = createScrollbar({
+            target: memberList,
+            container: memberListWrap,
+            hoverTarget: memberListWrap,
+            variant: 'thin',
+            right: 0,
+            minThumbSize: 24
+          });
+        });
+      }
+
+      function bindDialogCard(card, openDialog) {
+        card.addEventListener('click', openDialog);
+        card.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openDialog();
+          }
+        });
+      }
+
+      bindDialogCard(boundGameCard, openGameDialog);
+      bindDialogCard(membersCard, openMembersDialog);
+      const communityGroupsTrack = document.getElementById('home-community-groups-track');
+      const communityGroupVisibleCount = 4;
+      const communityGroupStep = 100 / communityGroupVisibleCount;
+      const communityGroupMaxIndex = Math.max(0, communityGroupsTrack.children.length - communityGroupVisibleCount);
+      let communityGroupIndex = 0;
+      const communityInfoPrev = nnButton({
+        variant: 'system',
+        level: 'tertiary',
+        size: 'small',
+        icon: '<i class="nnicon nicon-a-Arrowleft-linejiantouzuo-xianxing"></i>',
+        iconPosition: 'only',
+        iconSize: 'var(--icon-size-x9)',
+        className: 'home-community-info__group-control home-community-info__group-control--prev',
+        onClick: function() {
+          communityGroupIndex = Math.max(0, communityGroupIndex - 1);
+          updateCommunityGroupCarousel();
+        }
+      });
+      const communityInfoNext = nnButton({
+        variant: 'system',
+        level: 'tertiary',
+        size: 'small',
+        icon: '<i class="nnicon nicon-a-Arrowright-linejiantouyou-xianxing"></i>',
+        iconPosition: 'only',
+        iconSize: 'var(--icon-size-x9)',
+        className: 'home-community-info__group-control home-community-info__group-control--next',
+        onClick: function() {
+          communityGroupIndex = Math.min(communityGroupMaxIndex, communityGroupIndex + 1);
+          updateCommunityGroupCarousel();
+        }
+      });
+      communityInfoPrev.setAttribute('aria-label', '向左切换一个管理员分组');
+      communityInfoNext.setAttribute('aria-label', '向右切换一个管理员分组');
+      document.getElementById('home-community-info-prev').appendChild(communityInfoPrev);
+      document.getElementById('home-community-info-next').appendChild(communityInfoNext);
+
+      function updateCommunityGroupCarousel() {
+        communityGroupsTrack.style.transform = `translateX(-${communityGroupIndex * communityGroupStep}%)`;
+        communityInfoPrev.hidden = communityGroupIndex === 0;
+        communityInfoNext.hidden = communityGroupIndex === communityGroupMaxIndex;
+      }
+
+      updateCommunityGroupCarousel();
+      homeModalLayer.addEventListener('click', function(event) {
+        if (event.target === homeModalLayer) closeHomeDialog();
+      });
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && homeModalLayer.classList.contains('is-open')) {
+          closeHomeDialog();
+        }
+      });
+
+      const voicePanel = createVoicePanel({
+        launchState: 'idle',
+        avatars: [
+          '../image/Avatar/头像480.png',
+          '../image/Avatar/头像441.png',
+          '../image/Avatar/头像496.png',
+          '../image/Avatar/头像655.png',
+          '../image/Avatar/头像686.png'
+        ],
+        speakerAvatar: '../image/Avatar/头像480.png'
+      });
+      voiceSlot.appendChild(voicePanel);
+
+      const recordSwitch = createSwitch({
+        checked: false,
+        size: 'default',
+        onChange: function(showRecord) {
+          framework.classList.toggle('is-record-visible', showRecord);
+          scheduleHomeLayoutSync();
+        }
+      });
+      recordSwitch.setAttribute('aria-label', '展示战绩组件');
+      document.getElementById('home-record-switch').appendChild(recordSwitch);
+
+      const feedTabs = createTabs({
+        type: 'primary',
+        tabs: [
+          { name: '社区介绍' },
+          { name: '最新', badge: { dot: true, variant: 'red', size: 8 } },
+          { name: '战队' },
+          { name: '活动' },
+          { name: '赛事', badge: { text: '6', variant: 'red', size: 'small' } },
+          { name: '公告' },
+          { name: '攻略' }
+        ],
+        defaultActive: 0,
+        onChange: function(event) {
+          renderFeed(event.index);
+        }
+      });
+      document.getElementById('home-feed-tabs').appendChild(feedTabs);
+      feedActionsSlot.appendChild(nnButton({
+        variant: 'system',
+        level: 'tertiary',
+        size: 'small',
+        text: '发布',
+        icon: '<i class="nnicon nicon-a-Publishcontent-linefabuneirong-xianxing"></i>',
+        iconPosition: 'left',
+        iconSize: 'var(--icon-size-x9)'
+      }));
+      feedActionsSlot.appendChild(nnButton({
+        variant: 'system',
+        level: 'tertiary',
+        size: 'small',
+        text: '内容管理',
+        icon: '<i class="nnicon nicon-a-Content-lineneirong-xianxing"></i>',
+        iconPosition: 'left',
+        iconSize: 'var(--icon-size-x9)'
+      }));
+      feedActionsSlot.appendChild(nnButton({
+        variant: 'system',
+        level: 'tertiary',
+        size: 'small',
+        icon: '<i class="nnicon nicon-a-Clearqingli"></i>',
+        iconPosition: 'only',
+        iconSize: 'var(--icon-size-x9)',
+        className: 'home-feed__clear'
+      }));
+
+      document.getElementById('home-chat-create').appendChild(nnButton({
+        variant: 'system',
+        level: 'tertiary',
+        size: 'large',
+        text: '创建群聊',
+        icon: '<i class="nnicon nicon-a-add-linetianjia-xianxing"></i>',
+        iconPosition: 'left',
+        iconSize: 'var(--icon-size-x16)',
+        className: 'home-chat-create'
+      }));
+
+      const homeChatGroups = [
+        {
+          name: 'PDD的群聊',
+          id: '90231',
+          cover: '../image/Community/chat-group-pdd.png'
+        }
+      ];
+
+      const chatGroupsSlot = document.getElementById('home-chat-groups');
+      homeChatGroups.forEach(function(group) {
+        const card = document.createElement('article');
+        card.className = 'home-chat-card';
+
+        const cover = document.createElement('span');
+        cover.className = 'home-chat-card__cover';
+        const coverImage = document.createElement('img');
+        coverImage.src = group.cover;
+        coverImage.alt = '';
+        cover.appendChild(coverImage);
+
+        const copy = document.createElement('span');
+        copy.className = 'home-chat-card__copy';
+        const name = document.createElement('strong');
+        name.className = 'home-chat-card__name';
+        name.textContent = group.name;
+        const id = document.createElement('span');
+        id.className = 'home-chat-card__id';
+        id.innerHTML = `<i class="nnicon nicon-a-ID-linejinghao-xianxing" aria-hidden="true"></i>${group.id}`;
+        copy.append(name, id);
+
+        const joinButton = nnButton({
+          variant: 'system',
+          level: 'tertiary',
+          size: 'small',
+          icon: '<i class="nnicon nicon-a-add-linetianjia-xianxing"></i>',
+          iconPosition: 'only',
+          iconSize: 'var(--icon-size-x12)',
+          className: 'home-chat-card__join'
+        });
+        joinButton.setAttribute('aria-label', `加入${group.name}`);
+        card.append(cover, copy, joinButton);
+        chatGroupsSlot.appendChild(card);
+      });
+
+      [
+        'game-monster-hunter.png',
+        'game-tides.png',
+        'game-phantom-blade.png',
+        'game-resident-evil.png',
+        'game-bloodborne.png',
+        'game-final-fantasy.png',
+        'game-castlevania.png',
+        'game-onimusha.png'
+      ].forEach(function(coverName) {
+        gameRecommendationsSlot.appendChild(createGameReleaseCard({
+          coverSrc: `../image/Game Store/${coverName}`,
+          title: '怪物猎人：荒野-凌越',
+          description: 'Monster Hunter: Wilds - Beyond',
+          rating: '92%',
+          platforms: ['steam'],
+          tags: ['共斗'],
+          age: '16+',
+          fluid: true
+        }));
+      });
+
+      const homeFeedTitles = [
+        '社区玩家分享了今日精彩击杀集锦',
+        '新地图训练房开放，欢迎加入语音开黑',
+        '官方社区招募内容创作者，发布攻略赢奖励',
+        '本周热门房间榜单更新，快来看看你的排名',
+        '玩家自制战术路线图已同步到社区资料库',
+        '今晚 8 点社区娱乐赛开启报名',
+        '版本更新后武器平衡讨论合集',
+        '社区大厅新增沉浸语音模式体验反馈收集',
+        '高手复盘：决赛圈站位与投掷物选择',
+        '新成员入驻社区，完成认证即可领取权益',
+        '今日活跃队伍推荐，缺一名狙击位',
+        'PUBG 29.2 版本更新公告与维护说明',
+        '社区规范更新：语音房间管理规则调整',
+        '战绩数据服务升级通知',
+        '官方认证权益开放申请',
+        'SGS 电竞《夏鸡大作战》',
+        '周末双倍积分活动开启',
+        'PUBG 训练营报名倒计时',
+        '社区新人任务挑战',
+        '全球锦标赛报名开启',
+        'NN 娱乐赛进入报名阶段',
+        '洲际赛 PCS 待开赛',
+        'PCS6 亚洲赛区赛程公布，中国战队蓄势待发',
+        '决赛圈烟雾弹铺设路线与时间点',
+        '新版本枪械选择与配件推荐',
+        '四排信息位沟通模板',
+        '热门地图上分点位整理',
+        '固定队招募：晚 9 点开黑，缺指挥位',
+        '娱乐车队今晚冲分，欢迎麦克风清晰玩家',
+        '新手训练队招募，主打轻松交流'
+      ];
+      const homeFeedTimes = ['刚刚', '5分钟前', '12分钟前', '20分钟前', '32分钟前', '45分钟前', '1小时前', '2小时前'];
+      const homeFeedColors = ['#C03E85', '#6A47D8', '#396DDE', '#D58009', '#38B081', '#F2494F'];
+      const homeFeedTypeColors = {
+        activity: '#C03E85',
+        competition: '#6A47D8',
+        strategy: '#396DDE',
+        team: '#D58009'
+      };
+      const homeCompetitionNames = ['全球赛', '冠军杯', '洲际赛', '社区赛', '娱乐赛', '训练赛', '晋级赛', '挑战赛'];
+      function pickHomePinnedIndexes(total, count) {
+        const indexes = Array.from({ length: total }, function(_, index) {
+          return index;
+        });
+        for (let index = indexes.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1));
+          [indexes[index], indexes[swapIndex]] = [indexes[swapIndex], indexes[index]];
+        }
+        return new Set(indexes.slice(0, count));
+      }
+
+      const homeLatestPinned = pickHomePinnedIndexes(20, 3);
+
+      function homeFeedTitle(index) {
+        return homeFeedTitles[index % homeFeedTitles.length];
+      }
+
+      function homeFeedComment(index) {
+        return index % 5 === 0 ? '99+' : String(12 + ((index * 7) % 88));
+      }
+
+      function homeCompetitionTitle(index) {
+        return `${homeCompetitionNames[index % homeCompetitionNames.length].slice(0, 5)}（5.2-5.12）`;
+      }
+
+      function createHomeActivityItems(count, options = {}) {
+        const statusOptions = [
+          { status: '6月22日截止' },
+          { status: '2天后截止' },
+          { status: '5时30分20秒结束', state: 'urgent', countdownSeconds: 5 * 3600 + 30 * 60 + 20 },
+          { status: '已结束', state: 'ended', icon: 'nicon-a-Posts-linetiezi-xianxing' }
+        ];
+        return Array.from({ length: count }, function(_, index) {
+          return Object.assign({
+            title: homeFeedTitle(index),
+            count: homeFeedComment(index),
+            labelColor: options.colorful ? homeFeedColors[index % homeFeedColors.length] : '',
+            pinned: Boolean(options.pinnedSet && options.pinnedSet.has(index)),
+            showMore: false
+          }, statusOptions[index % statusOptions.length]);
+        });
+      }
+
+      function createHomeCompetitionItems(count, options = {}) {
+        const statusOptions = [
+          { status: '进行中', statusTone: 'active' },
+          { status: '报名中', statusTone: 'registering' },
+          { status: '待开赛', statusTone: 'upcoming' },
+          { status: '已结束', statusTone: 'ended' }
+        ];
+        return Array.from({ length: count }, function(_, index) {
+          return Object.assign({
+            title: homeCompetitionTitle(index),
+            count: homeFeedComment(index),
+            labelColor: options.colorful ? homeFeedColors[(index + 1) % homeFeedColors.length] : '',
+            pinned: Boolean(options.pinnedSet && options.pinnedSet.has(index)),
+            showMore: false
+          }, statusOptions[index % statusOptions.length]);
+        });
+      }
+
+      function createHomeTextItems(count, options = {}) {
+        return Array.from({ length: count }, function(_, index) {
+          return {
+            title: homeFeedTitle(index + (options.offset || 0)),
+            time: homeFeedTimes[index % homeFeedTimes.length],
+            commentCount: homeFeedComment(index),
+            labelColor: options.colorful ? homeFeedColors[(index + (options.offset || 0)) % homeFeedColors.length] : '',
+            pinned: Boolean(options.pinnedSet && options.pinnedSet.has(index)),
+            showMore: false
+          };
+        });
+      }
+
+      function createHomeLatestList() {
+        const list = document.createElement('div');
+        list.className = 'nn-pugc-dynamic-list';
+        const latestTypes = ['team', 'activity', 'competition', 'announcement', 'strategy'];
+        const latestItems = Array.from({ length: 20 }, function(_, index) {
+          const type = latestTypes[index % latestTypes.length];
+          return {
+            index,
+            type,
+            labelColor: homeFeedTypeColors[type] || '',
+            title: type === 'competition' ? homeCompetitionTitle(index) : homeFeedTitle(index),
+            pinned: homeLatestPinned.has(index),
+            showMore: false
+          };
+        }).sort(function(a, b) {
+          if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+          return a.index - b.index;
+        });
+
+        latestItems.forEach(function(item) {
+          const type = item.type;
+          if (type === 'activity') {
+            list.appendChild(createPugcActivityItem(Object.assign({}, createHomeActivityItems(1, { colorful: true })[0], item)));
+          } else if (type === 'competition') {
+            list.appendChild(createPugcCompetitionItem(Object.assign({}, createHomeCompetitionItems(1, { colorful: true })[0], item)));
+          } else if (type === 'announcement') {
+            list.appendChild(createPugcAnnouncementItem(Object.assign({}, item, {
+              time: homeFeedTimes[item.index % homeFeedTimes.length],
+              commentCount: homeFeedComment(item.index)
+            })));
+          } else if (type === 'strategy') {
+            list.appendChild(createPugcStrategyItem(Object.assign({}, item, {
+              time: homeFeedTimes[item.index % homeFeedTimes.length],
+              commentCount: homeFeedComment(item.index)
+            })));
+          } else if (type === 'team') {
+            list.appendChild(createPugcTeamItem(Object.assign({}, item, {
+              time: homeFeedTimes[item.index % homeFeedTimes.length],
+              commentCount: homeFeedComment(item.index)
+            })));
+          }
+        });
+        return list;
+      }
+
+      function createHomeOverviewList() {
+        const overviewTitles = [
+          '反作弊系统升级公告（2025年4月）',
+          'PCL春季赛季后赛即将开赛，16支战队争夺冠军',
+          'PCL春季赛季后赛即将开赛，16支战队争夺冠军',
+          'PCL春季赛季后赛即将开赛，16支战队争夺冠军',
+          'PCL春季赛季后赛即将开赛，16支战队争夺冠军',
+          'PCL春季赛季后赛即将开赛，16支战队争夺冠军'
+        ];
+        return createPugcAnnouncementList({
+          items: overviewTitles.map(function(title) {
+            return {
+              title,
+              time: '5分钟前',
+              commentCount: '12',
+              showMore: false
+            };
+          })
+        });
+      }
+
+      const feedRenderers = [
+        function() {
+          return createHomeOverviewList();
+        },
+        function() {
+          return createHomeLatestList();
+        },
+        function() {
+          return createPugcTeamList({ items: createHomeTextItems(20, { offset: 12 }) });
+        },
+        function() {
+          return createPugcActivityList({ items: createHomeActivityItems(20) });
+        },
+        function() {
+          return createPugcCompetitionList({ items: createHomeCompetitionItems(20) });
+        },
+        function() {
+          return createPugcAnnouncementList({ items: createHomeTextItems(20, { offset: 4 }) });
+        },
+        function() {
+          return createPugcStrategyList({ items: createHomeTextItems(20, { offset: 8 }) });
+        }
+      ];
+
+      function renderFeed(index) {
+        overviewSlot.hidden = index !== 0;
+        detailFeedSlot.hidden = index === 0;
+        framework.classList.toggle('is-detail-tab', index !== 0);
+        feedListSlot.innerHTML = '';
+        if (index !== 0) {
+          feedListSlot.appendChild(feedRenderers[index] ? feedRenderers[index]() : feedRenderers[1]());
+        }
+        scheduleHomeLayoutSync();
+      }
+
+      renderFeed(0);
+
+      document.getElementById('home-record').appendChild(createRecordPowerProfile({
+        playerName: 'Mahail',
+        summary: 'rank',
+        rankText: '生存者',
+        rankLevel: 10,
+        rankSize: 'large',
+        rankImageSrc: '../image/pubg rank/生存者.png'
+      }));
+
+      const homeLeaderboardNames = [
+        '亚洲暴龙兽',
+        '拖鞋也能赢',
+        '今晚不落地',
+        '决赛圈老六',
+        '雨林收割机',
+        '一枪一个梦',
+        '港口狙神',
+        '海岛快递员',
+        '苟到天亮',
+        '圈边观察员',
+        '北坡独狼',
+        '楼顶伏地魔'
+      ];
+      const homeLeaderboardCities = ['武汉', '上海', '广州', '成都', '杭州', '南京', '深圳', '重庆', '长沙', '西安', '苏州', '郑州'];
+      const homeLeaderboardRows = Array.from({ length: 100 }, function(_, index) {
+        return {
+          rank: index + 1,
+          name: `${homeLeaderboardNames[index % homeLeaderboardNames.length]}${index >= homeLeaderboardNames.length ? index + 1 : ''}`,
+          city: homeLeaderboardCities[index % homeLeaderboardCities.length],
+          wins: `吃鸡${Math.max(1, 23 - Math.floor(index / 4))}次`,
+          rankLv: Math.max(1, 10 - Math.floor(index / 10))
+        };
+      });
+
+      const homeLeaderboard = createLeaderboardRank({
+        rows: homeLeaderboardRows,
+        maxRows: 12,
+        height: 378,
+        moreText: '更多榜单'
+      });
+      document.getElementById('home-leaderboard').appendChild(homeLeaderboard);
+
+      const communityScroller = communitySlot.querySelector('.nn-community-combo__scroller');
+      const menuList = menuSlot.querySelector('.nn-menu-list');
+      const menuListWrapper = menuSlot.querySelector('.nn-menu-list-wrapper');
+      let frameworkMenuScrollOffset = 0;
+      let frameworkMenuMaxScroll = 0;
+
+      function syncFrameworkVoiceHeight() {
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        framework.style.setProperty('--framework-voice-height', `${voiceHeight}px`);
+        syncFrameworkMenuScroll();
+      }
+
+      function syncFrameworkMenuScroll() {
+        if (!menuList || !menuListWrapper) return;
+        const voiceHeight = Math.max(0, Math.ceil(voiceSlot.getBoundingClientRect().height));
+        const wrapperHeight = menuListWrapper.clientHeight;
+        const contentHeight = menuList.scrollHeight;
+        const contentBottom = menuList.offsetTop + contentHeight;
+        const visibleHeightBeforeVoice = Math.max(0, wrapperHeight - voiceHeight);
+        frameworkMenuMaxScroll = Math.max(0, contentBottom - visibleHeightBeforeVoice);
+        frameworkMenuScrollOffset = Math.min(frameworkMenuScrollOffset, frameworkMenuMaxScroll);
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+      }
+
+      function scrollFrameworkMenu(deltaY) {
+        syncFrameworkMenuScroll();
+        if (frameworkMenuMaxScroll <= 0) return false;
+        const nextOffset = Math.max(0, Math.min(frameworkMenuMaxScroll, frameworkMenuScrollOffset + deltaY));
+        if (nextOffset === frameworkMenuScrollOffset) return false;
+        frameworkMenuScrollOffset = nextOffset;
+        framework.style.setProperty('--framework-menu-scroll-offset', `${frameworkMenuScrollOffset}px`);
+        return true;
+      }
+
+      function hideVoiceRoomInfo() {
+        framework.classList.add('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      function showVoiceRoomInfo() {
+        framework.classList.remove('is-voice-room-hidden');
+        requestAnimationFrame(syncFrameworkVoiceHeight);
+      }
+
+      if (window.ResizeObserver) {
+        const voiceResizeObserver = new ResizeObserver(syncFrameworkVoiceHeight);
+        voiceResizeObserver.observe(voiceSlot);
+        voiceResizeObserver.observe(voicePanel);
+        if (menuList) voiceResizeObserver.observe(menuList);
+        if (menuListWrapper) voiceResizeObserver.observe(menuListWrapper);
+
+        const homeLayoutObserver = new ResizeObserver(function() {
+          syncHomeLayout();
+        });
+        homeLayoutObserver.observe(framework);
+        homeLayoutObserver.observe(homeContent);
+        if (homeAside) homeLayoutObserver.observe(homeAside);
+      }
+
+      window.addEventListener('resize', function() {
+        scheduleHomeLayoutSync();
+      });
+      homeContent.addEventListener('scroll', syncHomeLeaderboardHeight, { passive: true });
+      syncHomeLayout();
+      syncFrameworkVoiceHeight();
+
+      const leaveVoiceButton = voicePanel.querySelector('.nn-voice-panel__leave');
+      if (leaveVoiceButton) {
+        leaveVoiceButton.addEventListener('click', hideVoiceRoomInfo);
+      }
+
+      const firstVoiceRoom = communitySlot.querySelector('.nn-community-room');
+      if (firstVoiceRoom) {
+        firstVoiceRoom.addEventListener('click', showVoiceRoomInfo);
+      }
+
+      if (menuListWrapper) {
+        menuListWrapper.addEventListener('wheel', function(event) {
+          if (scrollFrameworkMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+        }, { passive: false });
+      }
+
+      voiceSlot.addEventListener('wheel', function(event) {
+        if (event.target.closest('.nn-slider, input, textarea, select, [contenteditable="true"], .nn-voice-mode__settings-popover')) return;
+        const menuRect = menuSlot.getBoundingClientRect();
+        const communityRect = communitySlot.getBoundingClientRect();
+
+        if (event.clientX >= menuRect.left && event.clientX <= menuRect.right) {
+          if (scrollFrameworkMenu(event.deltaY)) {
+            event.preventDefault();
+          }
+          return;
+        }
+
+        if (!communityScroller) return;
+        if (event.clientX < communityRect.left || event.clientX > communityRect.right) return;
+
+        const previousScrollTop = communityScroller.scrollTop;
+        communityScroller.scrollTop += event.deltaY;
+        if (communityScroller.scrollTop !== previousScrollTop) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      const voiceBack = voicePanel.querySelector('.nn-voice-panel__back');
+      let restoreMenuTimer = null;
+      let restoreEndTimer = null;
+      let menuHoverTimer = null;
+      let isMenuPointerInside = false;
+
+      function clearMenuRestoreTimers() {
+        if (restoreMenuTimer) {
+          window.clearTimeout(restoreMenuTimer);
+          restoreMenuTimer = null;
+        }
+        if (restoreEndTimer) {
+          window.clearTimeout(restoreEndTimer);
+          restoreEndTimer = null;
+        }
+      }
+
+      function clearMenuHoverTimer() {
+        if (menuHoverTimer) {
+          window.clearTimeout(menuHoverTimer);
+          menuHoverTimer = null;
+        }
+      }
+
+      function showCollapsedMenuPreview() {
+        if (!framework.classList.contains('is-menu-collapsed')) return;
+        clearMenuHoverTimer();
+        framework.classList.remove('is-menu-hovered');
+        void framework.offsetWidth;
+        framework.classList.add('is-menu-hovered');
+      }
+
+      function scheduleCollapsedMenuHide() {
+        clearMenuHoverTimer();
+        menuHoverTimer = window.setTimeout(function() {
+          if (!isMenuPointerInside) {
+            framework.classList.remove('is-menu-hovered');
+          }
+          menuHoverTimer = null;
+        }, 80);
+      }
+
+      if (menuHoverZone) {
+        menuHoverZone.addEventListener('mouseenter', showCollapsedMenuPreview);
+        menuHoverZone.addEventListener('mouseleave', scheduleCollapsedMenuHide);
+      }
+
+      document.addEventListener('mousemove', function(event) {
+        if (!framework.classList.contains('is-menu-collapsed') || !framework.classList.contains('is-menu-hovered')) return;
+        const frameworkRect = framework.getBoundingClientRect();
+        const isInsideVerticalRange = event.clientY >= frameworkRect.top + 50 && event.clientY <= frameworkRect.bottom;
+        const isInsideLeaveZone = event.clientX >= frameworkRect.left && event.clientX <= frameworkRect.left + 70;
+        if (!isInsideVerticalRange || !isInsideLeaveZone) {
+          isMenuPointerInside = false;
+          framework.classList.remove('is-menu-hovered');
+        }
+      });
+
+      menuSlot.addEventListener('mouseenter', function() {
+        isMenuPointerInside = true;
+        showCollapsedMenuPreview();
+      });
+
+      menuSlot.addEventListener('mouseleave', function() {
+        isMenuPointerInside = false;
+        scheduleCollapsedMenuHide();
+      });
+
+      if (voiceBack) {
+        voiceBack.addEventListener('click', function() {
+          if (framework.classList.contains('is-menu-collapsed')) {
+            clearMenuRestoreTimers();
+            clearMenuHoverTimer();
+            framework.classList.remove('is-menu-hovered');
+            framework.classList.add('is-menu-restoring');
+
+            restoreMenuTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-collapsed');
+              restoreMenuTimer = null;
+            }, 80);
+
+            restoreEndTimer = window.setTimeout(function() {
+              framework.classList.remove('is-menu-restoring');
+              restoreEndTimer = null;
+            }, 360);
+            return;
+          }
+
+          clearMenuRestoreTimers();
+          clearMenuHoverTimer();
+          framework.classList.remove('is-menu-restoring');
+          framework.classList.remove('is-menu-hovered');
+          framework.classList.add('is-menu-collapsed');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

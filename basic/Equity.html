@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NN 规范 - Equity 权益</title>
+  <link rel="stylesheet" href="../styles.css?v=20261119-din-balanced">
+  <script>
+    (function() {
+      if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <iframe id="header-iframe" src="../public/public-header.html?v=20260604-equity-id-premium-gif&library=basic" frameborder="0" style="width: 100%; height: 60px; border: none; display: block; position: fixed; top: 0; left: 0; z-index: 1000;"></iframe>
+  <iframe id="nav-iframe" src="../public/nav.html?v=20260604-equity-id-premium-gif" frameborder="0"></iframe>
+
+  <div class="container" style="margin-top: var(--space60);">
+    <section class="section">
+      <span class="breadcrumb-part">数据展示</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-part">权益</span>
+      <h1 class="section-title">Equity 权益</h1>
+      <p class="description">Equity 用于展示用户权益、身份 ID、段位身份等紧凑状态信息，支持不同类型、等级、状态与尺寸。</p>
+
+      <div class="equity-content">
+        <div class="equity-section">
+          <h2 class="equity-section-title">ID 样式</h2>
+          <p class="equity-section-desc">展示 ID 普通、ID 高级在 Default 和 Small 尺寸下的基础样式。</p>
+          <div class="equity-page-demo equity-page-with-border">
+            <div class="equity-demo-grid" id="equity-id-demo"></div>
+          </div>
+        </div>
+
+        <div class="equity-section">
+          <h2 class="equity-section-title">游戏段位</h2>
+          <p class="equity-section-desc">用于展示用户在游戏内的段位身份，可调用 Large、Default、Small 三种尺寸，颜色跟随亮暗模式自动切换。</p>
+          <div class="equity-page-demo equity-page-with-border">
+            <div class="equity-rank-demo">
+              <div class="equity-rank-demo-row" id="equity-rank-default-demo"></div>
+              <div class="equity-rank-demo-row equity-rank-demo-row--sample" id="equity-rank-size-demo"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="equity-section">
+          <h2 class="equity-section-title">社区等级</h2>
+          <p class="equity-section-desc">用于展示社区成长等级，可调用 Default、Small、Compact 三种尺寸；Compact 为 Small 的 90%，LV8、LV9、LV10 会展示绝对定位皇冠，不占用等级框高度。</p>
+          <div class="equity-page-demo equity-page-with-border">
+            <div class="equity-community-level-demo">
+              <div class="equity-community-level-demo-row" id="equity-community-level-default-demo"></div>
+              <div class="equity-community-level-demo-row" id="equity-community-level-small-demo"></div>
+              <div class="equity-community-level-demo-row" id="equity-community-level-compact-demo"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="equity-section">
+          <h2 class="equity-section-title">社区身份</h2>
+          <p class="equity-section-desc">用于展示用户在社区内的身份标签，包含超管、高管、管理、核心四种样式。</p>
+          <div class="equity-page-demo equity-page-with-border">
+            <div class="equity-community-level-demo-row equity-community-role-demo-row" id="equity-community-role-demo"></div>
+          </div>
+        </div>
+
+        <div class="equity-section">
+          <h2 class="equity-section-title">成员等级</h2>
+          <p class="equity-section-desc">用于展示成员成长等级，支持 1 至 100 级，统一使用 Default 尺寸。</p>
+          <div class="equity-page-demo equity-page-with-border">
+            <div class="equity-member-level-demo" id="equity-member-level-default-demo"></div>
+          </div>
+        </div>
+
+        <div class="equity-section">
+          <h2 class="equity-section-title">PUBG 全国战力排行</h2>
+          <p class="equity-section-desc">用于展示 PUBG 全国战力排行，支持第 1 至第 50 名，统一使用原始 20px 高度徽章。</p>
+          <div class="equity-page-demo equity-page-with-border">
+            <div class="equity-pubg-national-power-rank-demo" id="equity-pubg-national-power-rank-demo"></div>
+          </div>
+        </div>
+
+        <div class="equity-section">
+          <h2 class="equity-section-title">勋章类型</h2>
+          <p class="equity-section-desc">成就、社区与赛事勋章，按类别和等级排序展示。</p>
+          <div class="equity-page-demo equity-page-with-border">
+            <div class="equity-medal-demo" id="equity-medal-demo"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="equity-api-section">
+        <h2 class="equity-api-title">API 参考</h2>
+        <h3 class="equity-api-subtitle">ID 样式</h3>
+        <table class="equity-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>text</td><td>权益展示文本</td><td>string</td><td>-</td><td>90231</td></tr>
+                <tr><td>variant</td><td>权益状态；overlay 用于封面叠加场景</td><td>string</td><td>normal | overlay | premium</td><td>normal</td></tr>
+                <tr><td>state</td><td>状态别名，优先级高于 variant</td><td>string</td><td>normal | overlay | cover | premium | advanced | id-advanced | ID 普通 | ID 高级</td><td>''</td></tr>
+            <tr><td>size</td><td>权益尺寸</td><td>string</td><td>default | small</td><td>default</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+        <h3 class="equity-api-subtitle">游戏段位</h3>
+        <table class="equity-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>lv</td><td>段位等级</td><td>number | string</td><td>1 - 10</td><td>1</td></tr>
+            <tr><td>size</td><td>段位尺寸</td><td>string</td><td>small | default | large</td><td>default</td></tr>
+            <tr><td>text</td><td>自定义段位文本；为空时按 lv 自动展示</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+        <h3 class="equity-api-subtitle">社区等级</h3>
+        <table class="equity-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>lv</td><td>社区等级</td><td>number | string</td><td>1 - 10</td><td>1</td></tr>
+            <tr><td>size</td><td>社区等级尺寸；compact 为 small 的 90%</td><td>string</td><td>default | small | compact</td><td>default</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+        <h3 class="equity-api-subtitle">社区身份</h3>
+        <table class="equity-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>role</td><td>社区身份类型</td><td>string</td><td>super-admin | senior-admin | admin | core</td><td>super-admin</td></tr>
+            <tr><td>text</td><td>自定义身份文本；为空时按 role 自动展示</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+        <h3 class="equity-api-subtitle">成员等级</h3>
+        <table class="equity-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>lv</td><td>成员等级</td><td>number | string</td><td>1 - 100</td><td>1</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+        <h3 class="equity-api-subtitle">PUBG 全国战力排行</h3>
+        <table class="equity-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>rank</td><td>全国战力排名</td><td>number | string</td><td>1 - 50</td><td>1</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+        <h3 class="equity-api-subtitle">勋章类型</h3>
+        <table class="equity-api-table">
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>说明</th>
+              <th>类型</th>
+              <th>可选值</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>category</td><td>勋章分类</td><td>string</td><td>achievement | community | tournament</td><td>achievement</td></tr>
+            <tr><td>medal</td><td>勋章类型</td><td>string</td><td>firepower | survivor | ace | colonel | pubg-player | best-cp | nn-dragon | champion | runner-up | third</td><td>firepower</td></tr>
+            <tr><td>level</td><td>勋章等级</td><td>number | string</td><td>成就等级 1–5；PUBG玩家无等级；其他按勋章类型提供</td><td>1</td></tr>
+            <tr><td>className</td><td>自定义类名</td><td>string</td><td>-</td><td>''</td></tr>
+            <tr><td>id</td><td>自定义 id</td><td>string</td><td>-</td><td>''</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../main.js?v=20260525-clean"></script>
+  <script src="../basic%20components/button.js?v=20261112-button-progress"></script>
+  <script src="../basic%20components/message.js?v=20260602-code-preview-all"></script>
+  <script src="../basic%20components/code-preview.js?v=20260603-code-button-normal"></script>
+  <script src="../basic%20components/equity.js?v=20261112-equity-community-level-compact"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setActiveNav('nav-equity');
+      injectEquityStyles();
+
+      const equityIdDemo = document.getElementById('equity-id-demo');
+      const equityRankDefaultDemo = document.getElementById('equity-rank-default-demo');
+      const equityRankSizeDemo = document.getElementById('equity-rank-size-demo');
+      const equityCommunityLevelDefaultDemo = document.getElementById('equity-community-level-default-demo');
+      const equityCommunityLevelSmallDemo = document.getElementById('equity-community-level-small-demo');
+      const equityCommunityLevelCompactDemo = document.getElementById('equity-community-level-compact-demo');
+      const equityCommunityRoleDemo = document.getElementById('equity-community-role-demo');
+      const equityMemberLevelDefaultDemo = document.getElementById('equity-member-level-default-demo');
+      const equityPubgNationalPowerRankDemo = document.getElementById('equity-pubg-national-power-rank-demo');
+      const equityMedalDemo = document.getElementById('equity-medal-demo');
+      [
+        { text: '90231', variant: 'normal', size: 'default' },
+        { text: '90231', variant: 'premium', size: 'default' },
+        { text: '90231', variant: 'normal', size: 'small' },
+        { text: '90231', variant: 'premium', size: 'small' }
+      ].forEach(function(options) {
+        const cell = document.createElement('div');
+        cell.className = 'equity-demo-cell';
+        cell.appendChild(createEquity(options));
+        equityIdDemo.appendChild(cell);
+      });
+
+      Array.from({ length: 10 }, function(_, index) {
+        return index + 1;
+      }).forEach(function(lv) {
+        equityRankDefaultDemo.appendChild(createEquityRank({ lv: lv, size: 'default' }));
+      });
+
+      [
+        { lv: 1, size: 'large' },
+        { lv: 1, size: 'default' },
+        { lv: 1, size: 'small' }
+      ].forEach(function(options) {
+        equityRankSizeDemo.appendChild(createEquityRank(options));
+      });
+
+      Array.from({ length: 10 }, function(_, index) {
+        return index + 1;
+      }).forEach(function(lv) {
+        equityCommunityLevelDefaultDemo.appendChild(createEquityCommunityLevel({ lv: lv, size: 'default' }));
+        equityCommunityLevelSmallDemo.appendChild(createEquityCommunityLevel({ lv: lv, size: 'small' }));
+        equityCommunityLevelCompactDemo.appendChild(createEquityCommunityLevel({ lv: lv, size: 'compact' }));
+      });
+
+      ['super-admin', 'senior-admin', 'admin', 'core'].forEach(function(role) {
+        equityCommunityRoleDemo.appendChild(createEquityCommunityRole({ role: role }));
+      });
+
+      Array.from({ length: 100 }, function(_, index) {
+        return index + 1;
+      }).forEach(function(lv) {
+        equityMemberLevelDefaultDemo.appendChild(createEquityMemberLevel({ lv: lv }));
+      });
+
+      [1, 3, 4, 10, 11, 20, 21, 50].forEach(function(rank) {
+        equityPubgNationalPowerRankDemo.appendChild(createEquityPubgNationalPowerRank({ rank: rank }));
+      });
+
+      [
+        {
+          title: '成就勋章',
+          items: [
+            ...[
+              ['ace', '绝地王牌'], ['firepower', '火力全开'],
+              ['survivor', '绝地生存家'], ['colonel', '吃鸡上校']
+            ].flatMap(function(medal) {
+              return [1, 2, 3, 4, 5].map(function(level) {
+                return { category: 'achievement', medal: medal[0], level: level, name: `${medal[1]} ${['I', 'II', 'III', 'IV', 'V'][level - 1]}` };
+              });
+            }),
+            { category: 'achievement', medal: 'pubg-player', name: 'PUBG玩家' }
+          ]
+        },
+        {
+          title: '社区勋章',
+          items: [
+            { category: 'community', medal: 'best-cp', name: '最佳CP' },
+            ...[2, 3, 4, 5, 21].map(function(level) {
+              return { category: 'community', medal: 'nn-dragon', level: level, name: `NN龙王 LV.${level}` };
+            })
+          ]
+        },
+        {
+          title: '赛事勋章',
+          items: [
+            { category: 'tournament', medal: 'champion', name: '冠军' },
+            { category: 'tournament', medal: 'runner-up', name: '亚军' },
+            { category: 'tournament', medal: 'third', name: '季军' }
+          ]
+        }
+      ].forEach(function(groupData) {
+        const group = document.createElement('section');
+        group.className = 'equity-medal-demo-group';
+        const title = document.createElement('h3');
+        title.className = 'equity-medal-demo-group__title';
+        title.textContent = groupData.title;
+        const grid = document.createElement('div');
+        grid.className = 'equity-medal-demo-grid';
+        groupData.items.forEach(function(itemData) {
+          const item = document.createElement('div');
+          item.className = 'equity-medal-demo-item';
+          item.appendChild(createEquityMedal(itemData));
+          const name = document.createElement('span');
+          name.textContent = itemData.name;
+          item.appendChild(name);
+          grid.appendChild(item);
+        });
+        group.append(title, grid);
+        equityMedalDemo.appendChild(group);
+      });
+    });
+  </script>
+</body>
+</html>
